@@ -126,8 +126,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 <div class="tb">
   <button class="on" onclick="sw('sch')">📅 일정</button>
   <button onclick="sw('mp')">🗺️ 지도</button>
-  <button onclick="sw('bd')">💰 예산</button>
-  <button onclick="sw('tp')">💡 팁</button>
+  <button onclick="sw('info')">💰📌 예산·팁</button>
   <button onclick="sw('di')">📓 다이어리</button>
 </div>
 
@@ -263,8 +262,8 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 </div>
 </div></div>
 
-<!-- 4/17 ★ -->
-<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d17">4/17</div><div><div class="dtt">JW 입성 · ⭐ Kiss of the Sea</div><div class="dts">JW Marriott · Khem Beach · 32°/27°C 🌤️</div></div></div><div class="cv">▾</div></div>
+<!-- 4/17 -->
+<div class="dc" data-day="17"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d17">4/17</div><div><div class="dtt">JW 입성 · ⭐ Kiss of the Sea</div><div class="dts">JW Marriott · Khem Beach · 32°/27°C 🌤️</div></div></div><div class="cv">▾</div></div>
 <div class="dy">
 <div class="sl">
   <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">31°C ☀️ 맑음</span>
@@ -370,7 +369,7 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
   <div id="diary-upload" style="padding:20px;border:2px dashed #ddd;border-radius:12px;text-align:center;margin-bottom:12px;cursor:pointer" onclick="document.getElementById('diary-photo-input').click()">
     <div style="font-size:28px;margin-bottom:4px">📸</div>
     <div style="font-size:13px;color:#888">사진을 탭해서 업로드</div>
-    <div style="font-size:11px;color:#bbb;margin-top:2px">iPhone·Galaxy 사진 EXIF에서 날짜·시간 자동 추출</div>
+    <div style="font-size:11px;color:#bbb;margin-top:2px">EXIF 날짜·시간 자동 추출 · 이미지 자동 압축 (800px)</div>
     <input type="file" id="diary-photo-input" accept="image/*" multiple style="display:none" onchange="handleDiaryPhotos(event)">
   </div>
   
@@ -411,8 +410,8 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 <div id="tab-tp" class="tc">
 
 <!-- Quick Info Banner -->
-<div style="margin:10px 14px;padding:10px 14px;background:linear-gradient(135deg,#1a6b5a,#2c8c6e);border-radius:12px;color:#fff;font-size:12px" class="editable" id="wx-info">
-  <div style="font-weight:700;font-size:14px;margin-bottom:6px">📌 핵심 정보</div>
+<div class="sc op"><div class="sch" onclick="ts(this)" style="background:linear-gradient(135deg,#1a6b5a,#2c8c6e);border-radius:12px;margin:10px 14px;padding:10px 14px"><div class="sct" style="color:#fff;font-size:14px">📌 핵심 정보</div><div class="cv" style="color:#fff">▾</div></div>
+<div class="scb"><div style="padding:8px 14px;font-size:12px" class="editable" id="wx-info">
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
     <div>🌡️ 낮 30~33°C / 밤 27°C</div>
     <div>⏰ 시차: 한국 -2시간</div>
@@ -421,7 +420,7 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
     <div>🏖️ 바다 맑기: 남부 > 북부 > 중부</div>
     <div>☀️ UV 극심 11~15시</div>
   </div>
-</div>
+</div></div>
 
 <!-- Quick Links -->
 <div style="margin:8px 14px;display:flex;flex-wrap:wrap;gap:4px">
@@ -553,6 +552,172 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 </div></div>
 
 </div><!-- end tab-tp -->
+
+<!-- ═══ 예산·팁 ═══ -->
+<div id="tab-info" class="tc">
+
+<div style="margin:8px 14px;display:flex;gap:4px">
+  <button onclick="document.getElementById('info-budget').style.display='';document.getElementById('info-tips').style.display='none';this.style.background='#2c3e50';this.style.color='#fff';this.nextElementSibling.style.background='#fff';this.nextElementSibling.style.color='#333'" style="flex:1;padding:8px;border:none;border-radius:10px;background:#2c3e50;color:#fff;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">💰 예산</button>
+  <button onclick="document.getElementById('info-tips').style.display='';document.getElementById('info-budget').style.display='none';this.style.background='#2c3e50';this.style.color='#fff';this.previousElementSibling.style.background='#fff';this.previousElementSibling.style.color='#333'" style="flex:1;padding:8px;border:none;border-radius:10px;background:#fff;color:#333;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer">📌 팁</button>
+</div>
+
+<div id="info-budget">
+
+<div class="ib"><b>2인 총액</b> · 호텔 제외<br>
+💡 <b>절약 팁</b>: JW 내부 대신 외부 식당 → 식사비 절반 이하. 가성비 투어(Jeep Tour $39) 선택 시 약 10만원 절약. 마사지 3회로 줄이면 약 5만원 절약.<br>
+🇻🇳 <b>베트남 카드 사정</b>: 리조트·Grand World·스파·마트는 카드 OK. <b>야시장·노점·로컬식당은 약 80% 현금만</b>
+</div>
+
+<div id="info-tips" style="display:none">
+
+
+<!-- Quick Info Banner -->
+<div class="sc op"><div class="sch" onclick="ts(this)" style="background:linear-gradient(135deg,#1a6b5a,#2c8c6e);border-radius:12px;margin:10px 14px;padding:10px 14px"><div class="sct" style="color:#fff;font-size:14px">📌 핵심 정보</div><div class="cv" style="color:#fff">▾</div></div>
+<div class="scb"><div style="padding:8px 14px;font-size:12px" class="editable" id="wx-info">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+    <div>🌡️ 낮 30~33°C / 밤 27°C</div>
+    <div>⏰ 시차: 한국 -2시간</div>
+    <div>💱 10만 VND ≈ 5,600원</div>
+    <div>🌅 일몰 18:15</div>
+    <div>🏖️ 바다 맑기: 남부 > 북부 > 중부</div>
+    <div>☀️ UV 극심 11~15시</div>
+  </div>
+</div></div>
+
+<!-- Quick Links -->
+<div style="margin:8px 14px;display:flex;flex-wrap:wrap;gap:4px">
+  <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank" style="padding:5px 10px;background:#e3f2fd;border-radius:12px;font-size:11px;color:#1565c0;text-decoration:none">🌤️ AccuWeather</a>
+  <a href="https://weather.com/ko-KR/weather/monthly/l/375164cdeba46eb4d8459f8b705c9f30ef7b063b920dcce717b2d854c34cacab" target="_blank" style="padding:5px 10px;background:#e3f2fd;border-radius:12px;font-size:11px;color:#1565c0;text-decoration:none">🌦️ weather.com</a>
+  <a href="https://vinbus.vn/" target="_blank" style="padding:5px 10px;background:#e8f5e9;border-radius:12px;font-size:11px;color:#2e7d32;text-decoration:none">🚌 VinBus</a>
+  <a href="https://vinwonders.com/en/vinpearl-safari-phu-quoc-price-and-regulations/" target="_blank" style="padding:5px 10px;background:#fff3e0;border-radius:12px;font-size:11px;color:#e65100;text-decoration:none">🦁 Safari</a>
+  <a href="https://kissofthesea.com/" target="_blank" style="padding:5px 10px;background:#fce4ec;border-radius:12px;font-size:11px;color:#c62828;text-decoration:none">⭐ Kiss of Sea</a>
+  <a href="https://onbird.vn/" target="_blank" style="padding:5px 10px;background:#e0f2f1;border-radius:12px;font-size:11px;color:#00695c;text-decoration:none">🌊 OnBird</a>
+</div>
+
+<!-- Checklist -->
+<div class="sc op"><div class="sch" onclick="ts(this)"><div class="sct">✅ 출발 전 체크리스트</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" id="checklist-area">
+    <div style="font-weight:700;margin-bottom:6px">📱 앱·예약</div>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">eSIM 설치</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">트래블월렛 VND 충전</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">Grab 앱 설치 + 카드 등록</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">Safari 입장권 선결제</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">OnBird 스노클링 예약</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">마사지 1곳 예약</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">Kiss of the Sea 무료티켓 확인 (JW)</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">JW 레이트 체크아웃 문의</label>
+
+    <div style="font-weight:700;margin:10px 0 6px">💰 환전</div>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">은행 앱에서 $100 신권 환전 신청</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">인천공항에서 달러 수령</label>
+
+    <div style="font-weight:700;margin:10px 0 6px">🎒 짐싸기</div>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">여권 (6개월 유효)</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">선크림 SPF50 + 선글라스 + 모자</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">수영복 2벌 + 래시가드</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">방수폰케이스 + 방수팩</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">멀미약 + 상비약</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">접이식 우산</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">아쿠아슈즈</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">멀티어댑터</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">충전기 + 보조배터리</label>
+    <div id="custom-checks"></div>
+    <div id="check-add-area" style="display:none;margin-top:8px;border-top:1px dashed #ddd;padding-top:8px">
+      <div style="display:flex;gap:4px">
+        <input id="new-check-input" placeholder="새 항목 추가" style="flex:1;padding:6px 8px;border:1px solid #ddd;border-radius:6px;font-family:inherit;font-size:12px">
+        <button onclick="addCheckItem()" style="padding:6px 12px;background:var(--g);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;font-weight:700">+</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 환전 가이드 -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">💱 환전 가이드</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12px">
+      <b>🇰🇷→💵</b><div>은행 앱 환전 (우대 80~100%) → 공항 수령. <b>$100 신권 필수</b></div>
+      <b>4/13</b><div>공항에서 $50~100 소액 환전 (택시+야식)</div>
+      <b>4/14</b><div>트래블월렛 카드로 버팀 (Grand World 전부 Visa OK)</div>
+      <b>4/15</b><div><b>금은방 본격 환전</b> · King Kong Mart 근처 2~3곳 비교</div>
+      <b>이후</b><div>현금 위주. 부족 시 호텔 프런트 소액 추가</div>
+    </div>
+    <div style="margin-top:8px;padding:6px 8px;background:#fff3e0;border-radius:6px;font-size:11px">
+      ⚠️ 호객 환전 사기 주의 · 50만↔5만 VND 지폐 바꿔치기 주의 · ATM 카드 복제 주의
+    </div>
+  </div>
+</div></div>
+
+<!-- OOTD -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">👕 옷차림 OOTD</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="font-size:12px">
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px">
+      <b>☀️ 낮</b><div>린넨 반팔 + 반바지. 운동화(Safari) or 샌들. 양산/모자 필수</div>
+      <b>🌊 바다</b><div>래시가드 + 수영복. 아쿠아슈즈. 방수폰케이스</div>
+      <b>🌙 저녁</b><div>얇은 긴바지 + 반팔. 가디건 1장(에어컨). JW: 스마트캐주얼</div>
+      <b>❌ 불필요</b><div>두꺼운 옷(밤 27°C). 정장/구두</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- Grab -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🚕 Grab + 이동</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="font-size:12px">
+    <b>출발 전</b>: Grab 앱 설치 → 한국 번호로 가입 → 해외결제 카드/트래블월렛 등록<br><br>
+    <b>현지에서</b>: GrabCar(일반차) / GrabBike(오토바이). 요금 사전확정 → 바가지 걱정 없음<br>
+    공항 도착 → Grab 픽업존 안내 표지판 따라가기<br><br>
+    <b>기타 이동</b>: 🚌 VinBus (공항↔Grand World 무료) · ☀️ Sun World 무료셔틀 (남부)
+  </div>
+</div></div>
+
+<!-- 베트남어 -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🇻🇳 베트남어 한마디</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="font-size:12px">
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:3px 10px">
+      <b>Không rau mùi</b><div>꽁 라우 무이 — 고수 빼주세요</div>
+      <b>Không cay</b><div>꽁 까이 — 맵지 않게</div>
+      <b>Bao nhiêu tiền?</b><div>바오 니에우 띠엔? — 얼마예요?</div>
+      <b>Tính tiền</b><div>띤 띠엔 — 계산이요</div>
+      <b>Cảm ơn</b><div>깜 언 — 감사합니다</div>
+      <b>Ngon quá!</b><div>응온 꽈! — 맛있어요!</div>
+      <b>Một Hai Ba Yo!</b><div>못 하이 바 요! — 건배!</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 생활팁 -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">⚠️ 생활 팁</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="font-size:12px">
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:3px 10px">
+      <b>💧 물</b><div>수돗물 X. <b>양치도 생수로</b>. 노점 얼음 주의</div>
+      <b>🔌 전압</b><div>220V. 한국 2핀 대부분 호환. 멀티어댑터 1개 챙기기</div>
+      <b>🌅 일출/몰</b><div>05:54 / 18:15 (4월)</div>
+      <b>🚨 긴급</b><div>경찰 113 · 앰뷸런스 115 · 소방 114</div>
+      <b>🏥 병원</b><div>Vinmec +84-297-398-3668 (영어 OK)</div>
+      <b>🇰🇷 영사관</b><div>주호치민 +84-28-3822-5757</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 공항 대기 -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">✈️ 4/18 공항 대기 (약 4시간)</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="font-size:12px">
+    22:30 도착 → 02:25 출발 = <b>약 4시간</b><br>
+    라운지 약 $20(50만 VND). 카페·면세점 있음(심야 일부 닫힘). 무료 와이파이.
+  </div>
+</div></div>
+
+
+</div>
+
+</div>
+
 
 <!-- ═══ 예산 ═══ -->
 <div id="tab-bd" class="tc">
@@ -798,10 +963,12 @@ function handleDiaryPhotos(e){
   Array.from(files).forEach(function(file){
     var reader=new FileReader();
     reader.onload=function(ev){
-      var dataUrl=ev.target.result;
-      // Try to extract EXIF date
+      // Compress image to max 800px, quality 0.6
+      var origData=ev.target.result;
       var exifDate=null;
-      try{exifDate=extractExifDate(dataUrl);}catch(ex){}
+      try{exifDate=extractExifDate(origData);}catch(ex){}
+      compressImage(origData,800,0.6,function(dataUrl){
+      
       
       if(exifDate){
         saveDiaryEntry({type:'photo',src:dataUrl,date:exifDate.date,time:exifDate.time,place:'',note:''});
@@ -814,9 +981,26 @@ function handleDiaryPhotos(e){
         processed++;
         if(processed>=files.length&&diaryPendingPhotos.length===0)renderDiary();
       }
+      }); // end compressImage callback
     };
     reader.readAsDataURL(file);
   });
+}
+
+function compressImage(dataUrl,maxSize,quality,callback){
+  var img=new Image();
+  img.onload=function(){
+    var w=img.width,h=img.height;
+    if(w>maxSize||h>maxSize){
+      if(w>h){h=Math.round(h*maxSize/w);w=maxSize;}
+      else{w=Math.round(w*maxSize/h);h=maxSize;}
+    }
+    var canvas=document.createElement('canvas');
+    canvas.width=w;canvas.height=h;
+    canvas.getContext('2d').drawImage(img,0,0,w,h);
+    callback(canvas.toDataURL('image/jpeg',quality));
+  };
+  img.src=dataUrl;
 }
 
 function extractExifDate(dataUrl){
@@ -884,6 +1068,12 @@ function delDiaryEntry(id){
   renderDiary();
 }
 
+function updateDiaryNote(id,note){
+  var entries=JSON.parse(localStorage.getItem('pq-diary')||'[]');
+  entries.forEach(function(e){if(e.id===id)e.note=note});
+  localStorage.setItem('pq-diary',JSON.stringify(entries));
+}
+
 function renderDiary(){
   var el=document.getElementById('diary-entries');
   if(!el)return;
@@ -902,7 +1092,8 @@ function renderDiary(){
     html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:#999">🕐 '+e.time+(e.place?' · 📍 '+e.place:'')+'</span>';
     html+='<button onclick="delDiaryEntry('+e.id+')" style="background:none;border:none;color:#ccc;font-size:14px;cursor:pointer">✕</button></div>';
     if(e.type==='photo'&&e.src) html+='<img src="'+e.src+'" style="width:100%;border-radius:8px;margin-bottom:4px">';
-    if(e.note) html+='<div style="font-size:13px;color:#333">'+e.note+'</div>';
+    if(e.type==='photo') html+='<textarea onblur="updateDiaryNote('+e.id+',this.value)" placeholder="메모 추가..." style="width:100%;padding:6px;border:1px solid #eee;border-radius:6px;font-family:inherit;font-size:12px;margin-top:4px;resize:none;height:32px">'+(e.note||'')+'</textarea>';
+    else if(e.note) html+='<div style="font-size:13px;color:#333">'+e.note+'</div>';
     html+='</div>';
   });
   el.innerHTML=html;
