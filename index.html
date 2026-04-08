@@ -106,7 +106,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 <div style="position:fixed;top:8px;right:10px;z-index:300">
   <button id="mode-btn" onclick="toggleMode()" style="padding:5px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.4);color:#fff;font-family:inherit;font-size:11px;cursor:pointer;backdrop-filter:blur(4px)">👁️ Visitor</button>
 </div>
-<div class="wx">
+<div class="wx editable" id="wx-table">
   🌡️ <b>4/13~18 예보</b> <span style="font-size:10px;color:#e07a5f">(출발 전 아래 링크에서 최신 확인!)</span><br>
   <span style="font-size:10px;color:#555">4월 푸꾸옥 비 패턴: <b>오전 맑음 → 오후 13~17시 소나기 → 저녁 개임</b>. 소나기는 보통 30분~1시간 후 그침</span>
   <table style="width:100%;font-size:10.5px;border-collapse:collapse;margin:4px 0">
@@ -353,158 +353,142 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 
 <!-- ═══ 팁 ═══ -->
 <div id="tab-tp" class="tc">
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🔗 URL · 💡 팁</div><div class="cv">▾</div></div>
-<div class="scb">
-  <div class="it"><b>🔗 공식 링크</b><br>
-    <a class="lk" href="https://vinwonders.com/en/vinpearl-safari-phu-quoc-price-and-regulations/" target="_blank">Safari</a> · <a class="lk" href="https://vinwonders.com/en/wonderpedia/news/safari-phu-quoc-show-schedule/" target="_blank">동물쇼</a> · <a class="lk" href="https://vinwonders.com/en/vinwonders-phu-quoc-price-and-regulations/" target="_blank">VinWonders</a> · <a class="lk" href="https://onbird.vn/" target="_blank">OnBird</a> · <a class="lk" href="https://kissofthesea.com/" target="_blank">Kiss of the Sea</a> · <a class="lk" href="https://maps.vinbus.vn/pq" target="_blank">VinBus</a> · <a class="lk" href="https://sunworld.vn/en/hon-thom/" target="_blank">Sun World</a></div>
-  <div class="it"><b>📱 날씨</b><br>
-    <a class="lk" href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> · <a class="lk" href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> · <a class="lk" href="https://weather.com/ko-KR/weather/monthly/l/375164cdeba46eb4d8459f8b705c9f30ef7b063b920dcce717b2d854c34cacab" target="_blank">weather.com</a></div>
-  <div class="it"><b>💱 환율</b>: 100만 VND ≈ 약 5.6만원 · 10만 VND ≈ 약 5,600원 · 1만 VND ≈ 약 560원</div>
-  <div class="it"><b>🌡️ 날씨</b>: 11~15시 UV 극심 → 실내·카페·마사지. 소나기 우산 필수. 오전·늦은 오후 야외</div>
-  <div class="it"><b>🏖️ 바다 맑기</b>: 남부(Khem·Sao) > 북서(Bai Dai) > 중부 서해안(두엉동)</div>
-  <div class="it"><b>🚗 이동</b>: 북부 VinBus+셔틀, 남부 Sun World 무료셔틀, 기본 Grab</div>
-  <div class="it"><b>🏨 숙소</b>: 4/13~14 VinHolidays(북) → 4/15 Lahana(중) → 4/16 Moonlight(남) → 4/17~18 JW(남)</div>
-  <div class="it"><b>📋 체크리스트</b><br>☐ eSIM · ☐ 트래블월렛 · ☐ Safari예약 · ☐ OnBird예약 · ☐ 마사지1곳예약<br>☐ 멀미약 · ☐ 방수팩 · ☐ 접이식우산 · ☐ JW 레이트체크아웃 문의<br>☐ Kiss of the Sea 무료티켓 확인 · ☐ Sun World 셔틀 시간표<br>☐ Grab 앱 설치+결제등록 · ☐ 멀티어댑터</div>
-</div></div>
 
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">👕 OOTD · 옷차림 가이드</div><div class="cv">▾</div></div>
+<!-- Quick Info Banner -->
+<div style="margin:10px 14px;padding:10px 14px;background:linear-gradient(135deg,#1a6b5a,#2c8c6e);border-radius:12px;color:#fff;font-size:12px" class="editable" id="wx-info">
+  <div style="font-weight:700;font-size:14px;margin-bottom:6px">📌 핵심 정보</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+    <div>🌡️ 낮 30~33°C / 밤 27°C</div>
+    <div>⏰ 시차: 한국 -2시간</div>
+    <div>💱 10만 VND ≈ 5,600원</div>
+    <div>🌅 일몰 18:15</div>
+    <div>🏖️ 바다 맑기: 남부 > 북부 > 중부</div>
+    <div>☀️ UV 극심 11~15시</div>
+  </div>
+</div>
+
+<!-- Quick Links -->
+<div style="margin:8px 14px;display:flex;flex-wrap:wrap;gap:4px">
+  <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank" style="padding:5px 10px;background:#e3f2fd;border-radius:12px;font-size:11px;color:#1565c0;text-decoration:none">🌤️ AccuWeather</a>
+  <a href="https://weather.com/ko-KR/weather/monthly/l/375164cdeba46eb4d8459f8b705c9f30ef7b063b920dcce717b2d854c34cacab" target="_blank" style="padding:5px 10px;background:#e3f2fd;border-radius:12px;font-size:11px;color:#1565c0;text-decoration:none">🌦️ weather.com</a>
+  <a href="https://vinbus.vn/" target="_blank" style="padding:5px 10px;background:#e8f5e9;border-radius:12px;font-size:11px;color:#2e7d32;text-decoration:none">🚌 VinBus</a>
+  <a href="https://vinwonders.com/en/vinpearl-safari-phu-quoc-price-and-regulations/" target="_blank" style="padding:5px 10px;background:#fff3e0;border-radius:12px;font-size:11px;color:#e65100;text-decoration:none">🦁 Safari</a>
+  <a href="https://kissofthesea.com/" target="_blank" style="padding:5px 10px;background:#fce4ec;border-radius:12px;font-size:11px;color:#c62828;text-decoration:none">⭐ Kiss of Sea</a>
+  <a href="https://onbird.vn/" target="_blank" style="padding:5px 10px;background:#e0f2f1;border-radius:12px;font-size:11px;color:#00695c;text-decoration:none">🌊 OnBird</a>
+</div>
+
+<!-- Checklist -->
+<div class="sc op"><div class="sch" onclick="ts(this)"><div class="sct">✅ 출발 전 체크리스트</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it">
-    <b>4월 푸꾸옥</b>: 낮 30~33°C, 습도 높음, UV 극심. 가볍고 통풍 잘 되는 옷 위주<br><br>
-    <b>☀️ 낮 (Safari·Grand World·산책)</b><br>
-    • 린넨/면 반팔 + 반바지 or 얇은 긴바지<br>
-    • 통풍 잘 되는 운동화 or 스포츠 샌들 (Safari는 운동화 추천)<br>
-    • 양산 or 모자 필수 (UV 11+)<br>
-    • 선글라스 + SPF50 선크림<br><br>
-    <b>🌊 바다 (스노클링·비치)</b><br>
-    • 래시가드 상하 (자외선 차단 + 해파리 대비)<br>
-    • 수영복 (2벌 — 하루 말리기 시간 필요)<br>
-    • 아쿠아슈즈 (산호에 발 다칠 수 있음)<br>
-    • 방수폰케이스<br><br>
-    <b>🌙 저녁 (식당·야시장·Kiss of the Sea)</b><br>
-    • 얇은 긴바지 + 반팔 or 린넨셔츠<br>
-    • 편한 샌들 or 슬리퍼<br>
-    • 에어컨 실내용 얇은 가디건 1장<br>
-    • JW Pink Pearl 파인다이닝: 스마트 캐주얼 (반바지·슬리퍼 X)<br><br>
-    <b>🎒 안 가져가도 되는 것</b><br>
-    • 두꺼운 옷 (밤에도 27°C)<br>
-    • 정장/구두 (JW도 스마트 캐주얼이면 OK)
+  <div class="it" id="checklist-area">
+    <div style="font-weight:700;margin-bottom:6px">📱 앱·예약</div>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">eSIM 설치</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">트래블월렛 VND 충전</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">Grab 앱 설치 + 카드 등록</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">Safari 입장권 선결제</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">OnBird 스노클링 예약</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">마사지 1곳 예약</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">Kiss of the Sea 무료티켓 확인 (JW)</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">JW 레이트 체크아웃 문의</label>
+
+    <div style="font-weight:700;margin:10px 0 6px">💰 환전</div>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">은행 앱에서 $100 신권 환전 신청</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">인천공항에서 달러 수령</label>
+
+    <div style="font-weight:700;margin:10px 0 6px">🎒 짐싸기</div>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">여권 (6개월 유효)</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">선크림 SPF50 + 선글라스 + 모자</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">수영복 2벌 + 래시가드</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">방수폰케이스 + 방수팩</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">멀미약 + 상비약</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">접이식 우산</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">아쿠아슈즈</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">멀티어댑터</label>
+    <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">충전기 + 보조배터리</label>
   </div>
 </div></div>
 
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🎒 준비물 체크리스트</div><div class="cv">▾</div></div>
-<div class="scb">
-  <div class="it">
-    <b>📱 필수</b><br>
-    ☐ 여권 (6개월 이상 유효) · ☐ eSIM QR (미리 설치)<br>
-    ☐ 트래블월렛 (VND 충전) · ☐ Grab 앱 (한국서 미리 설치+카드 등록)<br>
-    ☐ 접이식 우산 · ☐ 선크림 SPF50 · ☐ 선글라스 · ☐ 모자<br><br>
-    <b>🌊 바다·수영</b><br>
-    ☐ 수영복 2벌 · ☐ 래시가드 상하 · ☐ 아쿠아슈즈<br>
-    ☐ 방수폰케이스 · ☐ 방수팩 (카메라·지갑용)<br>
-    ☐ 멀미약 (스노클링 보트용)<br><br>
-    <b>💊 건강</b><br>
-    ☐ 상비약 (두통·소화제·지사제·밴드)<br>
-    ☐ 모기퇴치제/패치 · ☐ 멀미약<br><br>
-    <b>🔌 전자기기</b><br>
-    ☐ 충전기 · ☐ 보조배터리<br>
-    ☐ 멀티어댑터 (대부분 호환되지만 간혹 안 맞음)<br><br>
-    <b>👕 의류 (5박 기준)</b><br>
-    ☐ 반팔 5~6장 · ☐ 반바지 3~4장 · ☐ 얇은 긴바지 1~2장<br>
-    ☐ 린넨셔츠 1장 (저녁·JW용) · ☐ 얇은 가디건 1장 (에어컨용)<br>
-    ☐ 속옷·양말 · ☐ 잠옷<br>
-    ☐ 운동화 1 · ☐ 샌들/슬리퍼 1 · ☐ 아쿠아슈즈 1
-  </div>
-</div></div>
-
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🇻🇳 유용한 베트남어</div><div class="cv">▾</div></div>
-<div class="scb">
-  <div class="it">
-    <b>Không rau mùi</b> (꽁 라우 무이) — 고수 빼주세요<br>
-    <b>Không cay</b> (꽁 까이) — 맵지 않게 해주세요<br>
-    <b>Bao nhiêu tiền?</b> (바오 니에우 띠엔?) — 얼마예요?<br>
-    <b>Tính tiền</b> (띤 띠엔) — 계산이요<br>
-    <b>Cảm ơn</b> (깜 언) — 감사합니다<br>
-    <b>Xin chào</b> (씬 짜오) — 안녕하세요<br>
-    <b>Ngon quá!</b> (응온 꽈!) — 맛있어요!<br>
-    <b>Một, Hai, Ba</b> (못, 하이, 바) — 1, 2, 3 (건배할 때 "못 하이 바 요!")
-  </div>
-</div></div>
-
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">📱 Grab 앱 세팅</div><div class="cv">▾</div></div>
-<div class="scb">
-  <div class="it">
-    <b>한국에서 미리 해야 할 것:</b><br>
-    1. Grab 앱 설치 (App Store / Google Play)<br>
-    2. 한국 전화번호로 가입<br>
-    3. 결제수단 등록: 해외결제 가능 카드 or 트래블월렛 카드<br>
-    4. 현지 도착 후 바로 호출 가능<br><br>
-    <b>팁:</b><br>
-    • 현금 결제도 가능 (VND)<br>
-    • GrabCar(일반차) / GrabBike(오토바이) 선택 가능<br>
-    • 요금 사전확정 → 바가지 걱정 없음<br>
-    • 공항 도착 후 Grab 픽업존이 따로 있음 (나오면 안내 표지판 따라가기)
-  </div>
-</div></div>
-
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">✈️ 4/18 밤 공항 대기 (약 4시간)</div><div class="cv">▾</div></div>
-<div class="scb">
-  <div class="it">
-    22:30 공항 도착 → 02:25 출발 = <b>약 4시간 대기</b><br><br>
-    <b>공항 시설:</b><br>
-    • 국제선 Business Lounge: 유료 약 $20(약 50만 VND/약 2.8만원). 간식·와이파이·소파<br>
-    • 카페: 커피숍, 버거킹, 베트남 식당 (심야 영업 확인 필요)<br>
-    • 면세점: 출국장 내 소규모. 주류·진주·공예품·기념품<br>
-    • 무료 와이파이 있음<br>
-    • 환전소·ATM 있음<br><br>
-    <b>팁:</b> 심야라 일부 매장 닫힐 수 있음. 라운지 이용 추천. Priority Pass 있으면 활용
-  </div>
-</div></div>
-
+<!-- 환전 가이드 -->
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">💱 환전 가이드</div><div class="cv">▾</div></div>
 <div class="scb">
   <div class="it">
-    <b>🇰🇷 KRW → USD (한국에서)</b><br>
-    카카오뱅크/토스/주거래은행 앱 환전(우대 80~100%) → 인천공항/영업점 수령<br>
-    현재 환율 약 1,490~1,500원/$1<br>
-    <b>필수: $100 신권(빳빳한 새 돈)</b>으로 받기. 구권/소액권은 현지 환율 깎임<br><br>
-
-    <b>🇻🇳 USD → VND (푸꾸옥에서)</b><br>
-    ① <b>두엉동 시내 금은방</b> — 환율 최고. King Kong Mart 주변. 2~3곳 비교<br>
-    ② King Kong Mart 내 환전 — 편리. 금은방과 비슷하거나 살짝 낮음<br>
-    ③ 호텔 프론트 — 편하지만 환율 약간 낮음. 소액 급할 때<br>
-    ④ 공항 — <b>최하</b>. $50~100 바꾸고 나머지는 시내에서<br><br>
-
-    <b>📅 환전 일정</b><br>
-    4/13 도착: 공항에서 $50~100 소액 환전 (택시+야식)<br>
-    4/14 하루: 공항 환전분으로 버팀 (부족 시 트래블월렛 카드 백업)<br>
-    <b>4/15 두엉동</b>: 금은방에서 나머지 달러 본격 환전 ← 핵심일<br>
-    이후: 부족 시 호텔 프론트 소액 추가<br><br>
-
-    <b>⚠️ 주의</b><br>
-    • 길거리 호객 환전 사기 — 공식 금은방/은행만 이용<br>
-    • VND 자릿수 세기 — 50만(파란색)↔5만(녹색) 지폐 바꿔치기 주의. 그 자리에서 세기<br>
-    • ATM 카드 복제 — 투입구에 이상한 장치 없는지 확인
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12px">
+      <b>🇰🇷→💵</b><div>은행 앱 환전 (우대 80~100%) → 공항 수령. <b>$100 신권 필수</b></div>
+      <b>4/13</b><div>공항에서 $50~100 소액 환전 (택시+야식)</div>
+      <b>4/14</b><div>트래블월렛 카드로 버팀 (Grand World 전부 Visa OK)</div>
+      <b>4/15</b><div><b>금은방 본격 환전</b> · King Kong Mart 근처 2~3곳 비교</div>
+      <b>이후</b><div>현금 위주. 부족 시 호텔 프런트 소액 추가</div>
+    </div>
+    <div style="margin-top:8px;padding:6px 8px;background:#fff3e0;border-radius:6px;font-size:11px">
+      ⚠️ 호객 환전 사기 주의 · 50만↔5만 VND 지폐 바꿔치기 주의 · ATM 카드 복제 주의
+    </div>
   </div>
 </div></div>
 
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">⚠️ 생활 팁 (물·전압·시간)</div><div class="cv">▾</div></div>
+<!-- OOTD -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">👕 옷차림 OOTD</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it">
-    <b>💧 물</b>: 수돗물 절대 X. <b>양치도 생수로</b>. 카페·식당 얼음은 대체로 OK(정수 얼음), 노점 얼음은 주의<br><br>
-    <b>🔌 전압·콘센트</b>: 베트남 220V/50Hz. 한국 플러그(C타입 2핀)는 <b>대부분 호환</b>. 간혹 안 맞을 수 있으니 멀티어댑터 1개 챙기면 안심<br><br>
-    <b>🌅 일출/일몰</b> (4월 중순):<br>
-    일출 <b>05:54</b> · 일몰 <b>18:15</b><br>
-    → Chuồn Chuồn 카페 일몰 보려면 17:30 전 도착<br>
-    → Kiss Bridge 일몰은 18:00 전후<br><br>
-    <b>⏰ 시차</b>: 한국보다 <b>2시간 느림</b> (한국 12시 = 푸꾸옥 10시)<br><br>
-    <b>🚨 긴급 연락처</b>:<br>
-    경찰 <b>113</b> · 앰뷸런스 <b>115</b> · 소방 <b>114</b><br>
-    주호치민 한국총영사관: <b>+84-28-3822-5757</b><br>
-    Vinmec 푸꾸옥 병원: <b>+84-297-398-3668</b> (영어 가능, 국제 보험 대응)<br>
-    관광경찰: <b>+84-297-384-6900</b>
+  <div class="it" style="font-size:12px">
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px">
+      <b>☀️ 낮</b><div>린넨 반팔 + 반바지. 운동화(Safari) or 샌들. 양산/모자 필수</div>
+      <b>🌊 바다</b><div>래시가드 + 수영복. 아쿠아슈즈. 방수폰케이스</div>
+      <b>🌙 저녁</b><div>얇은 긴바지 + 반팔. 가디건 1장(에어컨). JW: 스마트캐주얼</div>
+      <b>❌ 불필요</b><div>두꺼운 옷(밤 27°C). 정장/구두</div>
+    </div>
   </div>
 </div></div>
+
+<!-- Grab -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🚕 Grab + 이동</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="font-size:12px">
+    <b>출발 전</b>: Grab 앱 설치 → 한국 번호로 가입 → 해외결제 카드/트래블월렛 등록<br><br>
+    <b>현지에서</b>: GrabCar(일반차) / GrabBike(오토바이). 요금 사전확정 → 바가지 걱정 없음<br>
+    공항 도착 → Grab 픽업존 안내 표지판 따라가기<br><br>
+    <b>기타 이동</b>: 🚌 VinBus (공항↔Grand World 무료) · ☀️ Sun World 무료셔틀 (남부)
+  </div>
+</div></div>
+
+<!-- 베트남어 -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🇻🇳 베트남어 한마디</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="font-size:12px">
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:3px 10px">
+      <b>Không rau mùi</b><div>꽁 라우 무이 — 고수 빼주세요</div>
+      <b>Không cay</b><div>꽁 까이 — 맵지 않게</div>
+      <b>Bao nhiêu tiền?</b><div>바오 니에우 띠엔? — 얼마예요?</div>
+      <b>Tính tiền</b><div>띤 띠엔 — 계산이요</div>
+      <b>Cảm ơn</b><div>깜 언 — 감사합니다</div>
+      <b>Ngon quá!</b><div>응온 꽈! — 맛있어요!</div>
+      <b>Một Hai Ba Yo!</b><div>못 하이 바 요! — 건배!</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 생활팁 -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">⚠️ 생활 팁</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="font-size:12px">
+    <div style="display:grid;grid-template-columns:auto 1fr;gap:3px 10px">
+      <b>💧 물</b><div>수돗물 X. <b>양치도 생수로</b>. 노점 얼음 주의</div>
+      <b>🔌 전압</b><div>220V. 한국 2핀 대부분 호환. 멀티어댑터 1개 챙기기</div>
+      <b>🌅 일출/몰</b><div>05:54 / 18:15 (4월)</div>
+      <b>🚨 긴급</b><div>경찰 113 · 앰뷸런스 115 · 소방 114</div>
+      <b>🏥 병원</b><div>Vinmec +84-297-398-3668 (영어 OK)</div>
+      <b>🇰🇷 영사관</b><div>주호치민 +84-28-3822-5757</div>
+    </div>
+  </div>
+</div></div>
+
+<!-- 공항 대기 -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">✈️ 4/18 공항 대기 (약 4시간)</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="font-size:12px">
+    22:30 도착 → 02:25 출발 = <b>약 4시간</b><br>
+    라운지 약 $20(50만 VND). 카페·면세점 있음(심야 일부 닫힘). 무료 와이파이.
+  </div>
+</div></div>
+
 </div><!-- end tab-tp -->
 
 <!-- ═══ 예산 ═══ -->
@@ -788,7 +772,17 @@ function loadEdits(){
 document.addEventListener('DOMContentLoaded',function(){
   loadEdits();
   applyMode();
+  loadChecklist();
 });
+function saveChecklist(){
+  var checks=[];
+  document.querySelectorAll('#checklist-area input[type=checkbox]').forEach(function(cb){checks.push(cb.checked)});
+  localStorage.setItem('pq-checks',JSON.stringify(checks));
+}
+function loadChecklist(){
+  var checks=JSON.parse(localStorage.getItem('pq-checks')||'[]');
+  document.querySelectorAll('#checklist-area input[type=checkbox]').forEach(function(cb,i){if(checks[i])cb.checked=true});
+}
 
 
 
@@ -930,7 +924,7 @@ function initMap(){
   });
   loadCustomPins();
   loadComments();
-  renderCards("all");
+  renderCards('all');
 }
 var currentFilter='all';
 function filterMap(cat){
@@ -956,7 +950,9 @@ var regionNames={north:'🌿 북부',central:'🏙️ 중부',south:'🌅 남부
 function renderCards(cat){
   var el=document.getElementById('place-cards');
   if(!el)return;
-  var filtered=cat==='all'?places:places.filter(function(p){return p.c===cat});
+  // Hide cards on "전체", show only when specific category selected
+  if(cat==='all'){el.innerHTML='<div style="padding:12px;color:#999;font-size:12px;text-align:center">카테고리를 선택하면 장소 목록이 표시됩니다</div>';return}
+  var filtered=places.filter(function(p){return p.c===cat});
   // Also include custom pins
   var pins=JSON.parse(localStorage.getItem('pq-pins')||'[]');
   var customFiltered=cat==='all'?pins:pins.filter(function(p){return(p.type||'custom')===cat||cat==='custom'});
