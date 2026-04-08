@@ -107,7 +107,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
   <button id="mode-btn" onclick="toggleMode()" style="padding:5px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.4);color:#fff;font-family:inherit;font-size:11px;cursor:pointer;backdrop-filter:blur(4px)">👁️ Visitor</button>
 </div>
 <div class="wx">
-  🌡️ <b>4/13~18 예보</b> <span id="wx-status" style="font-size:10px;color:#555">(로딩중...)</span><br>
+  🌡️ <b>4/13~18 예보</b> <span style="font-size:10px;color:#e07a5f">(출발 전 아래 링크에서 최신 확인!)</span><br>
   <span style="font-size:10px;color:#555">4월 푸꾸옥 비 패턴: <b>오전 맑음 → 오후 13~17시 소나기 → 저녁 개임</b>. 소나기는 보통 30분~1시간 후 그침</span>
   <table style="width:100%;font-size:10.5px;border-collapse:collapse;margin:4px 0">
     <tr style="font-weight:700;border-bottom:1px solid #b2dfdb"><td>날짜</td><td>기온</td><td>☀️ 오전</td><td>🌦️ 오후</td><td>🌙 저녁</td><td>메모</td></tr>
@@ -235,8 +235,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 <div class="dy">
 <div class="sl">
   <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">30°C ☀️ 맑음</span>
-  <div class="sd">🌊 스노클링/다이빙 · 바다 맑기 최상 지역
-중부 픽업 → 남부 An Thoi 군도 (바다 맑기 1위 지역)
+  <div class="sd">중부 픽업 → 남부 An Thoi 군도 (바다 맑기 1위 지역)
 투어사 비교는 투어 탭 참고. 멀미약 필수</div>
   <div class="ch"><span class="c bg">OnBird 스노클링 2인 약 310만 VND (약 14.1만원)</span><span class="c bg">체험다이빙 2인 약 520만 (약 29.2만원)</span></div>
   <div class="alt alt-r">🧘 <b>바다 싫으면</b>: 오전 Lahana 풀 → 점심 후 남부 이동. 대신 남부에서 Khem Beach(JW 근처, 물 맑기 최상) 시간을 더 확보</div>
@@ -353,142 +352,156 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 
 <!-- ═══ 가이드 (통합) ═══ -->
 <div id="tab-gd" class="tc">
-<div class="ib">식당·카페·투어·마사지·쇼핑·스팟 통합. Google Maps 링크 연결됨.</div>
 
 <div style="margin:8px 14px;display:flex;flex-wrap:wrap;gap:4px">
-  <button onclick="scrollToSec('sec-fd')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">🍜 식당</button>
-  <button onclick="scrollToSec('sec-cf')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">☕ 카페</button>
-  <button onclick="scrollToSec('sec-dv')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">🤿 투어</button>
-  <button onclick="scrollToSec('sec-ms')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">💆 마사지</button>
-  <button onclick="scrollToSec('sec-sp')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">🛒 쇼핑·과일</button>
-  <button onclick="scrollToSec('sec-in')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">📍 스팟</button>
+  <button onclick="scrollToSec('sec-fd')" style="padding:6px 14px;border-radius:20px;border:none;background:#e07a5f;color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">🍜 식당</button>
+  <button onclick="scrollToSec('sec-cf')" style="padding:6px 14px;border-radius:20px;border:none;background:#c9a84c;color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">☕ 카페</button>
+  <button onclick="scrollToSec('sec-ms')" style="padding:6px 14px;border-radius:20px;border:none;background:#9c27b0;color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">💆 마사지</button>
+  <button onclick="scrollToSec('sec-sp')" style="padding:6px 14px;border-radius:20px;border:none;background:#ff9800;color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">🛒 쇼핑</button>
+  <button onclick="scrollToSec('sec-dv')" style="padding:6px 14px;border-radius:20px;border:none;background:#1a6b5a;color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">🤿 투어</button>
+  <button onclick="scrollToSec('sec-in')" style="padding:6px 14px;border-radius:20px;border:none;background:#3a7bd5;color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer">📍 스팟</button>
 </div>
 
+<!-- ══ 식당 ══ -->
 <div id="sec-fd" style="scroll-margin-top:60px">
-<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">🍜 식당</div>
+<div style="margin:16px 14px 8px;padding:8px 12px;background:#e07a5f;color:#fff;border-radius:10px;font-size:15px;font-weight:900">🍜 식당</div>
 
-<div class="ib">2인 기준. 고수: <b>"Không rau mùi"</b>(꽁 라우 무이)</div>
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🌿 북부 · Grand World</div><div class="cv">▾</div></div>
+<div class="sc op"><div class="sch" onclick="ts(this)"><div class="sct">⭐ 1000+ 리뷰 · 별점 4.0+</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it"><b>🦒 Giraffe Restaurant</b> · Safari · 양식 · 2인 약 2.8만~4.5만원</div>
-  <div class="it"><b>🍜 Kien Xay</b> · 분꾸아이 원조 · 2인 약 8천~1.4만원</div>
-  <div class="it"><b>🍜 Bep Nha</b> · 가정식 · 운하 옆 · 2인 약 2.2만~3.9만원</div>
-  <div class="it"><b>🍕 Jack's</b> · 이탈리안 · 2인 약 3.1만~5만원</div>
-  <div class="it"><b>🦐 Mai Huong</b> · 해산물BBQ · 15:00~ · 2인 약 3.4만~5.6만원</div>
-  <div class="it"><b>🥩 Volcano Beefsteak</b> · 용암석 스테이크 · 2인 약 3.9만~6.7만원</div>
-  <div class="it"><b>🍖 한식BBQ</b> · K-Street · 2인 BBQ세트 약 2.8만~3.4만원</div>
-  <div class="it"><b>🍜 야시장</b> · 해산물구이 · 2인 약 1.4만~2.8만원</div>
-  <div class="it" style="border-left:3px solid #c9a84c;margin-left:4px;padding-left:10px"><b>🆕 Google Maps 인기</b></div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJITDzhDUfCDERAEyM2xn3190" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍲 Madam Thảo</a></b> · ⭐4.8 (2,509) · 베트남 가정식</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJv-9uPmUfCDER6NeYGQTjw3g" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍽️ GW Food Court</a></b> · ⭐4.9 (1,578) · 비치프론트</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJh_DUIYeNpzERDqbaRMxPgTY" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Lobster Cave (동똠훔)</a></b> · ⭐4.8 (7,568) · 🏙️중부<br>해산물·랍스터 전문. 선셋뷰. 2인 약 60만~120만 VND(약 3.4만~6.7만원)</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJITDzhDUfCDERAEyM2xn3190" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Madam Thảo</a></b> · ⭐4.8 (2,509) · 🌿북부 GW<br>베트남 가정식. 반쎄오·분짜·에그커피. 2인 약 20만~50만(약 1.1만~2.8만원)</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJVX1ODrIfCDERlnrDWWdlWYQ" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Mai Hương GW</a></b> · ⭐4.8 (2,430) · 🌿북부 GW · 15:00~<br>해산물BBQ. 새우·게·가리비. 2인 약 60만~100만(약 3.4만~5.6만원)</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJF33R8xCLpzERFtTAVV7G-14" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Camia</a></b> · ⭐4.8 (2,310) · 🏙️Ong Lang<br>비치 파인다이닝. 선셋뷰. 2인 약 60만~150만(약 3.4만~8.4만원)</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJG0omSAeNpzERTWnB_Eaa4c8" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Bếp An</a></b> · ⭐4.7 (2,214) · 🏙️중부<br>베트남식 가성비. 2인 약 20만~50만(약 1.1만~2.8만원)</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJv-9uPmUfCDER6NeYGQTjw3g" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">GW Food Court</a></b> · ⭐4.9 (1,578) · 🌿북부 GW<br>비치프론트. 반쎄오·볶음밥. 2인 약 20만~40만(약 1.1만~2.2만원)</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJj9eeH0-XpzERR3O-7B0rxFo" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Cái Mâm</a></b> · ⭐4.8 (1,214) · 🌅남부 ST<br>베트남 가정식. Sunset Town. 2인 약 30만~60만(약 1.7만~3.4만원)</div>
 </div></div>
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🏙️ 중부 · Duong Dong</div><div class="cv">▾</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">✅ 500+ 리뷰 · 별점 4.0+</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it"><b>🦀 Xin Chao</b> · 해산물 · 2인 약 2만~3.6만원</div>
-  <div class="it"><b>🍜 Ra Khoi</b> · 현지식 · 2인 약 1.4만~2.5만원</div>
-  <div class="it"><b>🦀 Crab House</b> · 게요리 · 2인 약 2.8만~4.5만원</div>
-  <div class="it"><b>🐟 Nemo</b> · 해산물·양식 · 2인 약 2.5만~4.2만원</div>
-  <div class="it"><b>🍲 로컬 Phở</b> · 쌀국수 · 2인 약 8천~1.4만원</div>
-  <div class="it"><b>🦐 야시장</b> · 구이류 · 2인 약 1.7만~3.4만원</div>
-  <div class="it" style="border-left:3px solid #c9a84c;margin-left:4px;padding-left:10px"><b>🆕 Google Maps 인기 (1000+리뷰)</b></div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJh_DUIYeNpzERDqbaRMxPgTY" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🦐 Lobster Cave (동똠훔)</a></b> · ⭐4.8 (7,568) · 해산물·랍스터 · 선셋뷰</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJG0omSAeNpzERTWnB_Eaa4c8" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍲 Bếp An</a></b> · ⭐4.7 (2,214) · 베트남식 · 가성비</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJF33R8xCLpzERFtTAVV7G-14" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍽️ Camia</a></b> · ⭐4.8 (2,310) · 비치 파인다이닝 · Ong Lang</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJ31JYXFUfCDERyXS7VhvzzN4" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Bếp Nhà</a></b> · ⭐4.5 (765) · 🌿북부 GW<br>가정식·운하뷰. 2인 약 25만~50만(약 1.4만~2.8만원)</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJMemrMgSNpzERRHKLDaKlO9k" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Aigue-Marine French Bistro</a></b> · ⭐4.8 (276) · 🏙️중부<br>프렌치. 3코스 세트 약 50만 VND. 숨은맛집</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJ1SUXRwCVpzERK21wkH1D7nM" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Mai Hương Sunset Town</a></b> · ⭐5.0 (269) · 🌅남부 ST<br>해산물. 새로 오픈. 랍스터·게.</div>
 </div></div>
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🌅 남부 · JW</div><div class="cv">▾</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🏪 로컬 · 야시장</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it"><b>🍲 Cai Mam</b> · 가정식 · 2인 약 2.2만~3.9만원</div>
-  <div class="it"><b>🇫🇷 Pink Pearl</b> · JW 프렌치 · 2인 약 8.4만~22.4만원+</div>
-  <div class="it"><b>🌏 Tempus Fugit</b> · JW 인터내셔널 · 2인 약 4.5만~11.2만원</div>
-  <div class="it" style="border-left:3px solid #c9a84c;margin-left:4px;padding-left:10px"><b>🆕 Google Maps 인기</b></div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJ1SUXRwCVpzERK21wkH1D7nM" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🦐 Mai Hương Sunset Town</a></b> · ⭐5.0 (269) · 해산물</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJoU5XY4qXpzER7IMIeP5u2_U" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍕 MEDITERRAN</a></b> · ⭐4.9 (238) · 그리스·이탈리안</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Duong+Dong+Night+Market+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">즈엉동 야시장</a></b> · 🏙️중부 · 해산물구이 · 2인 약 25만~60만</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Grand+World+Night+Market+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Grand World 야시장</a></b> · 🌿북부 · 해산물·분짜 · 2인 약 15만~40만</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Kien+Xay+Grand+World+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Kien Xay (분꾸아이)</a></b> · 🌿북부 GW · 수제면+해산물 · 2인 약 15만~25만</div>
 </div></div>
 </div>
 
+<!-- ══ 카페 ══ -->
 <div id="sec-cf" style="scroll-margin-top:60px">
-<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">☕ 카페</div>
+<div style="margin:16px 14px 8px;padding:8px 12px;background:#c9a84c;color:#fff;border-radius:10px;font-size:15px;font-weight:900">☕ 카페</div>
 
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">☕ 추천 카페</div><div class="cv">▾</div></div>
+<div class="sc op"><div class="sch" onclick="ts(this)"><div class="sct">⭐ 1000+ 리뷰</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it"><b>☕ Chuồn Chuồn Bistro</b> · 선셋뷰 1위 · 사오마이 언덕<br>콜드브루 약 4,200원~, 칵테일 약 6,700원~<br>"푸꾸옥 최고 일몰" "음식도 OK"</div>
-  <div class="it"><b>☕ Zyzu Kafé</b> · 정원·나무텐트<br>복숭아 레몬그라스티 약 2,800원~<br>"힐링" "가격 합리적"</div>
-  <div class="it"><b>☕ Skyline Cafe</b> · 루프탑 4층<br>Ép Cóc(과일즙) 약 2,800원~<br>"시내 파노라마"</div>
-  <div class="it"><b>☕ The Coffee House</b> · Grand World · 에어컨<br>치즈폼 밀크티 약 2,800~3,900원</div>
-  <div class="it"><b>☕ Son Tra Hill</b> · 수영장 있는 카페<br>연유커피 약 1,700~2,800원<br>"조용, 뷰 좋음"</div>
-  <div class="it"><b>☕ Ann Cafe</b> · 브런치 가능<br>말차치즈케이크, 시푸드스파게티 약 4,200원~</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJ017u9rKNpzERuFNuG_u0HJk" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Café Green (카페그린)</a></b> · ⭐4.9 (1,673) · 🏙️중부 야시장 근처<br>망고빙수 맛집 🥭 한국인 多. 코코넛빙수도 인기</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJZ4DYfi6NpzERwk2Xbd77-PU" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">ANBA Coffee</a></b> · ⭐4.6 (1,296) · 🏙️중부<br>정원카페. 새우케이크+커피 조합. 넓고 에어컨</div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">✅ 500+ 리뷰</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJBZASQZ6NpzERfkHFOYJvawM" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Tarapaca Cafe</a></b> · ⭐4.7 (701) · 🏙️중부<br>조용·에어컨·와이파이. 브런치+커피. 일하기 좋음</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJW-dwUgCNpzEROm6tVugd7qw" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Ann Cafe</a></b> · ⭐4.8 (531) · 🏙️중부 야시장 근처<br>브런치 맛집. 수제빵 직접 굽기. 팬케이크 인기</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJBWE7axyNpzER5e0d8AjEDJA" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">AROMA Cafe</a></b> · ⭐4.9 (442) · 🏙️중부<br>양식 브런치. 소어도우·팬케이크·베이컨에그</div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🎯 100+ 리뷰</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJSQvg5PCNpzERilomshpyO-w" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Là-Men Coffee</a></b> · ⭐4.9 (301) · 🏙️중부<br>브런치·갤러리. 인테리어 예쁨. 야시장 근처</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Chuon+Chuon+Bistro+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Chuồn Chuồn Bistro</a></b> · 🏙️중부<br>선셋뷰 1위. 칵테일·타파스. Ong Lang Beach</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Skyline+Cafe+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Skyline Cafe</a></b> · 🏙️중부<br>루프탑 4층. 360도 뷰. 야시장 도보 5분</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Son+Tra+Hill+Coffee+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Son Tra Hill</a></b> · 🏙️중부<br>수영장 카페. 인피니티풀+커피 약 20만 VND</div>
 </div></div>
 </div>
 
-<div id="sec-dv" style="scroll-margin-top:60px">
-<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">🤿 투어</div>
-
-<div class="ib">남부 An Thoi 군도. 4월 건기, 수중시야 양호. 바다 맑기 최상 지역.</div>
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🐠 투어사 비교</div><div class="cv">▾</div></div>
-<div class="scb">
-  <div class="it"><b>🥇 OnBird</b> · 소규모 · 한국어 카톡 소통<br>스노클링(max 8~10인): 1인 약 126만 VND(약 7.1만원)<br>체험다이빙: 1인 약 14.6만원 (장비+점심+픽업)<br>⭐ TripAdvisor 5.0<br><a class="lk" href="https://onbird.vn/" target="_blank">공식</a></div>
-  <div class="it"><b>🥈 Vietnam Explorer's</b> · 2004 최장수<br>인증다이버: 1인 약 12.6만원~ (2다이브)<br><a class="lk" href="https://divephuquoc.com/snorkeling" target="_blank">공식</a></div>
-  <div class="it"><b>🥉 Jeep Tour</b> · Viator · 가성비<br>반일 스노클링: 1인 약 5.4만~7.7만원<br>⭐ Viator 4.9 (400+리뷰)<br><a class="lk" href="https://www.viator.com/tours/Phu-Quoc/Best-Half-Day-Snorkeling-Phu-Quoc-Island/d22452-240116P5" target="_blank">Viator</a></div>
-</div></div>
-</div>
-
+<!-- ══ 마사지 ══ -->
 <div id="sec-ms" style="scroll-margin-top:60px">
-<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">💆 마사지</div>
-<div class="ib">💡 팁: 만족 시 1인 5만~8만 VND(약 2,800~4,500원). 필수 아님. 4/18 마사지숍에 짐 맡기기도 가능(사전 확인)</div>
+<div style="margin:16px 14px 8px;padding:8px 12px;background:#9c27b0;color:#fff;border-radius:10px;font-size:15px;font-weight:900">💆 마사지</div>
 
-<div class="sc op"><div class="sch" onclick="ts(this)"><div class="sct">⭐ 1000+ 리뷰 (별점 4.0+)</div><div class="cv">▾</div></div>
+<div class="sc op"><div class="sch" onclick="ts(this)"><div class="sct">⭐ 1000+ 리뷰 · 별점 4.0+</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJCT7IJHeNpzERsmyKSQegiig" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 YUJU SPA</a></b> · ⭐4.9 (5,870) · 🇰🇷한인 多 · King Kong Mart 근처<br>전신 60분 약 40만~50만 VND(약 2.2만~2.8만원) · 무료 수박주스 · 픽업 가능</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJiyzaO4CNpzERTH6QKehpvBw" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 FIONA SPA</a></b> · ⭐4.8 (3,660) · 중부 · 야시장 근처<br>전신 60분 약 50만 VND(약 2.8만원) · 핫스톤 인기 · 쿠키+물 제공</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJtZzCV-CNpzERLAx0sVMFldE" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 ZENITH SPA (제니스스파)</a></b> · ⭐4.9 (2,653) · 🇰🇷한인 운영<br>핫스톤 90분 약 55만~65만 VND · 가족 단위 인기 · 픽업 가능</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJw0auYQCNpzER8BCjNBsmIBs" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 LUA SPA</a></b> · ⭐4.8 (1,821) · 중부 · 인플루언서 추천<br>아로마 60분 약 50만~60만 VND · 인스타 예약 추천</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJFQgAJs2NpzER0WPyHaJXWLk" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 Green Paradise Spa</a></b> · ⭐5.0 (1,563) · 🇰🇷한인 · 정원뷰<br>전신 60분 약 40만~50만 VND · 망고+차 서비스 · 자연 분위기</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJdV6RXACNpzERjSfl_Bi0K0o" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 Seoul Spa</a></b> · ⭐4.9 (1,513) · 🇰🇷한인 운영 · 픽업 가능<br>전신 60분 약 40만~50만 VND · 망고스무디 서비스 · 트리거포인트 맞춤</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJCT7IJHeNpzERsmyKSQegiig" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">YUJU SPA</a></b> · ⭐4.9 (5,870) · 🏙️중부 · 🇰🇷한인 多<br>King Kong 근처. 전신 60분 약 40만~50만. 수박주스·픽업</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJiyzaO4CNpzERTH6QKehpvBw" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">FIONA SPA</a></b> · ⭐4.8 (3,660) · 🏙️중부 야시장 근처<br>전신 60분 약 50만. 핫스톤 인기. 쿠키+물 제공</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJtZzCV-CNpzERLAx0sVMFldE" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">ZENITH SPA (제니스)</a></b> · ⭐4.9 (2,653) · 🏙️중부 · 🇰🇷한인 운영<br>핫스톤 90분 약 55만~65만. 가족 인기. 픽업</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJw0auYQCNpzER8BCjNBsmIBs" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">LUA SPA</a></b> · ⭐4.8 (1,821) · 🏙️중부<br>아로마 60분 약 50만~60만. 인플루언서 추천. 인스타 예약</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJFQgAJs2NpzER0WPyHaJXWLk" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Green Paradise</a></b> · ⭐5.0 (1,563) · 🏙️중부 · 🇰🇷한인<br>전신 60분 약 40만~50만. 정원뷰. 망고+차 서비스</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJdV6RXACNpzERjSfl_Bi0K0o" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Seoul Spa</a></b> · ⭐4.9 (1,513) · 🏙️중부 · 🇰🇷한인 운영<br>전신 60분 약 40만~50만. 망고스무디. 호텔 픽업</div>
 </div></div>
 
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">✅ 500+ 리뷰 (별점 4.0+)</div><div class="cv">▾</div></div>
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">✅ 500+ 리뷰</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJSZd5tJyNpzER_lUroEwqT2w" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 L Spa</a></b> · ⭐4.9 (854) · 중부 남쪽<br>아로마 60분 약 40만 VND · 연꽃오일 · 조용·깨끗</div>
-  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJzwU_1waNpzERJApCT6UMoDk" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 ZEN Spa</a></b> · ⭐4.8 (452) · 중부<br>60분 2인 76만(약 4.3만원) / 90분 2인 110만(약 6.2만원) · 아이마스크+핫팩 제공</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJ1Tfe3kGXpzERi4VaLomCKFA" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Hanz Sunset Spa</a></b> · ⭐4.8 (986) · 🌅남부 Sunset Town<br>전신+헤어워시. 무료 호텔 라이드. 남부 유일 추천</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJSZd5tJyNpzER_lUroEwqT2w" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">L Spa</a></b> · ⭐4.9 (854) · 🏙️중부 남쪽<br>아로마 60분 약 40만. 연꽃오일. 조용·깨끗</div>
 </div></div>
 
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">📋 기존 추천 (일정에 포함된 곳)</div><div class="cv">▾</div></div>
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🎯 100+ 리뷰</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Crown+Spa+Grand+World+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 Crown Spa</a></b> · 북부 Grand World<br>60분 2인 72만(약 4만원) / 120분 2인 188만(약 10.5만원)</div>
-  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Nu+Spa+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 Nu Spa</a></b> · 중부 가성비<br>60분 2인 56만(약 3.1만원)</div>
-  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Oasis+Spa+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">💆 Oasis Spa</a></b> · 남부 Sunset Town<br>60분 2인 120만(약 6.7만원) / 90분 2인 170만(약 9.5만원)</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJzwU_1waNpzERJApCT6UMoDk" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">ZEN Spa</a></b> · ⭐4.8 (452) · 🏙️중부<br>60분 2인 76만(약 4.3만원). 아이마스크+핫팩 제공</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJl1AwDfuNpzERAZBzVul_WO8" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">DuBai Luxury</a></b> · ⭐4.9 (333) · 🏙️중부<br>새벽 3시까지. 풀파티도 운영</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJrRrz9liNpzERSki_2kPkGkI" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Moon Spa</a></b> · ⭐4.7 (127) · 🏙️중부 · 🇰🇷한국어 가능<br>한국 손님 위주. 친절한 서비스</div>
 </div></div>
-
 </div>
 
+<!-- ══ 쇼핑·과일 ══ -->
 <div id="sec-sp" style="scroll-margin-top:60px">
-<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">🛒 쇼핑·과일</div>
+<div style="margin:16px 14px 8px;padding:8px 12px;background:#ff9800;color:#fff;border-radius:10px;font-size:15px;font-weight:900">🛒 쇼핑·과일</div>
 
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🛒 과자 · 🍉 과일 · 🌙 야식</div><div class="cv">▾</div></div>
+<div class="sc op"><div class="sch" onclick="ts(this)"><div class="sct">🏪 King Kong Mart</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it"><b>🏪 King Kong Mart</b> · 4/15 · Duong Dong<br>Gery치즈, 코코넛쿠키, Vinamit칩, 커피믹스<br>약 3.5만~15만 VND (약 2천~8천원) · <a class="lk" href="https://www.kingkongmart.vn/" target="_blank">공식</a></div>
-  <div class="it"><b>🍉 과일 (4월)</b><br>🥭 망고 1kg 3만~5만(약 1,700~2,800원) — 시즌!<br>🥥 코코넛 1개 2만~4만(약 1,100~2,200원)<br>🍍 파인애플 1개 1만~2만(약 560~1,100원)<br>🫐 망고스틴 1kg 7만~15만(약 3,900~8,400원) — 5월부터 제철<br><br>구매: 야시장 노점, King Kong Mart, "망고언니"(킹콩 근처)</div>
-  <div class="it"><b>🌙 야식·간식 (고수X)</b><br>• Bánh tráng trộn(라이스페이퍼 스낵) — 고수 빼달라고<br>• Sinh tố(스무디) 3만~5만(약 1,700~2,800원)<br>• Nước mía(사탕수수즙) 1만~2만(약 560~1,100원)<br>• Chè(코코넛밀크 디저트) — 고수 무관<br><br><b>"Không rau mùi"</b> = 고수 빼주세요</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJabPU6haNpzER0xtz5ErMvYw" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🏪 King Kong Mart 본점</a></b> · ⭐4.4 (4,961) · 141A Tran Hung Dao<br>과자·기념품·옷·커피·특산물 원스톱. 가장 큼. 환전도 가능</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJRQVFmFqNpzERu5Sg8_W6Zoo" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🏪 King Kong 야시장점</a></b> · ⭐4.4 (503) · 108 Bach Dang<br>야시장 안에 위치. 기념품 위주. 본점보다 작음</div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🍉 과일 (4월)</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">🥭 망고 1kg 3만~5만(약 1,700~2,800원) — 시즌!<br>🥥 코코넛 1개 2만~4만(약 1,100~2,200원)<br>🍍 파인애플 1개 1만~2만(약 560~1,100원)<br>🫐 망고스틴 1kg 7만~15만(약 3,900~8,400원) — 5월부터 제철<br><br>구매: 야시장 노점, King Kong Mart, 공항 과일노점</div>
 </div></div>
 </div>
 
+<!-- ══ 투어 ══ -->
+<div id="sec-dv" style="scroll-margin-top:60px">
+<div style="margin:16px 14px 8px;padding:8px 12px;background:#1a6b5a;color:#fff;border-radius:10px;font-size:15px;font-weight:900">🤿 투어</div>
+
+<div class="sc op"><div class="sch" onclick="ts(this)"><div class="sct">🌊 스노클링 · 다이빙</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b><a href="https://onbird.co/" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🌊 OnBird 스노클링</a></b> · 남부 An Thoi 군도<br>1인 126만 VND(약 7.1만원). 소규모 그룹. 산호·열대어. 사전예약 필수</div>
+  <div class="it"><b>🚙 Jeep Tour</b> · 1인 $39~<br>지프로 섬 일주. 비포장도로·해변·로컬마을. 반나절</div>
+</div></div>
+</div>
+
+<!-- ══ 주요 스팟 ══ -->
 <div id="sec-in" style="scroll-margin-top:60px">
-<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">📍 스팟</div>
+<div style="margin:16px 14px 8px;padding:8px 12px;background:#3a7bd5;color:#fff;border-radius:10px;font-size:15px;font-weight:900">📍 주요 스팟</div>
 
-<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">📍 주요 스팟</div><div class="cv">▾</div></div>
+<div class="sc op"><div class="sch" onclick="ts(this)"><div class="sct">🌿 북부</div><div class="cv">▾</div></div>
 <div class="scb">
-  <div class="it"><b>🦁 Vinpearl Safari</b> · 북부<br>베트남 최초·최대 반야생 동물원. 150종 4000마리. 버스 투어. 2015년 개장.</div>
-  <div class="it"><b>🌃 Grand World</b> · 북부 · 입장 무료<br>85ha "잠들지 않는 도시". 베네치아 운하+곤돌라, 상하이타운, 테디베어박물관. 야시장 새벽2시. 분수쇼 21:30. 2021년 개장.</div>
-  <div class="it"><b>🏖️ Bai Dai Beach</b> · 북서<br>15km 해변. 물 맑기 중상. VinHolidays 바로 앞. 2008년 ABC뉴스 "세계 가장 아름다운 해변" 선정.</div>
-  <div class="it"><b>🌙 <a href="https://www.google.com/maps/search/?api=1&query=Duong+Dong+Night+Market+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">즈엉동 야시장</a></b> · 중부<br>본섬 최대 야시장. 해산물 구이 메인. 로컬 분위기. King Kong Mart 바로 옆.</div>
-  <div class="it"><b>🌅 Sunset Town</b> · 남부<br>Sun World. 지중해풍. Kiss Bridge(건축가 Marco Casamonti — 400m 다리 두 갈래가 30cm 간격으로 닿지 않는 구조). Kiss of the Sea 쇼.</div>
-  <div class="it"><b>⭐ Kiss of the Sea</b> · 남부<br>물+빛+불꽃+드론 야외쇼. 21:00~21:30 (화요일 제외). 해상 100m 원형무대. ECA2+Sun Group 제작. JW 제공 가능 (요금제 확인).</div>
-  <div class="it"><b>🏖️ Khem Beach</b> · 남부<br>세계 50대 해변 선정. 물 맑기 푸꾸옥 최상. 초승달형 백사장. 2014년까지 군사구역이라 개발 안 됨 → 원시적 아름다움 보존. JW 앞.</div>
-  <div class="it"><b>🏨 JW Marriott</b> · 남부 2박<br>Bill Bensley 설계. 19세기 프랑스 대학교 컨셉(로비=학장도서관). 풀 3개(Shell Pool 성인전용). 미슐랭 셰프 Pink Pearl. 체크아웃 후 짐보관 가능(24h).<br>공항: Grab 22만~32만(약 1.2만~1.8만원) 추천.</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Vinpearl+Safari+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🦁 Vinpearl Safari</a></b> · 08:30~16:00<br>동물원+사파리. 기린 먹이주기. Park구역 14시 입장마감</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Grand+World+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🌃 Grand World</a></b> · 입장 무료<br>베니스 운하·곤돌라·야시장·분수쇼·테디베어뮤지엄</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=VinWonders+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🎢 VinWonders</a></b> · 09:00~19:30<br>워터파크+놀이공원. 1인 85만 VND</div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🏙️ 중부</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Dinh+Cau+Temple+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">⛩️ Dinh Cau (딘꺼우)</a></b><br>야시장 입구. 바위 위 사원. 선셋 포인트</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Duong+Dong+Night+Market+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🌙 즈엉동 야시장</a></b><br>본섬 최대 야시장. 해산물 구이. King Kong Mart 근처</div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🌅 남부</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Sunset+Town+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🌅 Sunset Town</a></b><br>Kiss Bridge·이탈리아풍 거리. 일몰 18:15</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Kiss+of+the+Sea+Sunset+Town+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">⭐ Kiss of the Sea</a></b> · 21:00 (화요일 제외)<br>야외 수상쇼+불꽃. 공식가 100만 VND</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Khem+Beach+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🏖️ Khem Beach</a></b><br>세계 50대 해변. 수영 OK. JW 프라이빗 구역</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Hon+Thom+Cable+Car+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🚡 Hon Thom Cable Car</a></b><br>세계 최장 해상 케이블카. 7.9km</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Sao+Beach+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🏖️ Sao Beach</a></b><br>백사장. 인스타 핫스팟. 남부</div>
+  <div class="it"><b><a href="https://www.google.com/maps/search/?api=1&query=Ho+Quoc+Pagoda+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🛕 Ho Quoc Pagoda</a></b><br>바다 위 절. 일출 명소</div>
 </div></div>
 </div>
 
-</div>
+
 
 <!-- ═══ 팁 ═══ -->
 <div id="tab-tp" class="tc">
@@ -927,70 +940,7 @@ document.addEventListener('DOMContentLoaded',function(){
   applyMode();
 });
 
-// === AUTO WEATHER UPDATE ===
-function updateWeather(){
-  var dates=['2026-04-13','2026-04-14','2026-04-15','2026-04-16','2026-04-17','2026-04-18'];
-  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&hourly=temperature_2m,precipitation_probability&timezone=Asia%2FHo_Chi_Minh&start_date='+dates[0]+'&end_date='+dates[dates.length-1];
-  
-  fetch(url).then(function(r){return r.json()}).then(function(data){
-    if(!data.hourly)return;
-    var times=data.hourly.time;
-    var temps=data.hourly.temperature_2m;
-    var rain=data.hourly.precipitation_probability;
-    
-    // Group by date, morning(6-12), afternoon(12-18), evening(18-24)
-    var table=document.querySelector('.wx table');
-    if(!table)return;
-    var rows=table.querySelectorAll('tr');
-    
-    dates.forEach(function(date,di){
-      var dayTemps=[],amRain=[],pmRain=[],evRain=[];
-      times.forEach(function(t,i){
-        if(!t.startsWith(date))return;
-        var h=parseInt(t.split('T')[1].split(':')[0]);
-        dayTemps.push(temps[i]);
-        if(h>=6&&h<12) amRain.push(rain[i]);
-        else if(h>=12&&h<18) pmRain.push(rain[i]);
-        else if(h>=18) evRain.push(rain[i]);
-      });
-      
-      if(dayTemps.length===0)return;
-      var hi=Math.round(Math.max.apply(null,dayTemps));
-      var lo=Math.round(Math.min.apply(null,dayTemps));
-      var amAvg=amRain.length?Math.round(amRain.reduce(function(a,b){return a+b},0)/amRain.length):0;
-      var pmAvg=pmRain.length?Math.round(pmRain.reduce(function(a,b){return a+b},0)/pmRain.length):0;
-      var evAvg=evRain.length?Math.round(evRain.reduce(function(a,b){return a+b},0)/evRain.length):0;
-      
-      function rainIcon(p){return p>40?'🌦️ '+p+'%':p>15?'🌤️ '+p+'%':'☀️ '+p+'%'}
-      
-      var row=rows[di+1]; // skip header
-      if(!row)return;
-      var cells=row.querySelectorAll('td');
-      if(cells.length>=5){
-        cells[1].textContent=hi+'°/'+lo+'°';
-        cells[2].textContent=rainIcon(amAvg);
-        cells[3].textContent=rainIcon(pmAvg);
-        cells[4].textContent=rainIcon(evAvg);
-      }
-    });
-    
-    document.getElementById('wx-status').innerHTML='<span style="color:#1a6b5a">✅ Open-Meteo 실시간 반영</span> · '+new Date().toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
-    localStorage.setItem('pq-wx-cache',JSON.stringify({data:data,ts:Date.now()}));
-  }).catch(function(e){
-    // Try cache
-    var cache=JSON.parse(localStorage.getItem('pq-wx-cache')||'null');
-    if(cache){
-      var ago=Math.round((Date.now()-cache.ts)/3600000);
-      document.getElementById('wx-status').textContent='(캐시 · '+ago+'시간 전)';
-    } else {
-      document.getElementById('wx-status').textContent='(오프라인 · 수동 예보)';
-    }
-  });
-}
-// Run weather update
-updateWeather();
-// Refresh every 3 hours
-setInterval(updateWeather,3*3600*1000);
+
 
 // PWA Service Worker
 if('serviceWorker' in navigator){
@@ -1075,6 +1025,7 @@ var places=[
   {n:"LUA SPA",c:"spa",lat:10.214,lng:103.959,d:"⭐4.8 (1,821) · 아로마 인기"},
   {n:"Green Paradise Spa",c:"spa",lat:10.197,lng:103.969,d:"⭐5.0 (1,563) · 한인"},
   {n:"Seoul Spa",c:"spa",lat:10.192,lng:103.967,d:"⭐4.9 (1,513) · 한인 운영 · 픽업"},
+  {n:"Hanz Sunset Spa",c:"spa",lat:10.030,lng:104.006,d:"⭐4.8 (986) · 남부 Sunset Town"},
 ];
 var icons={
   food:'🍜',cafe:'☕',spa:'💆',spot:'📍',hotel:'🏨',shop:'🛒',custom:'⭐'
