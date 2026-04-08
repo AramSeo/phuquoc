@@ -125,9 +125,9 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 
 <div class="tb">
   <button class="on" onclick="sw('sch')">📅 일정</button>
-  <button onclick="sw('tp')">💡 팁</button>
-  <button onclick="sw('bd')">💰 예산</button>
   <button onclick="sw('mp')">🗺️ 지도</button>
+  <button onclick="sw('bd')">💰 예산</button>
+  <button onclick="sw('tp')">💡 팁</button>
 </div>
 
 <!-- ═══ 일정 ═══ -->
@@ -885,9 +885,9 @@ function parseGmapUrl(url){
   var result={};
   // Extract coordinates
   var m=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if(!m) m=url.match(/q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if(!m) m=url.match(/ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
   if(m){result.lat=parseFloat(m[1]);result.lng=parseFloat(m[2]);}
-  else{m=url.match(/q=(-?\d+\.\d+),(-?\d+\.\d+)/);if(m){result.lat=parseFloat(m[1]);result.lng=parseFloat(m[2]);}}
-  else{m=url.match(/ll=(-?\d+\.\d+),(-?\d+\.\d+)/);if(m){result.lat=parseFloat(m[1]);result.lng=parseFloat(m[2]);}}
   // Extract place name from URL path: /place/Name+Here/@...
   var nm=url.match(/\/place\/([^/@]+)/);
   if(nm){result.name=decodeURIComponent(nm[1]).replace(/\+/g,' ');}
@@ -971,7 +971,7 @@ function renderCards(cat){
     html+='<div style="margin:12px 0 6px;padding:5px 10px;background:'+catColors[c]+';color:#fff;border-radius:8px;font-size:13px;font-weight:700">'+(catNames[c]||c)+' ('+items.length+')</div>';
     items.sort(function(a,b){return(b.rv||0)-(a.rv||0)});
     items.forEach(function(p){
-      var url=p.pid?'https://www.google.com/maps/place/?q=place_id:'+p.pid:'https://www.google.com/maps/search/?api=1&query='+(p.q||encodeURIComponent(p.n+' Phu Quoc'));
+      var url='https://www.google.com/maps/search/?api=1&query='+(p.q||encodeURIComponent(p.n+' Phu Quoc'));
       var rating=p.rt?(' · ⭐'+p.rt+(p.rv?' ('+p.rv.toLocaleString()+')':'')):'';
       var region=p.r?(' · '+regionNames[p.r]):'';
       html+='<div style="padding:8px 10px;margin:3px 0;background:#fff;border-radius:8px;font-size:12px;border-left:3px solid '+catColors[p.c]+'">';
