@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+<title>푸꾸옥 플랜</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a6b5a">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- iOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="푸꾸옥">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+@supports(padding: env(safe-area-inset-top)){
+  body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f0e8;--w:#fff;--g:#1a6b5a;--gl:#e8f4f0;--c:#e07a5f;--n:#1e2d2f;--s:#5a6e70;--gd:#c9a84c;--gdl:#faf6eb;--r:13px;--sh:rgba(30,45,47,.06)}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--n);line-height:1.65;font-size:14.5px;-webkit-font-smoothing:antialiased;padding-bottom:60px}
+.hero{background:linear-gradient(135deg,var(--g),#0d4a3e);color:#fff;padding:40px 20px 28px;text-align:center}
+.hero h1{font-size:24px;font-weight:900;margin-bottom:3px}
+.hero .sub{font-size:12px;opacity:.8}
+.hero .dt{display:inline-block;margin-top:10px;padding:4px 14px;border:1px solid rgba(255,255,255,.3);border-radius:99px;font-size:11.5px;font-weight:500}
+.wx{margin:0 14px;padding:10px 14px;background:#e0f2f1;border-radius:0 0 var(--r) var(--r);font-size:11.5px;line-height:1.55;color:#004d40}
+.wx a{color:#00695c}
+.tb{display:flex;background:var(--w);border-bottom:1px solid #ddd5c8;position:sticky;top:0;z-index:100;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tb button{flex:0 0 auto;padding:11px 11px;font-size:11px;font-weight:500;font-family:inherit;border:none;background:none;color:var(--s);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tb button.on{color:var(--g);border-bottom-color:var(--g);font-weight:700}
+.tc{display:none}.tc.on{display:block}
+.ib{margin:10px 14px;padding:10px 14px;background:var(--gdl);border-left:3px solid var(--gd);border-radius:0 var(--r) var(--r) 0;font-size:12px;line-height:1.55}
+.cr{margin:10px 14px;padding:10px 14px;background:#fdf0ec;border-left:3px solid var(--c);border-radius:0 var(--r) var(--r) 0;font-size:12px;line-height:1.6}
+.dc{margin:10px 14px;background:var(--w);border-radius:var(--r);box-shadow:0 2px 8px var(--sh);overflow:hidden}
+.dh{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.dh:active{background:#f0f8f5}
+.dl{display:flex;align-items:center;gap:8px}
+.db{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12.5px;color:#fff}
+.d13{background:#2c3e50}.d14{background:#2c3e50}.d15{background:#2c3e50}.d16{background:#2c3e50}.d17{background:#2c3e50}.d18{background:#2c3e50}.d19{background:#2c3e50}
+.dtt{font-weight:700;font-size:13.5px}.dts{font-size:11px;color:var(--s)}
+.cv{font-size:15px;color:var(--s);transition:transform .3s}
+.dc.op .cv{transform:rotate(180deg)}
+.dy{max-height:0;overflow:hidden;transition:max-height .4s}
+.dc.op .dy{max-height:50000px}
+.sl{padding:14px;border-top:1px solid #f0ece4}.sl:first-child{border-top:none}
+.st{display:inline-block;padding:5px 12px;border-radius:6px;font-size:13px;font-weight:700;letter-spacing:1px;margin-bottom:5px}
+.am{background:#7a8fa0;color:#fff}.pm{background:#7a8fa0;color:#fff}.ev{background:#7a8fa0;color:#fff}
+.sd{font-size:13px;line-height:1.65;white-space:pre-line}
+.rc{margin:6px 0;padding:8px 10px;background:#fafaf7;border-radius:8px;border:1px solid #eee8dc;font-size:12px;line-height:1.5}
+.rn{font-weight:700;font-size:12.5px}.rt{font-size:10px;color:var(--s)}
+.rp{font-weight:600;color:var(--c)}
+.alt{margin:8px 0;padding:8px 10px;border-radius:8px;font-size:12px;line-height:1.5}
+.alt-a{background:#e3f2fd;border-left:3px solid #1565c0;color:#0d47a1}
+.alt-r{background:#f3e5f5;border-left:3px solid #7b1fa2;color:#4a148c}
+.ch{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.c{padding:3px 8px;border-radius:6px;font-size:10.5px;font-weight:500}
+.bg{background:#e8f5e9;color:#2e7d32}.tr{background:#e3f2fd;color:#1565c0}.ms{background:#fce4ec;color:#c62828}.wn{background:#fff3e0;color:#e65100}.wx2{background:#e0f2f1;color:#00695c}
+a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-all}
+.tot{margin-top:6px;font-size:12px;font-weight:700;color:var(--c);padding:5px 9px;background:#fef5f2;border-radius:7px}
+.sc{margin:10px 14px;background:var(--w);border-radius:var(--r);box-shadow:0 2px 8px var(--sh);overflow:hidden}
+.sch{padding:13px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;-webkit-tap-highlight-color:transparent}
+.sch:active{background:#f0f8f5}
+.sct{font-weight:700;font-size:13.5px}
+.scb{max-height:0;overflow:hidden;transition:max-height .4s}
+.sc.op .scb{max-height:50000px}.sc.op .cv{transform:rotate(180deg)}
+.it{padding:10px 14px;border-top:1px solid #f0ece4;font-size:12px;line-height:1.55}
+.it:first-child{border-top:none}
+.bs{margin:10px 14px;padding:16px 14px;background:linear-gradient(135deg,var(--g),#0d4a3e);border-radius:var(--r);color:#fff}
+.bs h3{font-size:12.5px;font-weight:700;margin-bottom:8px;opacity:.9}
+.br{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,.1)}
+.br:last-child{border-bottom:none}
+.br.tl{font-weight:900;font-size:13.5px;padding-top:7px;margin-top:3px;border-top:2px solid rgba(255,255,255,.3);border-bottom:none}
+.ft{text-align:center;padding:24px 20px;font-size:10.5px;color:var(--s)}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Phú Quốc 여행 플랜</h1>
+  <div class="sub">2인 · 호텔 제외 현지 예산</div>
+  <div class="dt">4/13 월 → 4/19 일 · 5박 7일</div>
+</div>
+<div class="wx">
+  🌡️ <b>4/13~18 예보 종합</b> (AccuWeather·Ventusky·timeanddate 종합):<br>
+  <span style="font-size:10px;color:#555">4월 푸꾸옥 비 패턴: <b>오전 맑음 → 오후 13~17시 소나기 → 저녁 개임</b>. 소나기는 보통 30분~1시간 후 그침</span>
+  <table style="width:100%;font-size:10.5px;border-collapse:collapse;margin:4px 0">
+    <tr style="font-weight:700;border-bottom:1px solid #b2dfdb"><td>날짜</td><td>기온</td><td>☀️ 오전</td><td>🌦️ 오후</td><td>🌙 저녁</td><td>메모</td></tr>
+    <tr><td>4/13 월</td><td>32°/27°</td><td>☀️ 맑음</td><td>🌤️ 10%</td><td>🌙 맑음</td><td>도착일 밤 (출발 전 재확인)</td></tr>
+    <tr style="background:#f9f9f5"><td>4/14 화</td><td>31°/27°</td><td>☀️ 맑음</td><td>🌦️ 40%</td><td>🌤️ 15%</td><td>오전 Safari OK. 오후 실내 배치</td></tr>
+    <tr><td>4/15 수</td><td>31°/27°</td><td>🌤️ 15%</td><td>🌦️ 45%</td><td>🌤️ 20%</td><td>오후 카페 추천. 야시장은 저녁 OK</td></tr>
+    <tr style="background:#f9f9f5"><td>4/16 목</td><td>31°/27°</td><td>☀️ 맑음</td><td>🌤️ 20%</td><td>🌤️ 10%</td><td>스노클링 적합 (출발 전 재확인)</td></tr>
+    <tr><td>4/17 금</td><td>32°/27°</td><td>☀️ 맑음</td><td>🌤️ 15%</td><td>🌙 맑음</td><td>Kiss of Sea 21시 야외공연 OK</td></tr>
+    <tr style="background:#f9f9f5"><td>4/18 토</td><td>30°/26°</td><td>🌤️ 10%</td><td>🌦️ 30%</td><td>🌤️ 15%</td><td>출발일. 오후 소나기 가능성</td></tr>
+  </table>
+  <span style="font-size:10px;color:#555">※ 예보는 참고용. 정확도 제한 있음. 출발 직전 아래 링크에서 최신 확인 필수!</span><br>
+  📱 <b>최신 확인</b>: <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> · <a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> · <a href="https://weather.com/ko-KR/weather/monthly/l/375164cdeba46eb4d8459f8b705c9f30ef7b063b920dcce717b2d854c34cacab" target="_blank">weather.com</a> · <a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank">시간별(timeanddate)</a><br>
+  🏖️ <b>바다 맑기</b>: 남부(Khem·Sao) > 북서(Bai Dai·Ong Lang) > 중부 서해안(두엉동 — 강 하구라 탁함)
+</div>
+
+<div class="tb">
+  <button class="on" onclick="sw('sch')">📅 일정</button>
+  <button onclick="sw('fd')">🍜 식당</button>
+  <button onclick="sw('cf')">☕ 카페</button>
+  <button onclick="sw('dv')">🤿 투어</button>
+  <button onclick="sw('ms')">💆 마사지</button>
+  <button onclick="sw('sp')">🛒 쇼핑·과일</button>
+  <button onclick="sw('in')">📍 스팟</button>
+  <button onclick="sw('tp')">💡 팁</button>
+  <button onclick="sw('bd')">💰 예산</button>
+</div>
+
+<!-- ═══ 일정 ═══ -->
+<div id="tab-sch" class="tc on">
+
+<div class="ib">각 시간대마다 <b style="color:#1565c0">🎯 더 놀고 싶으면</b> / <b style="color:#7b1fa2">🧘 쉬고 싶으면</b> 대안을 함께 넣었어요. 상황에 맞게 골라서 쓰세요.</div>
+
+<!-- 4/13 -->
+<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d13">4/13</div><div><div class="dtt">출발 · 도착</div><div class="dts">인천 → PQC → VinHolidays · 32°/27°C 🌤️</div></div></div><div class="cv">▾</div></div>
+<div class="dy">
+<div class="sl">
+  <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">32°C ☀️</span>
+  <div class="sd">eSIM·트래블월렛 준비, 사전예약 최종 확인
+19:30 인천 출발</div>
+</div>
+<div class="sl">
+  <span class="st ev">저녁</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">27°C 🌙 맑음</span>
+  <div class="sd">23:20 PQC 도착 → 입국심사·수하물 → 약 00:00 공항 밖</div>
+  <div class="rc"><div class="rn">💱 공항 환전 <span class="rt">$50~100만 소액</span></div>택시비+야식용. 나머지 달러는 4/15 두엉동 금은방까지 보관. 급할 땐 트래블월렛 카드 백업</div>
+  <div class="rc"><div class="rn">🚕 Grab <span class="rt">추천 · 약 38만~50만 VND (약 2.1만~2.8만원)</span></div>공항 밖 Grab 픽업존에서 호출. 요금 사전확정이라 바가지 걱정 없음</div>
+  <div class="rc"><div class="rn">🚌 VinBus 17번 <span class="rt">무료(2026년 유료 전환 예정) · 공항↔Grand World</span></div>심야에도 운행 (00:15, 00:55, 02:15… 등). 예약 불필요, 선착순 탑승<br>단, 짐 많으면 불편 + VinHolidays까지 환승 필요 → <b>Grab 추천</b><br><a class="lk" href="https://vinbus.vn/" target="_blank">vinbus.vn</a> · VinBus 앱에서 실시간 배차 확인</div>
+  <div class="rc"><div class="rn">🍉 야식</div>공항 과일노점 — 망고 1kg 3만~5만(약 1,700~2,800원), 코코넛 2만~3만(약 1,100~1,700원)<br>편의점 Circle K/Winmart 근처. 고수: <b>"Không rau mùi"</b></div>
+</div>
+</div></div>
+
+<!-- 4/14 -->
+<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d14">4/14</div><div><div class="dtt">Safari · Grand World</div><div class="dts">VinHolidays · 북부 · 31°/27°C 🌦️ 비30%</div></div></div><div class="cv">▾</div></div>
+<div class="dy">
+<div class="sl">
+  <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">31°C ☀️ 맑음</span>
+  <div class="rc"><div class="rn">🦁 Vinpearl Safari <span class="rt">08:30~16:00 · Park구역 14시 입장마감</span></div>08:30 도착 추천 (공식 08:30~09:00) → 버스 투어(사자·기린·코뿔소) → 10:00 동물쇼<br><a class="lk" href="https://vinwonders.com/en/wonderpedia/news/safari-phu-quoc-show-schedule/" target="_blank">동물쇼: 매일 10:00~10:30</a> · <a class="lk" href="https://vinwonders.com/en/vinpearl-safari-phu-quoc-price-and-regulations/" target="_blank">가격·규정</a></div>
+  <div style="margin-top:6px"><b>점심 (Safari 내 or Grand World):</b></div>
+  <div class="rc"><div class="rn">🦒 Giraffe Restaurant <span class="rt">Safari 내 · 양식</span></div>기린 옆 식사. 버거 15만~20만, 파스타 18만~25만 VND<br><span class="rp">2인 약 50만~80만 VND (약 2.8만~4.5만원)</span></div>
+  <div class="rc"><div class="rn">🍜 Kien Xay <span class="rt">Grand World · 분꾸아이 원조</span></div>푸꾸옥 필수 음식. 수제면+해산물<br><span class="rp">2인 약 15만~25만 VND (약 8천~1.4만원)</span></div>
+  <div class="rc"><div class="rn">🍕 Jack's Pizzeria <span class="rt">Grand World · 이탈리안</span></div>피자 18만~25만, 크랩스파게티 20만~28만<br><span class="rp">2인 약 55만~90만 VND (약 3.1만~5만원)</span></div>
+  <div class="rc"><div class="rn">🦐 Mai Huong <span class="rt">Grand World · 해산물BBQ · 15:00~</span></div>새우 0.5kg 35만, BBQ세트 2인 50만~60만. 한국인 입맛 호평<br><span class="rp">2인 약 60만~100만 VND (약 3.4만~5.6만원)</span></div>
+</div>
+<div class="sl">
+  <span class="st pm">오후</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">33°C 🌦️ 비40%</span>
+  <div class="sd">Grand World 실내 탐방 or 호텔 휴식</div>
+  <div class="rc"><div class="rn">🧸 Teddy Bear Museum <span class="rt">실내 에어컨 · 입장 별도</span></div>2,162m² 테디베어 전시. 세계여행 테마</div>
+  <div class="rc"><div class="rn">🚣 Venice Canal 곤돌라 <span class="rt">45분 · 그늘+바람</span></div>베네치아풍 운하 보트. 양쪽에 컬러풀한 건물. Grand World 하이라이트</div>
+  <div class="rc"><div class="rn">☕ The Coffee House <span class="rt">에어컨 카페</span></div>치즈폼 밀크티 5만~7만 VND(약 2,800~3,900원). 분수쇼 뷰 2층</div>
+
+  <div class="alt alt-a">🎯 <b>더 놀고 싶으면</b>: 곤돌라 + 테디베어 + 상하이타운 골목 구경 → 15시 넘으면 기온 내려가니 야외 산책도 OK</div>
+  <div class="alt alt-r">🧘 <b>쉬고 싶으면</b>: 호텔 복귀. VinHolidays 풀(06:00~19:00) or 에어컨 카페에서 느긋하게</div>
+</div>
+<div class="sl">
+  <span class="st ev">저녁</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">28°C 🌤️ 비15%</span>
+  <div class="sd">Grand World 야시장 or 식당 → 마사지 → 21:30 분수쇼</div>
+  <div class="rc"><div class="rn">🥩 Volcano Beefsteak <span class="rt">용암석 스테이크</span></div><span class="rp">2인 약 70만~120만 VND (약 3.9만~6.7만원)</span></div>
+  <div class="rc"><div class="rn">🍜 야시장 Food Street <span class="rt">138개 부스 · 해산물구이</span></div><span class="rp">2인 약 25만~50만 VND (약 1.4만~2.8만원)</span></div>
+  <div class="rc"><div class="rn">🍖 한식BBQ <span class="rt">K-Street · 삼겹살</span></div><span class="rp">BBQ세트 2인 약 50만~60만 VND (약 2.8만~3.4만원)</span></div>
+
+  <div style="margin-top:8px;font-size:12px"><b>💆 마사지:</b></div>
+  <div class="rc" style="border-color:#fce4ec"><div class="rn">Crown Spa</div>60분: 1인 36만 → <b>2인 72만 VND (약 4만원)</b><br>120분: 1인 94만 → <b>2인 188만 VND (약 10.5만원)</b></div>
+  <div class="rc" style="border-color:#fce4ec"><div class="rn">La Spa 3 <span class="rt">무료픽업 · 후기 강점</span></div>60분대 <b>2인 약 60만~100만 VND (약 3.4만~5.6만원)</b><br><a class="lk" href="https://www.klook.com/activity/154835-la-spa-massage-experience-in-phu-quoc/" target="_blank">Klook</a></div>
+
+  <div class="tot">▸ 예시: 야시장 40만 + Crown 60분 72만 + 팁 12만 = 약 124만 VND (약 7만원)</div>
+</div>
+</div></div>
+
+<!-- 4/15 -->
+<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d15">4/15</div><div><div class="dtt">중부 이동 · 카페 · 야시장</div><div class="dts">Lahana · Duong Dong · 31°/27°C 🌦️ 비35%</div></div></div><div class="cv">▾</div></div>
+<div class="dy">
+<div class="sl">
+  <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">30°C 🌤️ 비15%</span>
+  <div class="sd">체크아웃 → Grab 25만~35만 VND(약 1.4만~2만원)로 중부 이동</div>
+  <div class="rc"><div class="rn">🦀 Xin Chao Seafood</div><span class="rp">2인 약 35만~65만 VND (약 2만~3.6만원)</span></div>
+  <div class="rc"><div class="rn">🍲 로컬 쌀국수(Phở)</div>Phở bò 4만~6만 VND/인. "Không rau mùi" = 고수 빼줘<br><span class="rp">2인 약 15만~25만 VND (약 8천~1.4만원)</span></div>
+  <div class="rc"><div class="rn">🦀 Crab House <span class="rt">게요리 전문</span></div><span class="rp">2인 약 50만~80만 VND (약 2.8만~4.5만원)</span></div>
+</div>
+<div class="sl">
+  <span class="st pm">오후</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">33°C 🌦️ 비45%</span>
+  <div class="sd">Lahana 체크인 → 카페 (카페 탭 참고)</div>
+  <div class="rc"><div class="rn">☕ Chuồn Chuồn Bistro <span class="rt">선셋뷰 1위 · 언덕</span></div>콜드브루 7.5만 VND(약 4,200원)~, 칵테일 12만(약 6,700원)~<br>15시부터 가면 일몰 관람 가능</div>
+  <div class="rc"><div class="rn">☕ Zyzu Kafé <span class="rt">정원·나무텐트</span></div>복숭아 레몬그라스티 5만 VND(약 2,800원)~</div>
+
+  <div class="alt alt-a">🎯 <b>더 놀고 싶으면</b>: 카페 후 즈엉동 시내 걸어보기 — Dinh Cau 사원(바다 위 작은 사원, 일몰 포인트) 구경</div>
+  <div class="alt alt-r">🧘 <b>쉬고 싶으면</b>: Lahana 인피니티풀(07:00~19:00)에서 느긋하게</div>
+</div>
+<div class="sl">
+  <span class="st ev">저녁</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">28°C 🌤️ 비20%</span>
+  <div class="sd">즈엉동 야시장 + King Kong Mart 과자쇼핑</div>
+  <div style="padding:8px 10px;background:#fff8e1;border-radius:8px;font-size:12px;margin-bottom:6px">
+    <b>💱 메인 환전!</b> King Kong Mart 근처 <b>금은방</b>에서 나머지 달러 → VND 환전<br>
+    $100 신권 기준 가장 좋은 환율. 2~3곳 비교 후 결정. 계산기로 보여줌<br>
+    ※ 4/14 하루치는 공항 환전분으로 충분. 이날 본격 환전
+  </div>
+  <div class="rc"><div class="rn">🦐 야시장 해산물</div>조개 5만~8만, 새우꼬치 3만~5만, 볶음면 6만~10만<br><span class="rp">2인 약 30만~60만 VND (약 1.7만~3.4만원)</span></div>
+  <div class="rc"><div class="rn">🍜 Ra Khoi <span class="rt">현지식</span></div><span class="rp">2인 약 25만~45만 VND (약 1.4만~2.5만원)</span></div>
+  <div class="rc"><div class="rn">🐟 Nemo <span class="rt">해산물·양식</span></div><span class="rp">2인 약 45만~75만 VND (약 2.5만~4.2만원)</span></div>
+
+  <div style="margin-top:6px;font-size:12px"><b>💆 마사지:</b></div>
+  <div class="rc" style="border-color:#fce4ec"><div class="rn">Zen Spa</div>60분: 2인 <b>76만 VND (약 4.3만원)</b> / 90분: 2인 <b>110만 (약 6.2만원)</b><br><a class="lk" href="https://zenspaphuquoc.com/services/" target="_blank">메뉴</a></div>
+  <div class="rc" style="border-color:#fce4ec"><div class="rn">Nu Spa <span class="rt">가성비</span></div>60분: 2인 <b>56만 VND (약 3.1만원)</b><br><a class="lk" href="https://nuspanailphuquoc.com/menu/" target="_blank">메뉴</a></div>
+
+  <div class="tot">▸ 예시: 야시장 40만 + Zen 60분 76만 + 팁 12만 + 과자 15만 = 약 143만 VND (약 8만원)</div>
+</div>
+</div></div>
+
+<!-- 4/16 -->
+<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d16">4/16</div><div><div class="dtt">바다 액티비티 · 남부 이동</div><div class="dts">OnBird → Moonlight · 31°/27°C 🌤️ 비20%</div></div></div><div class="cv">▾</div></div>
+<div class="dy">
+<div class="sl">
+  <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">30°C ☀️ 맑음</span>
+  <div class="sd">🌊 스노클링/다이빙 · 바다 맑기 최상 지역
+중부 픽업 → 남부 An Thoi 군도 (바다 맑기 1위 지역)
+투어사 비교는 투어 탭 참고. 멀미약 필수</div>
+  <div class="ch"><span class="c bg">OnBird 스노클링 2인 약 310만 VND (약 14.1만원)</span><span class="c bg">체험다이빙 2인 약 520만 (약 29.2만원)</span></div>
+  <div class="alt alt-r">🧘 <b>바다 싫으면</b>: 오전 Lahana 풀 → 점심 후 남부 이동. 대신 남부에서 Khem Beach(JW 근처, 물 맑기 최상) 시간을 더 확보</div>
+</div>
+<div class="sl">
+  <span class="st pm">오후</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">33°C 🌤️ 비20%</span>
+  <div class="sd">남부 이동 → Moonlight 체크인 → 늦은 점심</div>
+  <div class="rc"><div class="rn">🍲 Cai Mam <span class="rt">Sunset Town · 베트남 가정식</span></div>로끌락 15만~20만, 해산물볶음 12만~18만<br><span class="rp">2인 약 40만~70만 VND (약 2.2만~3.9만원)</span></div>
+  <div class="ch"><span class="c tr">🚌 Sun World 무료셔틀 or Grab 30만~39만 VND(약 1.7만~2.2만원)</span></div>
+</div>
+<div class="sl">
+  <span class="st ev">저녁</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">28°C 🌤️ 비10%</span>
+  <div class="sd">Sunset Town 산책 + Vui-Fest + 마사지</div>
+  <div class="rc" style="border-color:#fce4ec"><div class="rn">Oasis Spa</div>60분: 2인 <b>120만 VND (약 6.7만원)</b> / 90분: 2인 <b>170만 (약 9.5만원)</b><br><a class="lk" href="https://www.oasisspaphuquoc.com/" target="_blank">공식</a></div>
+  <div class="alt alt-a">🎯 <b>더 놀고 싶으면</b>: Sunset Town 야경 + Kiss Bridge 산책(일몰 포인트) + 19:45 Symphony of the Sea(제트스키·불꽃 쇼)</div>
+</div>
+</div></div>
+
+<!-- 4/17 ★ -->
+<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d17">4/17</div><div><div class="dtt">JW 입성 · ⭐ Kiss of the Sea</div><div class="dts">JW Marriott · Khem Beach · 32°/27°C 🌤️</div></div></div><div class="cv">▾</div></div>
+<div class="dy">
+<div class="sl">
+  <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">31°C ☀️ 맑음</span>
+  <div class="sd">Moonlight 체크아웃 → JW 이동 Grab 12만~22만 VND(약 6,700~1.2만원)
+JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
+원하면 오전 수영 (풀 06:30~18:30, Shell Pool 성인전용)</div>
+</div>
+<div class="sl">
+  <span class="st pm">오후</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">33°C 🌤️ 비15%</span>
+  <div class="rc"><div class="rn">🏖️ Khem Beach <span class="rt">JW 프라이빗 구역 · 수영 OK</span></div>세계 50대 해변. 잔잔하고 맑고 얕아서 수영 최적. 스노클링도 가능(산호·열대어). JW 투숙객은 프라이빗 비치 구역 이용. 카약 대여 약 10만~15만 VND(약 5,600~8,400원)/시간</div>
+  <div class="rc"><div class="rn">🏛️ JW 리조트 탐험 <span class="rt">Bill Bensley 설계 · Lamarck University</span></div>
+    <b>주목할 디테일들:</b><br>
+    • <b>로비(Dean's Library)</b>: 1,500권+ 책, 교수 초상화, 빈티지 지구본. 학장의 서재 컨셉<br>
+    • <b>Rue de Lamarck</b>: 리조트 중앙 거리. 호이안 고대 상점가를 재현한 숍하우스<br>
+    • <b>객실 동(Wing)</b>: 각각 동물학과·식물학과·화학과 등 학과명. 인테리어도 학과별로 다름<br>
+    • <b>Shell Pool</b>: 위에서 보면 조개 모양. 모자이크 타일 한 장 한 장 수작업<br>
+    • <b>Chanterelle Spa</b>: 이상한 나라의 앨리스 컨셉. 버섯 모티프 가구, 토끼굴 복도<br>
+    • <b>5,000개+ 업사이클 앤티크</b>: 새것 아닌 빈티지 소품으로 스토리텔링. 곳곳에 숨은 디테일 찾기<br>
+    • <b>마스코트</b>: 푸꾸옥 릿지백(현지 토종견). 리조트 곳곳에 강아지 디자인 숨어있음<br>
+    <span style="font-size:11px;color:var(--s)">TIME 매거진 선정 "이국적 럭셔리 리조트의 왕". 천천히 돌아다니며 디테일 찾는 재미가 큼</span>
+  </div>
+  <div class="rc"><div class="rn">🍹 French & Co. / 비치바</div>커피 10만~15만 VND(약 5,600~8,400원), 칵테일 20만~30만(약 1.1만~1.7만원)</div>
+  <div class="alt alt-a">🎯 <b>더 놀고 싶으면</b>: 오후에 Sunset Town으로 나가서 Kiss Bridge 구경(일몰) → 저녁+쇼 동선 연결</div>
+  <div class="alt alt-r">🧘 <b>쉬고 싶으면</b>: 오후를 완전히 비우기. 객실·비치에서 아무것도 안 하는 시간</div>
+</div>
+<div class="sl">
+  <span class="st ev">저녁</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">27°C 🌙 맑음</span>
+  <div class="sd">⭐ Kiss of the Sea 21:00 · JW 내 or Sunset Town에서 저녁 후 쇼 관람</div>
+  <div class="rc"><div class="rn">🇫🇷 Pink Pearl <span class="rt">JW · 프렌치 파인다이닝 · 예약필수</span></div>미슐랭 셰프 Olivier Elzer<br><span class="rp">2인 약 150만~400만+ VND (약 8.4만~22.4만원+)</span></div>
+  <div class="rc"><div class="rn">🌏 Tempus Fugit <span class="rt">JW · 인터내셔널</span></div><span class="rp">2인 약 80만~200만 VND (약 4.5만~11.2만원)</span></div>
+  <div class="rc"><div class="rn">🍲 Cai Mam <span class="rt">Sunset Town · 가성비 대안</span></div><span class="rp">2인 약 40만~70만 VND (약 2.2만~3.9만원)</span></div>
+
+  <div style="margin-top:8px;padding:9px 10px;background:#e8e0f0;border-radius:8px;font-size:12px">
+    <b>⭐ Kiss of the Sea</b> · 21:00~21:30 (화요일 제외, 4/17 금요일 OK)<br>
+    물+빛+불꽃+드론 야외 공연. Sunset Town 해상 100m 원형무대<br>
+    <b>JW 투숙 시 무료 제공 가능 (예약 요금제에 따라 다름 — 프런트에서 확인)</b> 프런트에서 수령<br>
+    공식가 100만 VND(약 5.6만원). 할인 플랫폼(Klook 등)에서 더 낮을 수 있음<br>
+    20:30 도어 오픈. <b>4월 금요일이면 20:15~20:20 도착으로 충분</b><br>
+    성수기(12~1월)에는 20:00부터 줄 서야 좋은 자리 확보 가능<br>
+    <b>중앙 좌석이 최고</b> — 불꽃이 머리 위에서 터지는 느낌. 북쪽 입구로 줄서면 앞쪽 확보 유리<br>
+    JW↔Sunset Town Grab 약 10분, 15만~25만 VND(약 8,400~1.4만원)<br>
+    <a class="lk" href="https://kissofthesea.com/" target="_blank">🔗 공식</a> · <a class="lk" href="https://www.klook.com/en-US/activity/81479-kiss-the-star-show-ticket/" target="_blank">🔗 Klook</a>
+  </div>
+</div>
+</div></div>
+
+<!-- 4/18 -->
+<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d18">4/18</div><div><div class="dtt">JW 마지막 · 출발</div><div class="dts">02:25 비행 · 30°/26°C 🌦️ 비25%</div></div></div><div class="cv">▾</div></div>
+<div class="dy">
+<div class="sl">
+  <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">30°C 🌤️ 비10%</span>
+  <div class="rc"><div class="rn">🍽️ 조식뷔페 <span class="rt">06:30~11:00 · Tempus Fugit</span></div>서양·중·일·아시안. 푸꾸옥 최고급 조식. 11시까지니 여유있게</div>
+  <div class="rc"><div class="rn">🏖️ Khem Beach 마지막 수영 <span class="rt">오전이 가장 잔잔</span></div>오전 물이 가장 맑고 사람 적음. 카약이나 패들보드도 가능</div>
+  <div class="rc"><div class="rn">🏛️ JW 디테일 산책 <span class="rt">놓친 구석 찾기</span></div>Rue de Lamarck 숍하우스, Shell Pool 주변, 로비 책장, 푸꾸옥 릿지백 마스코트 찾기</div>
+</div>
+<div class="sl">
+  <span class="st pm">오후</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">32°C 🌦️ 비30%</span>
+  <div class="sd">12:00 체크아웃 (레이트 체크아웃 사전 문의)
+짐 보관: JW 프런트 luggage storage (24h 무료)
+체크아웃 후 풀: 보장 안됨 → 프런트에 문의</div>
+
+  <div class="alt alt-a">🎯 <b>옵션A: JW 주변에서 보내기</b><br>
+    • Sunset Town 마지막 산책 + Kiss Bridge 일몰(18:15)<br>
+    • Oasis Spa 마사지 (2인 120만 VND/약 6.7만원)<br>
+    • Cai Mam 저녁 (2인 약 40만~70만 VND)<br>
+    • JW로 돌아와 짐 챙기고 Grab으로 공항
+  </div>
+
+  <div class="alt alt-r">🧘 <b>옵션B: 두엉동(중부)으로 이동</b><br>
+    JW → Grab(약 30만~40만 VND/약 1.7만~2.2만원, 30분) → 두엉동<br>
+    • 마사지숍(Zen/Nu)에 <b>짐 맡기고</b> 시내 구경<br>
+    • 즈엉동 시내 카페·야시장 마지막 탐방<br>
+    • 저녁에 마사지 받고 → 짐 챙겨서 Grab/픽업으로 공항 이동<br>
+    • 두엉동→공항 Grab 약 15만~22만 VND(약 8,400~1.2만원, 15분)<br>
+    <span style="font-size:11px;color:#888">※ 마사지숍에 짐 보관 가능 여부 사전 확인 필요 (Zen·Nu 대부분 OK)</span>
+  </div>
+</div>
+<div class="sl">
+  <span class="st ev">저녁</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">27°C 🌤️ 비15%</span>
+  <div class="sd">→ 공항 · 이른 저녁 후 공항 이동. 약 4시간 대기 (팁 탭 공항대기 참고)</div>
+  <div class="ch">
+    <span class="c bg">🍽️ 저녁 30만~90만 VND (약 1.7만~5만원)</span>
+    <span class="c tr">🚕 Grab 22만~32만 VND (약 1.2만~1.8만원)</span>
+    <span class="c wn">⚠️ 22:00~22:30 출발!</span>
+  </div>
+</div>
+</div></div>
+
+<!-- 4/19 -->
+<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d19">4/19</div><div><div class="dtt">인천 도착 09:55</div><div class="dts">ICN</div></div></div><div class="cv">▾</div></div>
+<div class="dy"><div class="sl"><span class="st am">오전</span><div class="sd">09:55 인천. 수하물·환전 정리.</div></div></div></div>
+
+</div><!-- end schedule -->
+
+<!-- ═══ 식당 ═══ -->
+<div id="tab-fd" class="tc">
+<div class="ib">2인 기준. 고수: <b>"Không rau mùi"</b>(꽁 라우 무이)</div>
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🌿 북부 · Grand World</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b>🦒 Giraffe Restaurant</b> · Safari · 양식 · 2인 약 2.8만~4.5만원</div>
+  <div class="it"><b>🍜 Kien Xay</b> · 분꾸아이 원조 · 2인 약 8천~1.4만원</div>
+  <div class="it"><b>🍜 Bep Nha</b> · 가정식 · 운하 옆 · 2인 약 2.2만~3.9만원</div>
+  <div class="it"><b>🍕 Jack's</b> · 이탈리안 · 2인 약 3.1만~5만원</div>
+  <div class="it"><b>🦐 Mai Huong</b> · 해산물BBQ · 15:00~ · 2인 약 3.4만~5.6만원</div>
+  <div class="it"><b>🥩 Volcano Beefsteak</b> · 용암석 스테이크 · 2인 약 3.9만~6.7만원</div>
+  <div class="it"><b>🍖 한식BBQ</b> · K-Street · 2인 BBQ세트 약 2.8만~3.4만원</div>
+  <div class="it"><b>🍜 야시장</b> · 해산물구이 · 2인 약 1.4만~2.8만원</div>
+</div></div>
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🏙️ 중부 · Duong Dong</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b>🦀 Xin Chao</b> · 해산물 · 2인 약 2만~3.6만원</div>
+  <div class="it"><b>🍜 Ra Khoi</b> · 현지식 · 2인 약 1.4만~2.5만원</div>
+  <div class="it"><b>🦀 Crab House</b> · 게요리 · 2인 약 2.8만~4.5만원</div>
+  <div class="it"><b>🐟 Nemo</b> · 해산물·양식 · 2인 약 2.5만~4.2만원</div>
+  <div class="it"><b>🍲 로컬 Phở</b> · 쌀국수 · 2인 약 8천~1.4만원</div>
+  <div class="it"><b>🦐 야시장</b> · 구이류 · 2인 약 1.7만~3.4만원</div>
+</div></div>
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🌅 남부 · JW</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b>🍲 Cai Mam</b> · 가정식 · 2인 약 2.2만~3.9만원</div>
+  <div class="it"><b>🇫🇷 Pink Pearl</b> · JW 프렌치 · 2인 약 8.4만~22.4만원+</div>
+  <div class="it"><b>🌏 Tempus Fugit</b> · JW 인터내셔널 · 2인 약 4.5만~11.2만원</div>
+</div></div>
+</div>
+
+<!-- ═══ 카페 ═══ -->
+<div id="tab-cf" class="tc">
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">☕ 추천 카페</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b>☕ Chuồn Chuồn Bistro</b> · 선셋뷰 1위 · 사오마이 언덕<br>콜드브루 약 4,200원~, 칵테일 약 6,700원~<br>"푸꾸옥 최고 일몰" "음식도 OK"</div>
+  <div class="it"><b>☕ Zyzu Kafé</b> · 정원·나무텐트<br>복숭아 레몬그라스티 약 2,800원~<br>"힐링" "가격 합리적"</div>
+  <div class="it"><b>☕ Skyline Cafe</b> · 루프탑 4층<br>Ép Cóc(과일즙) 약 2,800원~<br>"시내 파노라마"</div>
+  <div class="it"><b>☕ The Coffee House</b> · Grand World · 에어컨<br>치즈폼 밀크티 약 2,800~3,900원</div>
+  <div class="it"><b>☕ Son Tra Hill</b> · 수영장 있는 카페<br>연유커피 약 1,700~2,800원<br>"조용, 뷰 좋음"</div>
+  <div class="it"><b>☕ Ann Cafe</b> · 브런치 가능<br>말차치즈케이크, 시푸드스파게티 약 4,200원~</div>
+</div></div>
+</div>
+
+<!-- ═══ 투어 ═══ -->
+<div id="tab-dv" class="tc">
+<div class="ib">남부 An Thoi 군도. 4월 건기, 수중시야 양호. 바다 맑기 최상 지역.</div>
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🐠 투어사 비교</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b>🥇 OnBird</b> · 소규모 · 한국어 카톡 소통<br>스노클링(max 8~10인): 1인 약 126만 VND(약 7.1만원)<br>체험다이빙: 1인 약 14.6만원 (장비+점심+픽업)<br>⭐ TripAdvisor 5.0<br><a class="lk" href="https://onbird.vn/" target="_blank">공식</a></div>
+  <div class="it"><b>🥈 Vietnam Explorer's</b> · 2004 최장수<br>인증다이버: 1인 약 12.6만원~ (2다이브)<br><a class="lk" href="https://divephuquoc.com/snorkeling" target="_blank">공식</a></div>
+  <div class="it"><b>🥉 Jeep Tour</b> · Viator · 가성비<br>반일 스노클링: 1인 약 5.4만~7.7만원<br>⭐ Viator 4.9 (400+리뷰)<br><a class="lk" href="https://www.viator.com/tours/Phu-Quoc/Best-Half-Day-Snorkeling-Phu-Quoc-Island/d22452-240116P5" target="_blank">Viator</a></div>
+</div></div>
+</div>
+
+<!-- ═══ 마사지 ═══ -->
+<div id="tab-ms" class="tc">
+<div class="ib">💡 팁: 만족 시 1인 5만~8만 VND(약 2,800~4,500원). 필수 아님. 4/18 마사지숍에 짐 맡기기도 가능(사전 확인)</div>
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">💆 지역별 가격</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b>🌿 Crown Spa</b> · 북부<br>60분 2인 72만 VND (약 4만원) / 120분 2인 188만 (약 10.5만원)</div>
+  <div class="it"><b>🌿 La Spa 3</b> · 북부<br>60분대 2인 약 60만~100만 (약 3.4만~5.6만원) · <a class="lk" href="https://www.klook.com/activity/154835-la-spa-massage-experience-in-phu-quoc/" target="_blank">Klook</a></div>
+  <div class="it"><b>🏙️ Nu Spa</b> · 중부 가성비<br>60분 2인 56만 (약 3.1만원) · <a class="lk" href="https://nuspanailphuquoc.com/menu/" target="_blank">메뉴</a></div>
+  <div class="it"><b>🏙️ Zen Spa</b> · 중부<br>60분 2인 76만 (약 4.3만원) / 90분 2인 110만 (약 6.2만원) · <a class="lk" href="https://zenspaphuquoc.com/services/" target="_blank">메뉴</a></div>
+  <div class="it"><b>🌅 Oasis Spa</b> · 남부<br>60분 2인 120만 (약 6.7만원) / 90분 2인 170만 (약 9.5만원) · <a class="lk" href="https://www.oasisspaphuquoc.com/" target="_blank">공식</a></div>
+</div></div>
+</div>
+
+<!-- ═══ 쇼핑·과일 ═══ -->
+<div id="tab-sp" class="tc">
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🛒 과자 · 🍉 과일 · 🌙 야식</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b>🏪 King Kong Mart</b> · 4/15 · Duong Dong<br>Gery치즈, 코코넛쿠키, Vinamit칩, 커피믹스<br>약 3.5만~15만 VND (약 2천~8천원) · <a class="lk" href="https://www.kingkongmart.vn/" target="_blank">공식</a></div>
+  <div class="it"><b>🍉 과일 (4월)</b><br>🥭 망고 1kg 3만~5만(약 1,700~2,800원) — 시즌!<br>🥥 코코넛 1개 2만~4만(약 1,100~2,200원)<br>🍍 파인애플 1개 1만~2만(약 560~1,100원)<br>🫐 망고스틴 1kg 7만~15만(약 3,900~8,400원) — 5월부터 제철<br><br>구매: 야시장 노점, King Kong Mart, "망고언니"(킹콩 근처)</div>
+  <div class="it"><b>🌙 야식·간식 (고수X)</b><br>• Bánh tráng trộn(라이스페이퍼 스낵) — 고수 빼달라고<br>• Sinh tố(스무디) 3만~5만(약 1,700~2,800원)<br>• Nước mía(사탕수수즙) 1만~2만(약 560~1,100원)<br>• Chè(코코넛밀크 디저트) — 고수 무관<br><br><b>"Không rau mùi"</b> = 고수 빼주세요</div>
+</div></div>
+</div>
+
+<!-- ═══ 스팟 ═══ -->
+<div id="tab-in" class="tc">
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">📍 주요 스팟</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b>🦁 Vinpearl Safari</b> · 북부<br>베트남 최초·최대 반야생 동물원. 150종 4000마리. 버스 투어. 2015년 개장.</div>
+  <div class="it"><b>🌃 Grand World</b> · 북부 · 입장 무료<br>85ha "잠들지 않는 도시". 베네치아 운하+곤돌라, 상하이타운, 테디베어박물관. 야시장 새벽2시. 분수쇼 21:30. 2021년 개장.</div>
+  <div class="it"><b>🏖️ Bai Dai Beach</b> · 북서<br>15km 해변. 물 맑기 중상. VinHolidays 바로 앞. 2008년 ABC뉴스 "세계 가장 아름다운 해변" 선정.</div>
+  <div class="it"><b>🌙 즈엉동 야시장</b> · 중부<br>본섬 최대 야시장. 해산물 구이 메인. 로컬 분위기. King Kong Mart 바로 옆.</div>
+  <div class="it"><b>🌅 Sunset Town</b> · 남부<br>Sun World. 지중해풍. Kiss Bridge(건축가 Marco Casamonti — 400m 다리 두 갈래가 30cm 간격으로 닿지 않는 구조). Kiss of the Sea 쇼.</div>
+  <div class="it"><b>⭐ Kiss of the Sea</b> · 남부<br>물+빛+불꽃+드론 야외쇼. 21:00~21:30 (화요일 제외). 해상 100m 원형무대. ECA2+Sun Group 제작. JW 제공 가능 (요금제 확인).</div>
+  <div class="it"><b>🏖️ Khem Beach</b> · 남부<br>세계 50대 해변 선정. 물 맑기 푸꾸옥 최상. 초승달형 백사장. 2014년까지 군사구역이라 개발 안 됨 → 원시적 아름다움 보존. JW 앞.</div>
+  <div class="it"><b>🏨 JW Marriott</b> · 남부 2박<br>Bill Bensley 설계. 19세기 프랑스 대학교 컨셉(로비=학장도서관). 풀 3개(Shell Pool 성인전용). 미슐랭 셰프 Pink Pearl. 체크아웃 후 짐보관 가능(24h).<br>공항: Grab 22만~32만(약 1.2만~1.8만원) 추천.</div>
+</div></div>
+</div>
+
+<!-- ═══ 팁 ═══ -->
+<div id="tab-tp" class="tc">
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🔗 URL · 💡 팁</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it"><b>🔗 공식 링크</b><br>
+    <a class="lk" href="https://vinwonders.com/en/vinpearl-safari-phu-quoc-price-and-regulations/" target="_blank">Safari</a> · <a class="lk" href="https://vinwonders.com/en/wonderpedia/news/safari-phu-quoc-show-schedule/" target="_blank">동물쇼</a> · <a class="lk" href="https://vinwonders.com/en/vinwonders-phu-quoc-price-and-regulations/" target="_blank">VinWonders</a> · <a class="lk" href="https://onbird.vn/" target="_blank">OnBird</a> · <a class="lk" href="https://kissofthesea.com/" target="_blank">Kiss of the Sea</a> · <a class="lk" href="https://maps.vinbus.vn/pq" target="_blank">VinBus</a> · <a class="lk" href="https://sunworld.vn/en/hon-thom/" target="_blank">Sun World</a></div>
+  <div class="it"><b>📱 날씨</b><br>
+    <a class="lk" href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> · <a class="lk" href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> · <a class="lk" href="https://weather.com/ko-KR/weather/monthly/l/375164cdeba46eb4d8459f8b705c9f30ef7b063b920dcce717b2d854c34cacab" target="_blank">weather.com</a></div>
+  <div class="it"><b>💱 환율</b>: 100만 VND ≈ 약 5.6만원 · 10만 VND ≈ 약 5,600원 · 1만 VND ≈ 약 560원</div>
+  <div class="it"><b>🌡️ 날씨</b>: 11~15시 UV 극심 → 실내·카페·마사지. 소나기 우산 필수. 오전·늦은 오후 야외</div>
+  <div class="it"><b>🏖️ 바다 맑기</b>: 남부(Khem·Sao) > 북서(Bai Dai) > 중부 서해안(두엉동)</div>
+  <div class="it"><b>🚗 이동</b>: 북부 VinBus+셔틀, 남부 Sun World 무료셔틀, 기본 Grab</div>
+  <div class="it"><b>🏨 숙소</b>: 4/13~14 VinHolidays(북) → 4/15 Lahana(중) → 4/16 Moonlight(남) → 4/17~18 JW(남)</div>
+  <div class="it"><b>📋 체크리스트</b><br>☐ eSIM · ☐ 트래블월렛 · ☐ Safari예약 · ☐ OnBird예약 · ☐ 마사지1곳예약<br>☐ 멀미약 · ☐ 방수팩 · ☐ 접이식우산 · ☐ JW 레이트체크아웃 문의<br>☐ Kiss of the Sea 무료티켓 확인 · ☐ Sun World 셔틀 시간표<br>☐ Grab 앱 설치+결제등록 · ☐ 멀티어댑터</div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">👕 OOTD · 옷차림 가이드</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">
+    <b>4월 푸꾸옥</b>: 낮 30~33°C, 습도 높음, UV 극심. 가볍고 통풍 잘 되는 옷 위주<br><br>
+    <b>☀️ 낮 (Safari·Grand World·산책)</b><br>
+    • 린넨/면 반팔 + 반바지 or 얇은 긴바지<br>
+    • 통풍 잘 되는 운동화 or 스포츠 샌들 (Safari는 운동화 추천)<br>
+    • 양산 or 모자 필수 (UV 11+)<br>
+    • 선글라스 + SPF50 선크림<br><br>
+    <b>🌊 바다 (스노클링·비치)</b><br>
+    • 래시가드 상하 (자외선 차단 + 해파리 대비)<br>
+    • 수영복 (2벌 — 하루 말리기 시간 필요)<br>
+    • 아쿠아슈즈 (산호에 발 다칠 수 있음)<br>
+    • 방수폰케이스<br><br>
+    <b>🌙 저녁 (식당·야시장·Kiss of the Sea)</b><br>
+    • 얇은 긴바지 + 반팔 or 린넨셔츠<br>
+    • 편한 샌들 or 슬리퍼<br>
+    • 에어컨 실내용 얇은 가디건 1장<br>
+    • JW Pink Pearl 파인다이닝: 스마트 캐주얼 (반바지·슬리퍼 X)<br><br>
+    <b>🎒 안 가져가도 되는 것</b><br>
+    • 두꺼운 옷 (밤에도 27°C)<br>
+    • 정장/구두 (JW도 스마트 캐주얼이면 OK)
+  </div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🎒 준비물 체크리스트</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">
+    <b>📱 필수</b><br>
+    ☐ 여권 (6개월 이상 유효) · ☐ eSIM QR (미리 설치)<br>
+    ☐ 트래블월렛 (VND 충전) · ☐ Grab 앱 (한국서 미리 설치+카드 등록)<br>
+    ☐ 접이식 우산 · ☐ 선크림 SPF50 · ☐ 선글라스 · ☐ 모자<br><br>
+    <b>🌊 바다·수영</b><br>
+    ☐ 수영복 2벌 · ☐ 래시가드 상하 · ☐ 아쿠아슈즈<br>
+    ☐ 방수폰케이스 · ☐ 방수팩 (카메라·지갑용)<br>
+    ☐ 멀미약 (스노클링 보트용)<br><br>
+    <b>💊 건강</b><br>
+    ☐ 상비약 (두통·소화제·지사제·밴드)<br>
+    ☐ 모기퇴치제/패치 · ☐ 멀미약<br><br>
+    <b>🔌 전자기기</b><br>
+    ☐ 충전기 · ☐ 보조배터리<br>
+    ☐ 멀티어댑터 (대부분 호환되지만 간혹 안 맞음)<br><br>
+    <b>👕 의류 (5박 기준)</b><br>
+    ☐ 반팔 5~6장 · ☐ 반바지 3~4장 · ☐ 얇은 긴바지 1~2장<br>
+    ☐ 린넨셔츠 1장 (저녁·JW용) · ☐ 얇은 가디건 1장 (에어컨용)<br>
+    ☐ 속옷·양말 · ☐ 잠옷<br>
+    ☐ 운동화 1 · ☐ 샌들/슬리퍼 1 · ☐ 아쿠아슈즈 1
+  </div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🇻🇳 유용한 베트남어</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">
+    <b>Không rau mùi</b> (꽁 라우 무이) — 고수 빼주세요<br>
+    <b>Không cay</b> (꽁 까이) — 맵지 않게 해주세요<br>
+    <b>Bao nhiêu tiền?</b> (바오 니에우 띠엔?) — 얼마예요?<br>
+    <b>Tính tiền</b> (띤 띠엔) — 계산이요<br>
+    <b>Cảm ơn</b> (깜 언) — 감사합니다<br>
+    <b>Xin chào</b> (씬 짜오) — 안녕하세요<br>
+    <b>Ngon quá!</b> (응온 꽈!) — 맛있어요!<br>
+    <b>Một, Hai, Ba</b> (못, 하이, 바) — 1, 2, 3 (건배할 때 "못 하이 바 요!")
+  </div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">📱 Grab 앱 세팅</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">
+    <b>한국에서 미리 해야 할 것:</b><br>
+    1. Grab 앱 설치 (App Store / Google Play)<br>
+    2. 한국 전화번호로 가입<br>
+    3. 결제수단 등록: 해외결제 가능 카드 or 트래블월렛 카드<br>
+    4. 현지 도착 후 바로 호출 가능<br><br>
+    <b>팁:</b><br>
+    • 현금 결제도 가능 (VND)<br>
+    • GrabCar(일반차) / GrabBike(오토바이) 선택 가능<br>
+    • 요금 사전확정 → 바가지 걱정 없음<br>
+    • 공항 도착 후 Grab 픽업존이 따로 있음 (나오면 안내 표지판 따라가기)
+  </div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">✈️ 4/18 밤 공항 대기 (약 4시간)</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">
+    22:30 공항 도착 → 02:25 출발 = <b>약 4시간 대기</b><br><br>
+    <b>공항 시설:</b><br>
+    • 국제선 Business Lounge: 유료 약 $20(약 50만 VND/약 2.8만원). 간식·와이파이·소파<br>
+    • 카페: 커피숍, 버거킹, 베트남 식당 (심야 영업 확인 필요)<br>
+    • 면세점: 출국장 내 소규모. 주류·진주·공예품·기념품<br>
+    • 무료 와이파이 있음<br>
+    • 환전소·ATM 있음<br><br>
+    <b>팁:</b> 심야라 일부 매장 닫힐 수 있음. 라운지 이용 추천. Priority Pass 있으면 활용
+  </div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">💱 환전 가이드</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">
+    <b>🇰🇷 KRW → USD (한국에서)</b><br>
+    카카오뱅크/토스/주거래은행 앱 환전(우대 80~100%) → 인천공항/영업점 수령<br>
+    현재 환율 약 1,490~1,500원/$1<br>
+    <b>필수: $100 신권(빳빳한 새 돈)</b>으로 받기. 구권/소액권은 현지 환율 깎임<br><br>
+
+    <b>🇻🇳 USD → VND (푸꾸옥에서)</b><br>
+    ① <b>두엉동 시내 금은방</b> — 환율 최고. King Kong Mart 주변. 2~3곳 비교<br>
+    ② King Kong Mart 내 환전 — 편리. 금은방과 비슷하거나 살짝 낮음<br>
+    ③ 호텔 프론트 — 편하지만 환율 약간 낮음. 소액 급할 때<br>
+    ④ 공항 — <b>최하</b>. $50~100 바꾸고 나머지는 시내에서<br><br>
+
+    <b>📅 환전 일정</b><br>
+    4/13 도착: 공항에서 $50~100 소액 환전 (택시+야식)<br>
+    4/14 하루: 공항 환전분으로 버팀 (부족 시 트래블월렛 카드 백업)<br>
+    <b>4/15 두엉동</b>: 금은방에서 나머지 달러 본격 환전 ← 핵심일<br>
+    이후: 부족 시 호텔 프론트 소액 추가<br><br>
+
+    <b>⚠️ 주의</b><br>
+    • 길거리 호객 환전 사기 — 공식 금은방/은행만 이용<br>
+    • VND 자릿수 세기 — 50만(파란색)↔5만(녹색) 지폐 바꿔치기 주의. 그 자리에서 세기<br>
+    • ATM 카드 복제 — 투입구에 이상한 장치 없는지 확인
+  </div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">⚠️ 생활 팁 (물·전압·시간)</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">
+    <b>💧 물</b>: 수돗물 절대 X. <b>양치도 생수로</b>. 카페·식당 얼음은 대체로 OK(정수 얼음), 노점 얼음은 주의<br><br>
+    <b>🔌 전압·콘센트</b>: 베트남 220V/50Hz. 한국 플러그(C타입 2핀)는 <b>대부분 호환</b>. 간혹 안 맞을 수 있으니 멀티어댑터 1개 챙기면 안심<br><br>
+    <b>🌅 일출/일몰</b> (4월 중순):<br>
+    일출 <b>05:54</b> · 일몰 <b>18:15</b><br>
+    → Chuồn Chuồn 카페 일몰 보려면 17:30 전 도착<br>
+    → Kiss Bridge 일몰은 18:00 전후<br><br>
+    <b>⏰ 시차</b>: 한국보다 <b>2시간 느림</b> (한국 12시 = 푸꾸옥 10시)<br><br>
+    <b>🚨 긴급 연락처</b>:<br>
+    경찰 <b>113</b> · 앰뷸런스 <b>115</b> · 소방 <b>114</b><br>
+    주호치민 한국총영사관: <b>+84-28-3822-5757</b><br>
+    Vinmec 푸꾸옥 병원: <b>+84-297-398-3668</b> (영어 가능, 국제 보험 대응)<br>
+    관광경찰: <b>+84-297-384-6900</b>
+  </div>
+</div></div>
+</div><!-- end tab-tp -->
+
+<!-- ═══ 예산 ═══ -->
+<div id="tab-bd" class="tc">
+<div class="ib"><b>2인 총액</b> · 호텔 제외<br>
+💡 <b>절약 팁</b>: JW 내부 대신 외부 식당 → 식사비 절반 이하. 가성비 투어(Jeep Tour $39) 선택 시 약 10만원 절약. 마사지 3회로 줄이면 약 5만원 절약.<br>
+🇻🇳 <b>베트남 카드 사정</b>: 리조트·Grand World·스파·마트는 카드 OK. <b>야시장·노점·로컬식당은 약 80% 현금만</b></div>
+
+<!-- ====== 현금 위주 (먼저) ====== -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">💵 ① 현금 위주 (트래블월렛 카드 병행)</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="background:#fff8e1">
+    <b>전략</b>: 4/13~14는 환전 전 → <b>트래블월렛 카드 최대 활용</b> (Grand World 전부 Visa OK)<br>
+    → <b>4/15 두엉동 금은방에서 본격 환전</b> → 이후 현금 위주<br>
+    사전 카드결제: Safari 입장(선결제), OnBird 스노클링(온라인 예약)
+  </div>
+  <div style="overflow-x:auto;padding:8px 14px">
+  <table style="width:100%;font-size:10.5px;border-collapse:collapse;min-width:520px">
+    <tr style="font-weight:700;background:#fff3e0;border-bottom:2px solid #ffcc80">
+      <td style="padding:5px 4px">항목</td><td>VND (2인)</td><td>원화</td><td>결제</td><td>💰 그날 현금</td>
+    </tr>
+
+    <tr style="background:#2c3e50;color:#fff;font-weight:700"><td colspan="5" style="padding:5px 4px">4/13 월 · 도착 — 💳 카드로 버티기</td></tr>
+    <tr><td style="padding:3px 4px">🚕 Grab 공항→숙소</td><td>38만~50만</td><td>약 2.1만~2.8만</td><td>💳카드</td><td rowspan="3" style="vertical-align:middle;text-align:center;background:#e8f5e9;font-weight:700;font-size:12px">현금 불필요<br><span style="font-size:10px;color:#888">편의점 💳OK<br>과일노점만 💵</span></td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">🍉 편의점 간식 or 과일</td><td>5만~25만</td><td>약 3천~1.4만</td><td>💳/💵</td></tr>
+    <tr style="border-top:1px solid #ddd;font-weight:600"><td style="padding:3px 4px">소계</td><td>43만~75만</td><td style="color:#e07a5f">약 2.4만~4.2만</td><td></td></tr>
+
+    <tr style="background:#2c3e50;color:#fff;font-weight:700"><td colspan="5" style="padding:5px 4px">4/14 화 · Safari · Grand World — 💳 대부분 카드 OK</td></tr>
+    <tr><td style="padding:3px 4px">🦁 Safari 입장 2인</td><td>170만</td><td>약 9.5만</td><td>💳선결제</td><td rowspan="8" style="vertical-align:middle;text-align:center;background:#e8f5e9;font-weight:700;font-size:12px">약 15만~50만<br><span style="font-size:10px;color:#888">(약 8천~2.8만원)<br>팁+야시장만 💵</span></td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">🍽️ 점심 (Grand World)</td><td>15만~90만</td><td>약 8천~5만</td><td>💳카드</td></tr>
+    <tr><td style="padding:3px 4px">☕ 카페 (체인)</td><td>10만~25만</td><td>약 5천~1.4만</td><td>💳카드</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">🍽️ 저녁 (식당💳 or 야시장💵)</td><td>25만~120만</td><td>약 1.4만~6.7만</td><td>💳/💵</td></tr>
+    <tr><td style="padding:3px 4px">💆 Crown Spa 60분</td><td>72만</td><td>약 4만</td><td>💳카드</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">💰 팁</td><td>10만~14만</td><td>약 5천~8천</td><td>💵현금</td></tr>
+    <tr><td style="padding:3px 4px">🧸 테디베어·곤돌라</td><td>10만~30만</td><td>약 5천~1.7만</td><td>💳카드</td></tr>
+    <tr style="border-top:1px solid #ddd;font-weight:600"><td style="padding:3px 4px">소계</td><td>약 312만~521만</td><td style="color:#e07a5f">약 17.5만~29.2만</td><td></td></tr>
+
+    <tr style="background:#e07a5f;color:#fff;font-weight:700"><td colspan="5" style="padding:5px 4px">4/15 수 · 중부 + 야시장 — 💱 금은방 환전일</td></tr>
+    <tr><td style="padding:3px 4px">🚕 Grab 북→중</td><td>25만~35만</td><td>약 1.4만~2만</td><td>💳카드</td><td rowspan="8" style="vertical-align:middle;text-align:center;background:#fff8e1;font-weight:700;font-size:12px">약 140만~260만<br><span style="font-size:10px;color:#888">(약 7.9만~14.6만원)</span></td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">🍽️ 브런치</td><td>15만~65만</td><td>약 8천~3.6만</td><td>💵현금</td></tr>
+    <tr><td style="padding:3px 4px">☕ 카페</td><td>10만~30만</td><td>약 5천~1.7만</td><td>💵현금</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">🍽️ 저녁 (야시장)</td><td>25만~60만</td><td>약 1.4만~3.4만</td><td>💵현금</td></tr>
+    <tr><td style="padding:3px 4px">💆 Zen 60분</td><td>76만</td><td>약 4.3만</td><td>💵현금</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">💰 팁</td><td>10만~14만</td><td>약 5천~8천</td><td>💵현금</td></tr>
+    <tr><td style="padding:3px 4px">🛒 과자 (King Kong)</td><td>3.5만~15만</td><td>약 2천~8천</td><td>💵현금</td></tr>
+    <tr style="border-top:1px solid #ddd;font-weight:600"><td style="padding:3px 4px">소계</td><td>165만~295만</td><td style="color:#e07a5f">약 9.3만~16.5만</td><td></td></tr>
+
+    <tr style="background:#3a7bd5;color:#fff;font-weight:700"><td colspan="5" style="padding:5px 4px">4/16 목 · 스노클링 + 남부</td></tr>
+    <tr><td style="padding:3px 4px">🌊 OnBird 2인</td><td>~252만</td><td>약 14.1만</td><td>💳사전결제</td><td rowspan="6" style="vertical-align:middle;text-align:center;background:#fff8e1;font-weight:700;font-size:12px">약 210만~340만<br><span style="font-size:10px;color:#888">(약 11.8만~19만원)</span></td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">🚕 Grab 중→남</td><td>30만~39만</td><td>약 1.7만~2.2만</td><td>💳카드</td></tr>
+    <tr><td style="padding:3px 4px">🍽️ 점심+저녁</td><td>70만~190만</td><td>약 3.9만~10.7만</td><td>💵현금</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">💆 Oasis 60분</td><td>120만</td><td>약 6.7만</td><td>💵현금</td></tr>
+    <tr><td style="padding:3px 4px">💰 팁</td><td>10만~16만</td><td>약 5천~9천</td><td>💵현금</td></tr>
+    <tr style="border-top:1px solid #ddd;font-weight:600"><td style="padding:3px 4px">소계</td><td>약 482만~617만</td><td style="color:#e07a5f">약 27만~34.6만</td><td></td></tr>
+
+    <tr style="background:#c9a84c;color:#fff;font-weight:700"><td colspan="5" style="padding:5px 4px">4/17 금 · JW + Kiss of the Sea</td></tr>
+    <tr><td style="padding:3px 4px">🚕 Grab Moonlight→JW</td><td>12만~22만</td><td>약 7천~1.2만</td><td>💳카드</td><td rowspan="8" style="vertical-align:middle;text-align:center;background:#fff8e1;font-weight:700;font-size:12px">약 120만~500만<br><span style="font-size:10px;color:#888">(약 6.7만~28만원)</span></td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">🍽️ 점심+저녁</td><td>80만~400만</td><td>약 4.5만~22.4만</td><td>💵현금</td></tr>
+    <tr><td style="padding:3px 4px">☕ 간식·음료</td><td>20만~60만</td><td>약 1.1만~3.4만</td><td>💵현금</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">⭐ Kiss of the Sea</td><td>0</td><td>JW 무료</td><td>-</td></tr>
+    <tr><td style="padding:3px 4px">🚕 JW↔Sunset Town</td><td>15만~25만</td><td>약 8천~1.4만</td><td>💳카드</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">💆 Oasis(선택)</td><td>120만</td><td>약 6.7만</td><td>💵현금</td></tr>
+    <tr><td style="padding:3px 4px">💰 팁</td><td>10만~16만</td><td>약 5천~9천</td><td>💵현금</td></tr>
+    <tr style="border-top:1px solid #ddd;font-weight:600"><td style="padding:3px 4px">소계</td><td>137만~663만</td><td style="color:#e07a5f">약 7.7만~37만</td><td></td></tr>
+
+    <tr style="background:#8b5e3c;color:#fff;font-weight:700"><td colspan="5" style="padding:5px 4px">4/18 토 · 마지막 + 출발</td></tr>
+    <tr><td style="padding:3px 4px">🍽️ 점심+저녁</td><td>30만~150만</td><td>약 1.7만~8.4만</td><td>💵현금</td><td rowspan="5" style="vertical-align:middle;text-align:center;background:#fff8e1;font-weight:700;font-size:12px">약 50만~200만<br><span style="font-size:10px;color:#888">(약 2.8만~11만원)</span></td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">💆 Oasis(선택)</td><td>120만</td><td>약 6.7만</td><td>💵현금</td></tr>
+    <tr><td style="padding:3px 4px">🚕 Grab JW→공항</td><td>22만~32만</td><td>약 1.2만~1.8만</td><td>💳카드</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px">✈️ 라운지(선택)</td><td>~50만</td><td>약 2.8만</td><td>💳카드</td></tr>
+    <tr style="border-top:1px solid #ddd;font-weight:600"><td style="padding:3px 4px">소계</td><td>52만~352만</td><td style="color:#e07a5f">약 2.9만~19.7만</td><td></td></tr>
+
+    <tr style="background:#1e2d2f;color:#fff;font-weight:900;font-size:12px">
+      <td style="padding:7px 4px">🏝️ 6일 총합</td><td>약 1,191만~2,523만</td><td>약 67만~142만원</td><td></td>
+      <td style="background:#ff8f00;color:#fff;font-size:11px;text-align:center">현금 약<br>760만~1,725만<br>(약 43만~97만원)</td>
+    </tr>
+  </table>
+  </div>
+
+  <div class="it" style="background:#fff8e1">
+    <b>💰 현금 인출 계획</b><br>
+    ① 공항: $20~30만 소액 환전 (비상용 팁·과일 정도)<br>
+    ② 4/13~14: <b>트래블월렛 카드</b>로 버티기 (Grand World 전부 Visa OK)<br>
+    ③ <b>4/15 두엉동 금은방</b>: 나머지 달러 본격 환전 (환율 최고)<br>
+    ④ 이후: 현금 위주. 매일 필요량만 지갑에, 나머지 숙소 금고<br>
+    ⑤ 부족 시: ATM 추가 인출 or 호텔 프런트 소액 환전
+  </div>
+</div></div>
+
+<!-- ====== 카드 위주 (두번째) ====== -->
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">💳 ② 카드 위주 (가능한 곳은 전부 카드)</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it" style="background:#e3f2fd">
+    식당·스파·마트·입장권은 카드, <b>야시장·노점·팁만 현금</b>.<br>
+    현금 약 200만~300만 VND(약 11만~17만원)만 준비하면 됨.
+  </div>
+  <div style="overflow-x:auto;padding:8px 14px">
+  <table style="width:100%;font-size:10.5px;border-collapse:collapse;min-width:520px">
+    <tr style="font-weight:700;background:#e3f2fd;border-bottom:2px solid #90caf9">
+      <td style="padding:5px 4px">날짜</td><td>💳카드 (VND)</td><td>💵현금 (VND)</td><td>현금 (원화)</td><td>현금 용도</td>
+    </tr>
+    <tr><td style="padding:3px 4px"><b>4/13</b></td><td>38만~50만</td><td>8만~25만</td><td>약 4천~1.4만</td><td>야식·과일</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px"><b>4/14</b></td><td>192만~360만</td><td>35만~86만</td><td>약 2만~4.8만</td><td>야시장 저녁·팁·간식</td></tr>
+    <tr><td style="padding:3px 4px"><b>4/15</b></td><td>114만~221만</td><td>49만~74만</td><td>약 2.7만~4.2만</td><td>야시장·과일·팁·과자</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px"><b>4/16</b></td><td>530만~659만</td><td>10만~16만</td><td>약 5천~9천</td><td>팁만</td></tr>
+    <tr><td style="padding:3px 4px"><b>4/17</b></td><td>127만~647만</td><td>10만~16만</td><td>약 5천~9천</td><td>팁만</td></tr>
+    <tr style="background:#fafaf7"><td style="padding:3px 4px"><b>4/18</b></td><td>52만~352만</td><td>0</td><td>-</td><td>-</td></tr>
+    <tr style="background:#e3f2fd;font-weight:700;border-top:2px solid #90caf9">
+      <td style="padding:5px 4px">합계</td><td>1,053만~2,289만</td><td>112만~217만</td><td style="color:#1565c0">약 6.3만~12.2만</td><td></td>
+    </tr>
+  </table>
+  </div>
+  <div class="it" style="background:#e3f2fd">현금 약 200만~300만 VND(약 11만~17만원)이면 넉넉. ATM 1회로 충분.</div>
+</div></div>
+
+<div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">💳 결제수단 정리</div><div class="cv">▾</div></div>
+<div class="scb">
+  <div class="it">
+    <b>💳 카드 OK</b>: Grab(트래블월렛), JW/Grand World 식당, 마사지(Zen·Oasis·Crown), King Kong Mart, 편의점, Safari/VinWonders (온라인 구매 시)<br><br>
+    <b>💵 현금 필수</b>: 즈엉동 야시장(80%), 과일 노점, 로컬 쌀국수집, 팁, 일부 소형 식당<br><br>
+    <b>💡 현금 위주 추천 이유</b>: 어디서든 통하고, 카드 안 되는 곳에서 당황할 일 없음. 트래블월렛은 Grab 전용으로만 쓰면 깔끔
+  </div>
+</div></div>
+</div>
+
+<div class="ft">Phú Quốc 2026 · PWA · 오프라인 사용 가능</div>
+
+<script>
+function td(h){h.closest('.dc').classList.toggle('op')}
+function ts(h){h.closest('.sc').classList.toggle('op')}
+function sw(id){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tb button').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  event.target.classList.add('on');
+  window.scrollTo(0,0);
+}
+// PWA Service Worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registered')).catch(e=>console.log('SW failed',e));
+}
+// Offline indicator
+window.addEventListener('online',()=>{document.getElementById('offline-bar')&&(document.getElementById('offline-bar').style.display='none')});
+window.addEventListener('offline',()=>{
+  let b=document.getElementById('offline-bar');
+  if(!b){b=document.createElement('div');b.id='offline-bar';b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#ff9800;color:#fff;text-align:center;padding:8px;font-size:12px;font-weight:700;z-index:9999';b.textContent='📡 오프라인 모드 — 저장된 데이터로 보고 있어요';document.body.appendChild(b)}
+  b.style.display='block';
+});
+</script>
+</body>
+</html>
