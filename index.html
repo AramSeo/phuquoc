@@ -128,15 +128,25 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
   <button onclick="sw('mp')">🗺️ 지도</button>
   <button onclick="sw('bd')">💰 예산</button>
   <button onclick="sw('tp')">💡 팁</button>
+  <button onclick="sw('di')">📓 다이어리</button>
 </div>
 
 <!-- ═══ 일정 ═══ -->
 <div id="tab-sch" class="tc on">
 
-<div class="ib">각 시간대마다 <b style="color:#1565c0">🎯 더 놀고 싶으면</b> / <b style="color:#7b1fa2">🧘 쉬고 싶으면</b> 대안을 함께 넣었어요. 상황에 맞게 골라서 쓰세요.</div>
+<div style="margin:8px 14px;display:flex;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch" id="day-nav">
+  <button onclick="showDay('all')" class="dn dn-on" style="padding:8px 14px;border:none;border-bottom:3px solid #2c3e50;background:#fff;font-family:inherit;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer;color:#2c3e50">전체</button>
+  <button onclick="showDay(13)" class="dn" style="padding:8px 14px;border:none;border-bottom:3px solid transparent;background:#fff;font-family:inherit;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;color:#888">4/13<br><span style="font-size:10px">월·도착</span></button>
+  <button onclick="showDay(14)" class="dn" style="padding:8px 14px;border:none;border-bottom:3px solid transparent;background:#fff;font-family:inherit;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;color:#888">4/14<br><span style="font-size:10px">화·Safari</span></button>
+  <button onclick="showDay(15)" class="dn" style="padding:8px 14px;border:none;border-bottom:3px solid transparent;background:#fff;font-family:inherit;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;color:#888">4/15<br><span style="font-size:10px">수·중부</span></button>
+  <button onclick="showDay(16)" class="dn" style="padding:8px 14px;border:none;border-bottom:3px solid transparent;background:#fff;font-family:inherit;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;color:#888">4/16<br><span style="font-size:10px">목·스노클링</span></button>
+  <button onclick="showDay(17)" class="dn" style="padding:8px 14px;border:none;border-bottom:3px solid transparent;background:#fff;font-family:inherit;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;color:#888">4/17<br><span style="font-size:10px">금·JW</span></button>
+  <button onclick="showDay(18)" class="dn" style="padding:8px 14px;border:none;border-bottom:3px solid transparent;background:#fff;font-family:inherit;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;color:#888">4/18<br><span style="font-size:10px">토·출발</span></button>
+  <button onclick="showDay(19)" class="dn" style="padding:8px 14px;border:none;border-bottom:3px solid transparent;background:#fff;font-family:inherit;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;color:#888">4/19<br><span style="font-size:10px">일·인천</span></button>
+</div>
 
 <!-- 4/13 -->
-<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d13">4/13</div><div><div class="dtt">출발 · 도착</div><div class="dts">인천 → PQC → VinHolidays · 32°/27°C 🌤️</div></div></div><div class="cv">▾</div></div>
+<div class="dc" data-day="13"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d13">4/13</div><div><div class="dtt">출발 · 도착</div><div class="dts">인천 → PQC → VinHolidays · 32°/27°C 🌤️</div></div></div><div class="cv">▾</div></div>
 <div class="dy">
 <div class="sl">
   <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">32°C ☀️</span>
@@ -154,7 +164,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 </div></div>
 
 <!-- 4/14 -->
-<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d14">4/14</div><div><div class="dtt">Safari · Grand World</div><div class="dts">VinHolidays · 북부 · 31°/27°C 🌦️ 비30%</div></div></div><div class="cv">▾</div></div>
+<div class="dc" data-day="14"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d14">4/14</div><div><div class="dtt">Safari · Grand World</div><div class="dts">VinHolidays · 북부 · 31°/27°C 🌦️ 비30%</div></div></div><div class="cv">▾</div></div>
 <div class="dy">
 <div class="sl">
   <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">31°C ☀️ 맑음</span>
@@ -191,7 +201,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 </div></div>
 
 <!-- 4/15 -->
-<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d15">4/15</div><div><div class="dtt">중부 이동 · 카페 · 야시장</div><div class="dts">Lahana · Duong Dong · 31°/27°C 🌦️ 비35%</div></div></div><div class="cv">▾</div></div>
+<div class="dc" data-day="15"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d15">4/15</div><div><div class="dtt">중부 이동 · 카페 · 야시장</div><div class="dts">Lahana · Duong Dong · 31°/27°C 🌦️ 비35%</div></div></div><div class="cv">▾</div></div>
 <div class="dy">
 <div class="sl">
   <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">30°C 🌤️ 비15%</span>
@@ -230,7 +240,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 </div></div>
 
 <!-- 4/16 -->
-<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d16">4/16</div><div><div class="dtt">바다 액티비티 · 남부 이동</div><div class="dts">OnBird → Moonlight · 31°/27°C 🌤️ 비20%</div></div></div><div class="cv">▾</div></div>
+<div class="dc" data-day="16"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d16">4/16</div><div><div class="dtt">바다 액티비티 · 남부 이동</div><div class="dts">OnBird → Moonlight · 31°/27°C 🌤️ 비20%</div></div></div><div class="cv">▾</div></div>
 <div class="dy">
 <div class="sl">
   <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">30°C ☀️ 맑음</span>
@@ -302,7 +312,7 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 </div></div>
 
 <!-- 4/18 -->
-<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d18">4/18</div><div><div class="dtt">JW 마지막 · 출발</div><div class="dts">02:25 비행 · 30°/26°C 🌦️ 비25%</div></div></div><div class="cv">▾</div></div>
+<div class="dc" data-day="18"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d18">4/18</div><div><div class="dtt">JW 마지막 · 출발</div><div class="dts">02:25 비행 · 30°/26°C 🌦️ 비25%</div></div></div><div class="cv">▾</div></div>
 <div class="dy">
 <div class="sl">
   <span class="st am">오전</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">30°C 🌤️ 비10%</span>
@@ -344,12 +354,58 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 </div></div>
 
 <!-- 4/19 -->
-<div class="dc"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d19">4/19</div><div><div class="dtt">인천 도착 09:55</div><div class="dts">ICN</div></div></div><div class="cv">▾</div></div>
+<div class="dc" data-day="19"><div class="dh" onclick="td(this)"><div class="dl"><div class="db d19">4/19</div><div><div class="dtt">인천 도착 09:55</div><div class="dts">ICN</div></div></div><div class="cv">▾</div></div>
 <div class="dy"><div class="sl"><span class="st am">오전</span><div class="sd">09:55 인천. 수하물·환전 정리.</div></div></div></div>
 
 </div><!-- end schedule -->
 
 <!-- ═══ 가이드 (통합) ═══ -->
+
+<!-- ═══ 다이어리 ═══ -->
+<div id="tab-di" class="tc">
+<div style="margin:10px 14px">
+  <div style="font-size:16px;font-weight:900;margin-bottom:8px">📓 여행 다이어리</div>
+  
+  <!-- Upload area -->
+  <div id="diary-upload" style="padding:20px;border:2px dashed #ddd;border-radius:12px;text-align:center;margin-bottom:12px;cursor:pointer" onclick="document.getElementById('diary-photo-input').click()">
+    <div style="font-size:28px;margin-bottom:4px">📸</div>
+    <div style="font-size:13px;color:#888">사진을 탭해서 업로드</div>
+    <div style="font-size:11px;color:#bbb;margin-top:2px">iPhone·Galaxy 사진 EXIF에서 날짜·시간 자동 추출</div>
+    <input type="file" id="diary-photo-input" accept="image/*" multiple style="display:none" onchange="handleDiaryPhotos(event)">
+  </div>
+  
+  <!-- Manual entry fallback -->
+  <div id="diary-manual" style="display:none;padding:10px;background:#fafaf7;border-radius:10px;margin-bottom:12px">
+    <div style="font-size:12px;color:#888;margin-bottom:6px">📅 EXIF 없는 사진 — 직접 입력:</div>
+    <div style="display:flex;gap:4px;margin-bottom:6px">
+      <select id="diary-date" style="flex:1;padding:6px;border:1px solid #ddd;border-radius:6px;font-family:inherit;font-size:12px">
+        <option value="2026-04-13">4/13 월</option>
+        <option value="2026-04-14">4/14 화</option>
+        <option value="2026-04-15">4/15 수</option>
+        <option value="2026-04-16">4/16 목</option>
+        <option value="2026-04-17">4/17 금</option>
+        <option value="2026-04-18">4/18 토</option>
+        <option value="2026-04-19">4/19 일</option>
+      </select>
+      <input id="diary-time" type="time" style="flex:1;padding:6px;border:1px solid #ddd;border-radius:6px;font-size:12px">
+    </div>
+    <input id="diary-place" placeholder="장소 (선택)" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;font-family:inherit;font-size:12px;margin-bottom:6px">
+    <button onclick="saveDiaryManual()" style="width:100%;padding:8px;background:var(--g);color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:12px">저장</button>
+  </div>
+  
+  <!-- Note entry -->
+  <div style="display:flex;gap:4px;margin-bottom:12px">
+    <input id="diary-note-input" placeholder="✍️ 메모 남기기 (사진 없이도 OK)" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:12px">
+    <button onclick="addDiaryNote()" style="padding:8px 14px;background:var(--g);color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:12px">+</button>
+  </div>
+  
+  <!-- Export button -->
+  <button onclick="exportDiary()" style="width:100%;padding:10px;background:#2c3e50;color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:13px;margin-bottom:16px">📄 다이어리 PDF 내보내기</button>
+  
+  <!-- Diary entries (grouped by date) -->
+  <div id="diary-entries"></div>
+</div>
+</div>
 
 <!-- ═══ 팁 ═══ -->
 <div id="tab-tp" class="tc">
@@ -712,6 +768,168 @@ function sw(id){
   if(id==='mp'&&map){setTimeout(function(){map.invalidateSize()},100)}
   if(id==='mp'&&!map){initMap()}
 }
+// === DAY NAVIGATION ===
+function showDay(d){
+  document.querySelectorAll('.dc').forEach(function(el){
+    if(d==='all') el.style.display='';
+    else el.style.display=el.dataset.day==d?'':'none';
+  });
+  document.querySelectorAll('.dn').forEach(function(b){
+    b.classList.remove('dn-on');
+    b.style.borderBottomColor='transparent';
+    b.style.color='#888';
+  });
+  event.target.closest('.dn').classList.add('dn-on');
+  event.target.closest('.dn').style.borderBottomColor='#2c3e50';
+  event.target.closest('.dn').style.color='#2c3e50';
+  // Auto-expand the selected day
+  if(d!=='all'){
+    document.querySelectorAll('.dc[data-day="'+d+'"]').forEach(function(el){el.classList.add('op')});
+  }
+}
+
+// === DIARY ===
+var diaryPendingPhotos=[];
+function handleDiaryPhotos(e){
+  var files=e.target.files;
+  if(!files.length)return;
+  diaryPendingPhotos=[];
+  var processed=0;
+  Array.from(files).forEach(function(file){
+    var reader=new FileReader();
+    reader.onload=function(ev){
+      var dataUrl=ev.target.result;
+      // Try to extract EXIF date
+      var exifDate=null;
+      try{exifDate=extractExifDate(dataUrl);}catch(ex){}
+      
+      if(exifDate){
+        saveDiaryEntry({type:'photo',src:dataUrl,date:exifDate.date,time:exifDate.time,place:'',note:''});
+        processed++;
+        if(processed>=files.length){renderDiary();document.getElementById('diary-manual').style.display='none';}
+      } else {
+        // Show manual input
+        diaryPendingPhotos.push(dataUrl);
+        document.getElementById('diary-manual').style.display='block';
+        processed++;
+        if(processed>=files.length&&diaryPendingPhotos.length===0)renderDiary();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function extractExifDate(dataUrl){
+  // Simple EXIF date extraction from JPEG
+  var bin=atob(dataUrl.split(',')[1]);
+  var view=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++)view[i]=bin.charCodeAt(i);
+  // Find EXIF marker
+  if(view[0]!==0xFF||view[1]!==0xD8)return null; // Not JPEG
+  var offset=2;
+  while(offset<view.length-1){
+    if(view[offset]!==0xFF)break;
+    var marker=view[offset+1];
+    if(marker===0xE1){ // APP1 (EXIF)
+      var length=(view[offset+2]<<8)|view[offset+3];
+      var exifData=bin.substring(offset+4,offset+2+length);
+      // Find DateTimeOriginal tag (0x9003)
+      var dateMatch=exifData.match(/(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/);
+      if(dateMatch){
+        return{date:dateMatch[1]+'-'+dateMatch[2]+'-'+dateMatch[3],time:dateMatch[4]+':'+dateMatch[5]};
+      }
+      break;
+    }
+    var len=(view[offset+2]<<8)|view[offset+3];
+    offset+=2+len;
+  }
+  return null;
+}
+
+function saveDiaryManual(){
+  var date=document.getElementById('diary-date').value;
+  var time=document.getElementById('diary-time').value||'12:00';
+  var place=document.getElementById('diary-place').value;
+  diaryPendingPhotos.forEach(function(src){
+    saveDiaryEntry({type:'photo',src:src,date:date,time:time,place:place,note:''});
+  });
+  diaryPendingPhotos=[];
+  document.getElementById('diary-manual').style.display='none';
+  renderDiary();
+}
+
+function addDiaryNote(){
+  var note=document.getElementById('diary-note-input').value.trim();
+  if(!note)return;
+  var now=new Date();
+  var date=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+  var time=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  saveDiaryEntry({type:'note',date:date,time:time,note:note,place:''});
+  document.getElementById('diary-note-input').value='';
+  renderDiary();
+}
+
+function saveDiaryEntry(entry){
+  var entries=JSON.parse(localStorage.getItem('pq-diary')||'[]');
+  entry.id=Date.now();
+  entries.push(entry);
+  entries.sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)});
+  localStorage.setItem('pq-diary',JSON.stringify(entries));
+}
+
+function delDiaryEntry(id){
+  var entries=JSON.parse(localStorage.getItem('pq-diary')||'[]');
+  entries=entries.filter(function(e){return e.id!==id});
+  localStorage.setItem('pq-diary',JSON.stringify(entries));
+  renderDiary();
+}
+
+function renderDiary(){
+  var el=document.getElementById('diary-entries');
+  if(!el)return;
+  var entries=JSON.parse(localStorage.getItem('pq-diary')||'[]');
+  if(!entries.length){el.innerHTML='<div style="text-align:center;color:#bbb;padding:30px;font-size:13px">아직 기록이 없어요<br>사진을 올리거나 메모를 남겨보세요 ✨</div>';return}
+  
+  var dayNames={'2026-04-13':'4/13 월 · 도착','2026-04-14':'4/14 화 · Safari','2026-04-15':'4/15 수 · 중부','2026-04-16':'4/16 목 · 스노클링','2026-04-17':'4/17 금 · JW','2026-04-18':'4/18 토 · 출발','2026-04-19':'4/19 일 · 인천'};
+  var currentDate='';
+  var html='';
+  entries.forEach(function(e){
+    if(e.date!==currentDate){
+      currentDate=e.date;
+      html+='<div style="margin:16px 0 8px;padding:6px 10px;background:#2c3e50;color:#fff;border-radius:8px;font-size:13px;font-weight:700">'+(dayNames[e.date]||e.date)+'</div>';
+    }
+    html+='<div style="margin:6px 0;padding:10px;background:#fff;border-radius:10px;border:1px solid #eee">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span style="font-size:11px;color:#999">🕐 '+e.time+(e.place?' · 📍 '+e.place:'')+'</span>';
+    html+='<button onclick="delDiaryEntry('+e.id+')" style="background:none;border:none;color:#ccc;font-size:14px;cursor:pointer">✕</button></div>';
+    if(e.type==='photo'&&e.src) html+='<img src="'+e.src+'" style="width:100%;border-radius:8px;margin-bottom:4px">';
+    if(e.note) html+='<div style="font-size:13px;color:#333">'+e.note+'</div>';
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+function exportDiary(){
+  var entries=JSON.parse(localStorage.getItem('pq-diary')||'[]');
+  if(!entries.length){alert('다이어리가 비어있어요');return}
+  // Open print-friendly version
+  var dayNames={'2026-04-13':'4/13 월 · 도착','2026-04-14':'4/14 화 · Safari','2026-04-15':'4/15 수 · 중부','2026-04-16':'4/16 목 · 스노클링','2026-04-17':'4/17 금 · JW','2026-04-18':'4/18 토 · 출발','2026-04-19':'4/19 일 · 인천'};
+  var html='<html><head><meta charset="UTF-8"><title>푸꾸옥 다이어리</title><style>body{font-family:sans-serif;max-width:700px;margin:0 auto;padding:20px}h1{text-align:center;color:#1a6b5a}h2{color:#2c3e50;border-bottom:2px solid #2c3e50;padding-bottom:4px;margin-top:20px}.entry{margin:10px 0;page-break-inside:avoid}img{max-width:100%;border-radius:8px}.time{color:#999;font-size:12px}.note{font-size:14px;margin-top:4px}@media print{body{padding:0}}</style></head><body>';
+  html+='<h1>🏝️ 푸꾸옥 여행 다이어리</h1><p style="text-align:center;color:#888">4/13~19 · 2026</p>';
+  var curDate='';
+  entries.forEach(function(e){
+    if(e.date!==curDate){curDate=e.date;html+='<h2>'+(dayNames[e.date]||e.date)+'</h2>';}
+    html+='<div class="entry"><div class="time">🕐 '+e.time+(e.place?' · 📍 '+e.place:'')+'</div>';
+    if(e.type==='photo'&&e.src) html+='<img src="'+e.src+'">';
+    if(e.note) html+='<div class="note">'+e.note+'</div>';
+    html+='</div>';
+  });
+  html+='</body></html>';
+  var w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(function(){w.print()},500);
+}
+
 function scrollToSec(id){
   document.getElementById(id).scrollIntoView({behavior:'smooth'})
 }
@@ -784,6 +1002,7 @@ document.addEventListener('DOMContentLoaded',function(){
   applyMode();
   loadChecklist();
   renderCustomChecks();
+  renderDiary();
 });
 // === ROUTE SELECTION ===
 function getRouteSet(){return new Set(JSON.parse(localStorage.getItem('pq-route')||'[]'))}
