@@ -23,6 +23,16 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#f5f0e8;--w:#fff;--g:#1a6b5a;--gl:#e8f4f0;--c:#e07a5f;--n:#1e2d2f;--s:#5a6e70;--gd:#c9a84c;--gdl:#faf6eb;--r:13px;--sh:rgba(30,45,47,.06)}
+
+.map-float{position:fixed;bottom:20px;right:16px;z-index:200;width:48px;height:48px;border-radius:50%;background:var(--g);color:#fff;border:none;font-size:22px;box-shadow:0 3px 12px rgba(0,0,0,.3);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.map-float:active{transform:scale(.9)}
+.map-overlay{position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--w);border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.15);transform:translateY(100%);transition:transform .3s;max-height:55vh;display:flex;flex-direction:column}
+.map-overlay.show{transform:translateY(0)}
+.map-overlay-head{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid #eee;flex-shrink:0}
+.map-overlay-head b{font-size:14px}
+.map-overlay-close{background:none;border:none;font-size:20px;color:#999;cursor:pointer;padding:4px 8px}
+#map-overlay-body{flex:1;min-height:0}
+
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--n);line-height:1.65;font-size:14.5px;-webkit-font-smoothing:antialiased;padding-bottom:60px}
 .hero{background:linear-gradient(135deg,var(--g),#0d4a3e);color:#fff;padding:40px 20px 28px;text-align:center}
 .hero h1{font-size:24px;font-weight:900;margin-bottom:3px}
@@ -154,7 +164,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
   <span class="st pm">오후</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">33°C 🌦️ 비40%</span>
   <div class="sd">Grand World 실내 탐방 or 호텔 휴식</div>
   <div class="rc"><div class="rn">🧸 <a href="https://www.google.com/maps/search/?api=1&query=Teddy+Bear+Museum+Grand+World+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Teddy Bear Museum</a> <span class="rt">실내 에어컨 · 입장 별도</span></div>2,162m² 테디베어 전시. 세계여행 테마</div>
-  <div class="rc"><div class="rn">🚣 Venice Canal 곤돌라 <span class="rt">45분 · 그늘+바람</span></div>베네치아풍 운하 보트. 양쪽에 컬러풀한 건물. Grand World 하이라이트</div>
+  <div class="rc"><div class="rn">🚣 <a href="https://www.google.com/maps/search/?api=1&query=Venice+Canal+Grand+World+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Venice Canal</a> 곤돌라 <span class="rt">45분 · 그늘+바람</span></div>베네치아풍 운하 보트. 양쪽에 컬러풀한 건물. Grand World 하이라이트</div>
   <div class="rc"><div class="rn">☕ <a href="https://www.google.com/maps/search/?api=1&query=The+Coffee+House+Grand+World+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">The Coffee House</a> <span class="rt">에어컨 카페</span></div>치즈폼 밀크티 5만~7만 VND(약 2,800~3,900원). 분수쇼 뷰 2층</div>
 
   <div class="alt alt-a">🎯 <b>더 놀고 싶으면</b>: 곤돌라 + 테디베어 + 상하이타운 골목 구경 → 15시 넘으면 기온 내려가니 야외 산책도 OK</div>
@@ -162,7 +172,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 </div>
 <div class="sl">
   <span class="st ev">저녁</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">28°C 🌤️ 비15%</span>
-  <div class="sd">Grand World 야시장 or 식당 → 마사지 → 21:30 분수쇼</div>
+  <div class="sd"><a href="https://www.google.com/maps/search/?api=1&query=Grand+World+Night+Market+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Grand World 야시장</a> or 식당 → 마사지 → 21:30 분수쇼</div>
   <div class="rc"><div class="rn">🥩 <a href="https://www.google.com/maps/search/?api=1&query=Volcano+Beefsteak+Grand+World+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">Volcano Beefsteak</a> <span class="rt">용암석 스테이크</span></div><span class="rp">2인 약 70만~120만 VND (약 3.9만~6.7만원)</span></div>
   <div class="rc"><div class="rn">🍜 야시장 Food Street <span class="rt">138개 부스 · 해산물구이</span></div><span class="rp">2인 약 25만~50만 VND (약 1.4만~2.8만원)</span></div>
   <div class="rc"><div class="rn">🍖 한식BBQ <span class="rt">K-Street · 삼겹살</span></div><span class="rp">BBQ세트 2인 약 50만~60만 VND (약 2.8만~3.4만원)</span></div>
@@ -196,7 +206,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 </div>
 <div class="sl">
   <span class="st ev">저녁</span> <span style="font-size:11.5px;color:#999;font-weight:400;margin-left:6px">28°C 🌤️ 비20%</span>
-  <div class="sd">즈엉동 야시장 + King Kong Mart 과자쇼핑</div>
+  <div class="sd"><a href="https://www.google.com/maps/search/?api=1&query=Duong+Dong+Night+Market+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">즈엉동 야시장</a> + King Kong Mart 과자쇼핑</div>
   <div style="padding:8px 10px;background:#fff8e1;border-radius:8px;font-size:12px;margin-bottom:6px">
     <b>💱 메인 환전!</b> King Kong Mart 근처 <b>금은방</b>에서 나머지 달러 → VND 환전<br>
     $100 신권 기준 가장 좋은 환율. 2~3곳 비교 후 결정. 계산기로 보여줌<br>
@@ -420,7 +430,7 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
   <div class="it"><b>🦁 Vinpearl Safari</b> · 북부<br>베트남 최초·최대 반야생 동물원. 150종 4000마리. 버스 투어. 2015년 개장.</div>
   <div class="it"><b>🌃 Grand World</b> · 북부 · 입장 무료<br>85ha "잠들지 않는 도시". 베네치아 운하+곤돌라, 상하이타운, 테디베어박물관. 야시장 새벽2시. 분수쇼 21:30. 2021년 개장.</div>
   <div class="it"><b>🏖️ Bai Dai Beach</b> · 북서<br>15km 해변. 물 맑기 중상. VinHolidays 바로 앞. 2008년 ABC뉴스 "세계 가장 아름다운 해변" 선정.</div>
-  <div class="it"><b>🌙 즈엉동 야시장</b> · 중부<br>본섬 최대 야시장. 해산물 구이 메인. 로컬 분위기. King Kong Mart 바로 옆.</div>
+  <div class="it"><b>🌙 <a href="https://www.google.com/maps/search/?api=1&query=Duong+Dong+Night+Market+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">즈엉동 야시장</a></b> · 중부<br>본섬 최대 야시장. 해산물 구이 메인. 로컬 분위기. King Kong Mart 바로 옆.</div>
   <div class="it"><b>🌅 Sunset Town</b> · 남부<br>Sun World. 지중해풍. Kiss Bridge(건축가 Marco Casamonti — 400m 다리 두 갈래가 30cm 간격으로 닿지 않는 구조). Kiss of the Sea 쇼.</div>
   <div class="it"><b>⭐ Kiss of the Sea</b> · 남부<br>물+빛+불꽃+드론 야외쇼. 21:00~21:30 (화요일 제외). 해상 100m 원형무대. ECA2+Sun Group 제작. JW 제공 가능 (요금제 확인).</div>
   <div class="it"><b>🏖️ Khem Beach</b> · 남부<br>세계 50대 해변 선정. 물 맑기 푸꾸옥 최상. 초승달형 백사장. 2014년까지 군사구역이라 개발 안 됨 → 원시적 아름다움 보존. JW 앞.</div>
@@ -701,7 +711,7 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 <div class="scb">
   <div class="it">
     <b>💳 카드 OK</b>: Grab(트래블월렛), JW/Grand World 식당, 마사지(Zen·Oasis·Crown), King Kong Mart, 편의점, Safari/VinWonders (온라인 구매 시)<br><br>
-    <b>💵 현금 필수</b>: 즈엉동 야시장(80%), 과일 노점, 로컬 쌀국수집, 팁, 일부 소형 식당<br><br>
+    <b>💵 현금 필수</b>: <a href="https://www.google.com/maps/search/?api=1&query=Duong+Dong+Night+Market+Phu+Quoc" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">즈엉동 야시장</a>(80%), 과일 노점, 로컬 쌀국수집, 팁, 일부 소형 식당<br><br>
     <b>💡 현금 위주 추천 이유</b>: 어디서든 통하고, 카드 안 되는 곳에서 당황할 일 없음. 트래블월렛은 Grab 전용으로만 쓰면 깔끔
   </div>
 </div></div>
@@ -722,6 +732,7 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
   <button onclick="filterMap('spa')" style="padding:4px 10px;border-radius:12px;border:1px solid #ccc;background:#fff;font-family:inherit;font-size:11px">💆 스파</button>
   <button onclick="filterMap('spot')" style="padding:4px 10px;border-radius:12px;border:1px solid #ccc;background:#fff;font-family:inherit;font-size:11px">📍 스팟</button>
   <button onclick="filterMap('hotel')" style="padding:4px 10px;border-radius:12px;border:1px solid #ccc;background:#fff;font-family:inherit;font-size:11px">🏨 숙소</button>
+  <button onclick="filterMap('shop')" style="padding:4px 10px;border-radius:12px;border:1px solid #ccc;background:#fff;font-family:inherit;font-size:11px">🛒 쇼핑</button>
   <button onclick="filterMap('custom')" style="padding:4px 10px;border-radius:12px;border:1px solid #ccc;background:#fff;font-family:inherit;font-size:11px">⭐ 내 핀</button>
 </div>
 
@@ -729,14 +740,36 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">⭐ 내 장소 추가</div><div class="cv">▾</div></div>
 <div class="scb">
   <div class="it">
-    <input id="pin-name" placeholder="장소 이름" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:13px;margin-bottom:6px"><br>
-    <input id="pin-lat" placeholder="위도 (예: 10.29)" type="number" step="any" style="width:48%;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:12px">
-    <input id="pin-lng" placeholder="경도 (예: 103.98)" type="number" step="any" style="width:48%;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:12px"><br>
-    <div style="font-size:10.5px;color:#999;margin:4px 0">💡 Google Maps에서 장소 길게 누르면 좌표 복사 가능</div>
-    <textarea id="pin-note" placeholder="메모 (선택)" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:12px;height:50px;margin-bottom:6px"></textarea><br>
+    <input id="pin-url" placeholder="📍 Google Maps 링크 붙여넣기" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:13px;margin-bottom:6px">
+    <div style="font-size:10.5px;color:#999;margin:2px 0 6px">Google Maps에서 공유 → 링크 복사 → 여기 붙여넣기. 또는 아래 좌표 직접 입력</div>
+    <input id="pin-name" placeholder="장소 이름" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:13px;margin-bottom:6px">
+    <div style="display:flex;gap:4px;margin-bottom:6px">
+      <select id="pin-region" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:12px">
+        <option value="">🌍 지역</option>
+        <option value="north">🌿 북부</option>
+        <option value="central">🏙️ 중부</option>
+        <option value="south">🌅 남부</option>
+      </select>
+      <select id="pin-type" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:12px">
+        <option value="custom">⭐ 종류</option>
+        <option value="food">🍜 식당</option>
+        <option value="cafe">☕ 카페</option>
+        <option value="spa">💆 스파</option>
+        <option value="spot">📍 스팟</option>
+        <option value="shop">🛒 쇼핑</option>
+        <option value="hotel">🏨 숙소</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:4px;margin-bottom:6px">
+      <input id="pin-lat" placeholder="위도" type="number" step="any" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:12px">
+      <input id="pin-lng" placeholder="경도" type="number" step="any" style="flex:1;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:12px">
+    </div>
+    <textarea id="pin-note" placeholder="메모 (선택)" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-family:inherit;font-size:12px;height:40px;margin-bottom:6px"></textarea>
     <button onclick="addCustomPin()" style="width:100%;padding:10px;background:var(--g);color:#fff;border:none;border-radius:8px;font-family:inherit;font-weight:700;font-size:13px">추가</button>
   </div>
 </div></div>
+
+<div id="pin-list" style="margin:10px 14px"></div>
 
 <!-- Comments -->
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">💬 메모 / 코멘트</div><div class="cv">▾</div></div>
@@ -776,6 +809,16 @@ window.addEventListener('offline',()=>{
 });
 </script>
 
+
+<button class="map-float" onclick="toggleMapOverlay()" id="map-float-btn">🗺️</button>
+<div class="map-overlay" id="map-overlay">
+  <div class="map-overlay-head">
+    <b>🗺️ 지도</b>
+    <button class="map-overlay-close" onclick="toggleMapOverlay()">✕</button>
+  </div>
+  <div id="map-overlay-body"></div>
+</div>
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -800,7 +843,7 @@ var places=[
   {n:"Ra Khoi",c:"food",lat:10.216,lng:103.961,d:"현지식"},
   {n:"Nemo",c:"food",lat:10.219,lng:103.960,d:"해산물·양식"},
   {n:"즈엉동 야시장",c:"food",lat:10.215,lng:103.960,d:"본섬 최대 야시장"},
-  {n:"King Kong Mart",c:"spot",lat:10.216,lng:103.961,d:"과자·기념품 · 환전"},
+  {n:"King Kong Mart",c:"shop",lat:10.216,lng:103.961,d:"과자·기념품 · 환전"},
   {n:"Chuồn Chuồn Bistro",c:"cafe",lat:10.213,lng:103.958,d:"선셋뷰 1위"},
   {n:"Zyzu Kafé",c:"cafe",lat:10.225,lng:103.962,d:"정원·나무텐트"},
   {n:"Skyline Cafe",c:"cafe",lat:10.217,lng:103.960,d:"루프탑 4층"},
@@ -820,8 +863,43 @@ var places=[
   {n:"Son Tra Hill Coffee",c:"cafe",lat:10.222,lng:103.958,d:"수영장 카페"},
 ];
 var icons={
-  food:'🍜',cafe:'☕',spa:'💆',spot:'📍',hotel:'🏨',custom:'⭐'
+  food:'🍜',cafe:'☕',spa:'💆',spot:'📍',hotel:'🏨',shop:'🛒',custom:'⭐'
 };
+
+// Parse Google Maps URL for coordinates
+function parseGmapUrl(url){
+  if(!url)return null;
+  // Format: @lat,lng or ?q=lat,lng or /place/.../@lat,lng
+  var m=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if(m)return{lat:parseFloat(m[1]),lng:parseFloat(m[2])};
+  m=url.match(/q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if(m)return{lat:parseFloat(m[1]),lng:parseFloat(m[2])};
+  m=url.match(/ll=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if(m)return{lat:parseFloat(m[1]),lng:parseFloat(m[2])};
+  return null;
+}
+
+var mapOverlay=null,mapOverlayInited=false;
+function toggleMapOverlay(){
+  var el=document.getElementById('map-overlay');
+  var showing=el.classList.toggle('show');
+  if(showing&&!mapOverlayInited){
+    mapOverlayInited=true;
+    var om=L.map(document.getElementById('map-overlay-body')).setView([10.22,103.96],11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM',maxZoom:18}).addTo(om);
+    places.forEach(function(p){
+      L.marker([p.lat,p.lng]).addTo(om).bindPopup('<b>'+icons[p.c]+' '+p.n+'</b><br>'+p.d);
+    });
+    var pins=JSON.parse(localStorage.getItem('pq-pins')||'[]');
+    pins.forEach(function(p){
+      L.marker([p.lat,p.lng]).addTo(om).bindPopup('<b>⭐ '+p.n+'</b>'+(p.note?'<br>'+p.note:''));
+    });
+    mapOverlay=om;
+  }
+  if(showing&&mapOverlay)setTimeout(function(){mapOverlay.invalidateSize()},200);
+}
+
+var regionLabels={north:'🌿북부',central:'🏙️중부',south:'🌅남부'};
 function initMap(){
   if(typeof L==='undefined')return;
   map=L.map('map').setView([10.22,103.96],11);
@@ -846,36 +924,67 @@ function filterMap(cat){
   });
 }
 function addCustomPin(){
+  var url=document.getElementById('pin-url').value;
   var n=document.getElementById('pin-name').value;
   var lat=parseFloat(document.getElementById('pin-lat').value);
   var lng=parseFloat(document.getElementById('pin-lng').value);
   var note=document.getElementById('pin-note').value;
-  if(!n||isNaN(lat)||isNaN(lng)){alert('이름과 좌표를 입력해주세요');return}
+  var region=document.getElementById('pin-region').value;
+  var type=document.getElementById('pin-type').value||'custom';
+  // Try parsing URL if coords not provided
+  if(url&&(isNaN(lat)||isNaN(lng))){
+    var parsed=parseGmapUrl(url);
+    if(parsed){lat=parsed.lat;lng=parsed.lng;}
+  }
+  if(!n){alert('장소 이름을 입력해주세요');return}
+  if(isNaN(lat)||isNaN(lng)){alert('좌표를 입력하거나 Google Maps 링크를 붙여넣어주세요\n(단축 URL goo.gl은 풀 URL로 변환 필요)');return}
+  var pin={n:n,lat:lat,lng:lng,note:note,region:region,type:type,url:url};
   var pins=JSON.parse(localStorage.getItem('pq-pins')||'[]');
-  pins.push({n:n,lat:lat,lng:lng,note:note});
+  pins.push(pin);
   localStorage.setItem('pq-pins',JSON.stringify(pins));
-  addCustomMarker({n:n,lat:lat,lng:lng,note:note});
+  addCustomMarker(pin);
+  // Also add to overlay map
+  if(mapOverlay){L.marker([lat,lng]).addTo(mapOverlay).bindPopup('<b>⭐ '+n+'</b>'+(note?'<br>'+note:''));}
+  document.getElementById('pin-url').value='';
   document.getElementById('pin-name').value='';
   document.getElementById('pin-lat').value='';
   document.getElementById('pin-lng').value='';
   document.getElementById('pin-note').value='';
   map.setView([lat,lng],14);
+  renderPinList();
 }
 function addCustomMarker(p){
+  var ic=icons[p.type]||'⭐';
+  var rg=regionLabels[p.region]||'';
   var m=L.marker([p.lat,p.lng],{}).addTo(map);
-  m.bindPopup('<b>⭐ '+p.n+'</b>'+(p.note?'<br>'+p.note:'')+'<br><button onclick="delPin('+p.lat+','+p.lng+')" style="margin-top:4px;padding:2px 8px;background:#e07a5f;color:#fff;border:none;border-radius:4px;font-size:11px">삭제</button>');
-  m._cat='custom';
+  m.bindPopup('<b>'+ic+' '+p.n+'</b>'+(rg?' <span style="font-size:10px">'+rg+'</span>':'')+(p.note?'<br>'+p.note:'')+(p.url?'<br><a href="'+p.url+'" target="_blank" style="color:#1a6b5a;font-size:11px">Google Maps</a>':'')+'<br><button onclick="delPin('+p.lat+','+p.lng+')" style="margin-top:4px;padding:2px 8px;background:#e07a5f;color:#fff;border:none;border-radius:4px;font-size:11px">삭제</button>');
+  m._cat=p.type||'custom';
   customMarkers.push(m);
 }
 function loadCustomPins(){
   var pins=JSON.parse(localStorage.getItem('pq-pins')||'[]');
   pins.forEach(function(p){addCustomMarker(p)});
+  renderPinList();
+}
+function renderPinList(){
+  var el=document.getElementById('pin-list');
+  if(!el)return;
+  var pins=JSON.parse(localStorage.getItem('pq-pins')||'[]');
+  if(!pins.length){el.innerHTML='<div style="color:#999;font-size:12px;padding:8px">저장된 핀이 없어요</div>';return}
+  el.innerHTML=pins.map(function(p,i){
+    var ic=icons[p.type]||'⭐';
+    var rg=regionLabels[p.region]||'';
+    return '<div style="padding:6px 8px;background:#fafaf7;border-radius:6px;margin-bottom:3px;font-size:12px;display:flex;justify-content:space-between;align-items:center"><div>'+ic+' <b>'+p.n+'</b>'+(rg?' <span style="font-size:10px;color:#888">'+rg+'</span>':'')+(p.note?' · '+p.note:'')+'</div><button onclick="delPin('+p.lat+','+p.lng+')" style="background:none;border:none;color:#999;font-size:12px;cursor:pointer;padding:2px 6px">✕</button></div>';
+  }).join('');
 }
 function delPin(lat,lng){
   var pins=JSON.parse(localStorage.getItem('pq-pins')||'[]');
   pins=pins.filter(function(p){return!(p.lat===lat&&p.lng===lng)});
   localStorage.setItem('pq-pins',JSON.stringify(pins));
-  location.reload();
+  customMarkers.forEach(function(m){map.removeLayer(m)});
+  customMarkers=[];
+  pins.forEach(function(p){addCustomMarker(p)});
+  renderPinList();
 }
 function addComment(){
   var txt=document.getElementById('comment-input').value;
