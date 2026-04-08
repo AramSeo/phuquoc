@@ -754,6 +754,15 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 <script>
 function td(h){h.closest('.dc').classList.toggle('op')}
 function ts(h){h.closest('.sc').classList.toggle('op')}
+function sw(id){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tb button').forEach(b=>b.classList.remove('on'));
+  document.getElementById('tab-'+id).classList.add('on');
+  event.target.classList.add('on');
+  window.scrollTo(0,0);
+  if(id==='mp'&&map){setTimeout(function(){map.invalidateSize()},100)}
+  if(id==='mp'&&!map){initMap()}
+}
 // PWA Service Worker
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registered')).catch(e=>console.log('SW failed',e));
