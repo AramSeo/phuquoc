@@ -405,6 +405,13 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
     <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">아쿠아슈즈</label>
     <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">멀티어댑터</label>
     <label style="display:block;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px" onchange="saveChecklist()">충전기 + 보조배터리</label>
+    <div id="custom-checks"></div>
+    <div id="check-add-area" style="display:none;margin-top:8px;border-top:1px dashed #ddd;padding-top:8px">
+      <div style="display:flex;gap:4px">
+        <input id="new-check-input" placeholder="새 항목 추가" style="flex:1;padding:6px 8px;border:1px solid #ddd;border-radius:6px;font-family:inherit;font-size:12px">
+        <button onclick="addCheckItem()" style="padding:6px 12px;background:var(--g);color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:12px;font-weight:700">+</button>
+      </div>
+    </div>
   </div>
 </div></div>
 
@@ -639,6 +646,7 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
   <button data-cat="shop" onclick="filterMap('shop')" style="padding:5px 12px;border-radius:16px;border:none;background:#fff;color:#333;font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer">🛒 쇼핑</button>
   <button data-cat="spot" onclick="filterMap('spot')" style="padding:5px 12px;border-radius:16px;border:none;background:#fff;color:#333;font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer">📍 스팟</button>
   <button data-cat="hotel" onclick="filterMap('hotel')" style="padding:5px 12px;border-radius:16px;border:none;background:#fff;color:#333;font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer">🏨 숙소</button>
+  <button data-cat="route" onclick="filterMap('route')" style="padding:5px 12px;border-radius:16px;border:none;background:#fff;color:#333;font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer">📌 선택루트</button>
   <button data-cat="custom" onclick="filterMap('custom')" style="padding:5px 12px;border-radius:16px;border:none;background:#fff;color:#333;font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer">⭐ 내 핀</button>
 </div>
 
@@ -732,6 +740,7 @@ function applyMode(){
     btn.innerHTML='✏️ Master';
     btn.style.background='rgba(201,168,76,.8)';
     document.body.classList.add('master-mode');
+    var addArea=document.getElementById('check-add-area');if(addArea)addArea.style.display='block';
     // Make key elements editable
     document.querySelectorAll('.dtt,.sct,.rn,.sd,.it').forEach(function(el){
       el.setAttribute('contenteditable','true');
@@ -742,6 +751,7 @@ function applyMode(){
     btn.innerHTML='👁️ Visitor';
     btn.style.background='rgba(0,0,0,.4)';
     document.body.classList.remove('master-mode');
+    var addArea=document.getElementById('check-add-area');if(addArea)addArea.style.display='none';
     document.querySelectorAll('.editable').forEach(function(el){
       el.removeAttribute('contenteditable');
       el.classList.remove('editable');
@@ -773,7 +783,51 @@ document.addEventListener('DOMContentLoaded',function(){
   loadEdits();
   applyMode();
   loadChecklist();
+  renderCustomChecks();
 });
+// === ROUTE SELECTION ===
+function getRouteSet(){return new Set(JSON.parse(localStorage.getItem('pq-route')||'[]'))}
+function toggleRoute(name){
+  var routes=getRouteSet();
+  if(routes.has(name))routes.delete(name);else routes.add(name);
+  localStorage.setItem('pq-route',JSON.stringify([...routes]));
+}
+function getRoutePlaces(){
+  var routes=getRouteSet();
+  return places.filter(function(p){return routes.has(p.n)});
+}
+
+// === CUSTOM CHECKLIST ITEMS ===
+function addCheckItem(){
+  var input=document.getElementById('new-check-input');
+  var text=input.value.trim();
+  if(!text)return;
+  var items=JSON.parse(localStorage.getItem('pq-custom-checks')||'[]');
+  items.push({t:text,done:false});
+  localStorage.setItem('pq-custom-checks',JSON.stringify(items));
+  input.value='';
+  renderCustomChecks();
+}
+function delCheckItem(i){
+  var items=JSON.parse(localStorage.getItem('pq-custom-checks')||'[]');
+  items.splice(i,1);
+  localStorage.setItem('pq-custom-checks',JSON.stringify(items));
+  renderCustomChecks();
+}
+function toggleCustomCheck(i){
+  var items=JSON.parse(localStorage.getItem('pq-custom-checks')||'[]');
+  items[i].done=!items[i].done;
+  localStorage.setItem('pq-custom-checks',JSON.stringify(items));
+}
+function renderCustomChecks(){
+  var el=document.getElementById('custom-checks');
+  if(!el)return;
+  var items=JSON.parse(localStorage.getItem('pq-custom-checks')||'[]');
+  el.innerHTML=items.map(function(item,i){
+    return '<label style="display:flex;align-items:center;padding:3px 0;font-size:12.5px"><input type="checkbox" style="margin-right:6px"'+(item.done?' checked':'')+' onchange="toggleCustomCheck('+i+')"><span style="flex:1">'+item.t+'</span><button onclick="delCheckItem('+i+')" style="background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:0 4px">✕</button></label>';
+  }).join('');
+}
+
 function saveChecklist(){
   var checks=[];
   document.querySelectorAll('#checklist-area input[type=checkbox]').forEach(function(cb){checks.push(cb.checked)});
@@ -920,6 +974,7 @@ function initMap(){
     var m=L.marker([p.lat,p.lng],{icon:ic}).addTo(map);
     m.bindPopup('<b>'+icons[p.c]+' '+p.n+'</b><br>'+p.d+'<br><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc')+'" target="_blank" style="color:#1a6b5a">Google Maps 열기</a>');
     m._cat=p.c;
+    m._name=p.n;
     markers.push(m);
   });
   loadCustomPins();
@@ -929,12 +984,15 @@ function initMap(){
 var currentFilter='all';
 function filterMap(cat){
   currentFilter=cat;
+  var routeNames=getRouteSet();
   markers.forEach(function(m){
-    if(cat==='all'||m._cat===cat)map.addLayer(m);
-    else map.removeLayer(m);
+    if(cat==='all') map.addLayer(m);
+    else if(cat==='route') {if(routeNames.has(m._name))map.addLayer(m);else map.removeLayer(m);}
+    else {if(m._cat===cat)map.addLayer(m);else map.removeLayer(m);}
   });
   customMarkers.forEach(function(m){
-    if(cat==='all'||cat==='custom'||m._cat===cat)map.addLayer(m);
+    if(cat==='all') map.addLayer(m);
+    else if(cat==='custom'||m._cat===cat) map.addLayer(m);
     else map.removeLayer(m);
   });
   // Update filter button styles
@@ -952,7 +1010,14 @@ function renderCards(cat){
   if(!el)return;
   // Hide cards on "전체", show only when specific category selected
   if(cat==='all'){el.innerHTML='<div style="padding:12px;color:#999;font-size:12px;text-align:center">카테고리를 선택하면 장소 목록이 표시됩니다</div>';return}
-  var filtered=places.filter(function(p){return p.c===cat});
+  var filtered;
+  if(cat==='route'){
+    var routeNames=getRouteSet();
+    filtered=places.filter(function(p){return routeNames.has(p.n)});
+    if(filtered.length===0){el.innerHTML='<div style="padding:12px;color:#999;font-size:12px;text-align:center">📌 선택루트가 비어있어요. 카테고리에서 장소를 선택해 보세요</div>';return}
+  } else {
+    filtered=places.filter(function(p){return p.c===cat});
+  }
   // Also include custom pins
   var pins=JSON.parse(localStorage.getItem('pq-pins')||'[]');
   var customFiltered=cat==='all'?pins:pins.filter(function(p){return(p.type||'custom')===cat||cat==='custom'});
@@ -974,6 +1039,8 @@ function renderCards(cat){
       html+='<div style="font-weight:700"><a href="'+url+'" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #aaa">'+icons[p.c]+' '+p.n+'</a>'+rating+region+'</div>';
       if(p.d) html+='<div style="color:#666;margin-top:2px">'+p.d+'</div>';
       if(p.pr) html+='<div style="color:#e07a5f;margin-top:1px;font-size:11px">'+p.pr+'</div>';
+      var isRoute=getRouteSet().has(p.n);
+      html+='<label style="display:flex;align-items:center;gap:4px;margin-top:3px;font-size:11px;color:#9c27b0"><input type="checkbox" onchange="toggleRoute(\''+p.n.replace(/'/g,"\\'")+'\')"'+(isRoute?' checked':'')+'>📌 선택루트에 추가</label>';
       html+='</div>';
     });
   });
