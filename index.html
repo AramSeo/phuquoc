@@ -24,6 +24,14 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#f5f0e8;--w:#fff;--g:#1a6b5a;--gl:#e8f4f0;--c:#e07a5f;--n:#1e2d2f;--s:#5a6e70;--gd:#c9a84c;--gdl:#faf6eb;--r:13px;--sh:rgba(30,45,47,.06)}
 
+
+.mk{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.3);border:2px solid #fff}
+.mk-food{background:#e07a5f}.mk-cafe{background:#c9a84c}.mk-spa{background:#9c27b0}.mk-spot{background:#1a6b5a}.mk-hotel{background:#3a7bd5}.mk-shop{background:#ff9800}.mk-custom{background:#e91e63}
+
+.editable{outline:none}
+.master-mode .editable{border-bottom:1px dashed #c9a84c;cursor:text}
+.master-mode .editable:focus{background:#fff8e1;border-bottom:2px solid #c9a84c}
+.mode-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700}
 .map-float{position:fixed;bottom:20px;right:16px;z-index:200;width:48px;height:48px;border-radius:50%;background:var(--g);color:#fff;border:none;font-size:22px;box-shadow:0 3px 12px rgba(0,0,0,.3);cursor:pointer;display:flex;align-items:center;justify-content:center}
 .map-float:active{transform:scale(.9)}
 .map-overlay{position:fixed;bottom:0;left:0;right:0;z-index:150;background:var(--w);border-radius:16px 16px 0 0;box-shadow:0 -4px 20px rgba(0,0,0,.15);transform:translateY(100%);transition:transform .3s;max-height:55vh;display:flex;flex-direction:column}
@@ -95,8 +103,11 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
   <div class="sub">2인 · 호텔 제외 현지 예산</div>
   <div class="dt">4/13 월 → 4/19 일 · 5박 7일</div>
 </div>
+<div style="position:fixed;top:8px;right:10px;z-index:300">
+  <button id="mode-btn" onclick="toggleMode()" style="padding:5px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.4);color:#fff;font-family:inherit;font-size:11px;cursor:pointer;backdrop-filter:blur(4px)">👁️ Visitor</button>
+</div>
 <div class="wx">
-  🌡️ <b>4/13~18 예보 종합</b> (AccuWeather·Ventusky·timeanddate 종합):<br>
+  🌡️ <b>4/13~18 예보</b> <span id="wx-status" style="font-size:10px;color:#555">(로딩중...)</span><br>
   <span style="font-size:10px;color:#555">4월 푸꾸옥 비 패턴: <b>오전 맑음 → 오후 13~17시 소나기 → 저녁 개임</b>. 소나기는 보통 30분~1시간 후 그침</span>
   <table style="width:100%;font-size:10.5px;border-collapse:collapse;margin:4px 0">
     <tr style="font-weight:700;border-bottom:1px solid #b2dfdb"><td>날짜</td><td>기온</td><td>☀️ 오전</td><td>🌦️ 오후</td><td>🌙 저녁</td><td>메모</td></tr>
@@ -114,12 +125,7 @@ a.lk{color:var(--g);text-decoration:underline;font-size:11px;word-break:break-al
 
 <div class="tb">
   <button class="on" onclick="sw('sch')">📅 일정</button>
-  <button onclick="sw('fd')">🍜 식당</button>
-  <button onclick="sw('cf')">☕ 카페</button>
-  <button onclick="sw('dv')">🤿 투어</button>
-  <button onclick="sw('ms')">💆 마사지</button>
-  <button onclick="sw('sp')">🛒 쇼핑·과일</button>
-  <button onclick="sw('in')">📍 스팟</button>
+  <button onclick="sw('gd')">📋 가이드</button>
   <button onclick="sw('tp')">💡 팁</button>
   <button onclick="sw('bd')">💰 예산</button>
   <button onclick="sw('mp')">🗺️ 지도</button>
@@ -345,8 +351,22 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 
 </div><!-- end schedule -->
 
-<!-- ═══ 식당 ═══ -->
-<div id="tab-fd" class="tc">
+<!-- ═══ 가이드 (통합) ═══ -->
+<div id="tab-gd" class="tc">
+<div class="ib">식당·카페·투어·마사지·쇼핑·스팟 통합. Google Maps 링크 연결됨.</div>
+
+<div style="margin:8px 14px;display:flex;flex-wrap:wrap;gap:4px">
+  <button onclick="scrollToSec('sec-fd')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">🍜 식당</button>
+  <button onclick="scrollToSec('sec-cf')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">☕ 카페</button>
+  <button onclick="scrollToSec('sec-dv')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">🤿 투어</button>
+  <button onclick="scrollToSec('sec-ms')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">💆 마사지</button>
+  <button onclick="scrollToSec('sec-sp')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">🛒 쇼핑·과일</button>
+  <button onclick="scrollToSec('sec-in')" style="padding:5px 12px;border-radius:16px;border:1px solid #ddd;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer">📍 스팟</button>
+</div>
+
+<div id="sec-fd" style="scroll-margin-top:60px">
+<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">🍜 식당</div>
+
 <div class="ib">2인 기준. 고수: <b>"Không rau mùi"</b>(꽁 라우 무이)</div>
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🌿 북부 · Grand World</div><div class="cv">▾</div></div>
 <div class="scb">
@@ -358,6 +378,9 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
   <div class="it"><b>🥩 Volcano Beefsteak</b> · 용암석 스테이크 · 2인 약 3.9만~6.7만원</div>
   <div class="it"><b>🍖 한식BBQ</b> · K-Street · 2인 BBQ세트 약 2.8만~3.4만원</div>
   <div class="it"><b>🍜 야시장</b> · 해산물구이 · 2인 약 1.4만~2.8만원</div>
+  <div class="it" style="border-left:3px solid #c9a84c;margin-left:4px;padding-left:10px"><b>🆕 Google Maps 인기</b></div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJITDzhDUfCDERAEyM2xn3190" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍲 Madam Thảo</a></b> · ⭐4.8 (2,509) · 베트남 가정식</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJv-9uPmUfCDER6NeYGQTjw3g" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍽️ GW Food Court</a></b> · ⭐4.9 (1,578) · 비치프론트</div>
 </div></div>
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🏙️ 중부 · Duong Dong</div><div class="cv">▾</div></div>
 <div class="scb">
@@ -367,17 +390,25 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
   <div class="it"><b>🐟 Nemo</b> · 해산물·양식 · 2인 약 2.5만~4.2만원</div>
   <div class="it"><b>🍲 로컬 Phở</b> · 쌀국수 · 2인 약 8천~1.4만원</div>
   <div class="it"><b>🦐 야시장</b> · 구이류 · 2인 약 1.7만~3.4만원</div>
+  <div class="it" style="border-left:3px solid #c9a84c;margin-left:4px;padding-left:10px"><b>🆕 Google Maps 인기 (1000+리뷰)</b></div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJh_DUIYeNpzERDqbaRMxPgTY" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🦐 Lobster Cave (동똠훔)</a></b> · ⭐4.8 (7,568) · 해산물·랍스터 · 선셋뷰</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJG0omSAeNpzERTWnB_Eaa4c8" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍲 Bếp An</a></b> · ⭐4.7 (2,214) · 베트남식 · 가성비</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJF33R8xCLpzERFtTAVV7G-14" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍽️ Camia</a></b> · ⭐4.8 (2,310) · 비치 파인다이닝 · Ong Lang</div>
 </div></div>
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🌅 남부 · JW</div><div class="cv">▾</div></div>
 <div class="scb">
   <div class="it"><b>🍲 Cai Mam</b> · 가정식 · 2인 약 2.2만~3.9만원</div>
   <div class="it"><b>🇫🇷 Pink Pearl</b> · JW 프렌치 · 2인 약 8.4만~22.4만원+</div>
   <div class="it"><b>🌏 Tempus Fugit</b> · JW 인터내셔널 · 2인 약 4.5만~11.2만원</div>
+  <div class="it" style="border-left:3px solid #c9a84c;margin-left:4px;padding-left:10px"><b>🆕 Google Maps 인기</b></div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJ1SUXRwCVpzERK21wkH1D7nM" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🦐 Mai Hương Sunset Town</a></b> · ⭐5.0 (269) · 해산물</div>
+  <div class="it"><b><a href="https://www.google.com/maps/place/?q=place_id:ChIJoU5XY4qXpzER7IMIeP5u2_U" target="_blank" style="color:inherit;text-decoration:none;border-bottom:1px dashed #999">🍕 MEDITERRAN</a></b> · ⭐4.9 (238) · 그리스·이탈리안</div>
 </div></div>
 </div>
 
-<!-- ═══ 카페 ═══ -->
-<div id="tab-cf" class="tc">
+<div id="sec-cf" style="scroll-margin-top:60px">
+<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">☕ 카페</div>
+
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">☕ 추천 카페</div><div class="cv">▾</div></div>
 <div class="scb">
   <div class="it"><b>☕ Chuồn Chuồn Bistro</b> · 선셋뷰 1위 · 사오마이 언덕<br>콜드브루 약 4,200원~, 칵테일 약 6,700원~<br>"푸꾸옥 최고 일몰" "음식도 OK"</div>
@@ -389,8 +420,9 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 </div></div>
 </div>
 
-<!-- ═══ 투어 ═══ -->
-<div id="tab-dv" class="tc">
+<div id="sec-dv" style="scroll-margin-top:60px">
+<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">🤿 투어</div>
+
 <div class="ib">남부 An Thoi 군도. 4월 건기, 수중시야 양호. 바다 맑기 최상 지역.</div>
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🐠 투어사 비교</div><div class="cv">▾</div></div>
 <div class="scb">
@@ -400,8 +432,9 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 </div></div>
 </div>
 
-<!-- ═══ 마사지 ═══ -->
-<div id="tab-ms" class="tc">
+<div id="sec-ms" style="scroll-margin-top:60px">
+<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">💆 마사지</div>
+
 <div class="ib">💡 팁: 만족 시 1인 5만~8만 VND(약 2,800~4,500원). 필수 아님. 4/18 마사지숍에 짐 맡기기도 가능(사전 확인)</div>
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">💆 지역별 가격</div><div class="cv">▾</div></div>
 <div class="scb">
@@ -413,8 +446,9 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 </div></div>
 </div>
 
-<!-- ═══ 쇼핑·과일 ═══ -->
-<div id="tab-sp" class="tc">
+<div id="sec-sp" style="scroll-margin-top:60px">
+<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">🛒 쇼핑·과일</div>
+
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">🛒 과자 · 🍉 과일 · 🌙 야식</div><div class="cv">▾</div></div>
 <div class="scb">
   <div class="it"><b>🏪 King Kong Mart</b> · 4/15 · Duong Dong<br>Gery치즈, 코코넛쿠키, Vinamit칩, 커피믹스<br>약 3.5만~15만 VND (약 2천~8천원) · <a class="lk" href="https://www.kingkongmart.vn/" target="_blank">공식</a></div>
@@ -423,8 +457,9 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 </div></div>
 </div>
 
-<!-- ═══ 스팟 ═══ -->
-<div id="tab-in" class="tc">
+<div id="sec-in" style="scroll-margin-top:60px">
+<div style="margin:12px 14px 4px;font-size:15px;font-weight:900;color:var(--n)">📍 스팟</div>
+
 <div class="sc"><div class="sch" onclick="ts(this)"><div class="sct">📍 주요 스팟</div><div class="cv">▾</div></div>
 <div class="scb">
   <div class="it"><b>🦁 Vinpearl Safari</b> · 북부<br>베트남 최초·최대 반야생 동물원. 150종 4000마리. 버스 투어. 2015년 개장.</div>
@@ -436,6 +471,8 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
   <div class="it"><b>🏖️ Khem Beach</b> · 남부<br>세계 50대 해변 선정. 물 맑기 푸꾸옥 최상. 초승달형 백사장. 2014년까지 군사구역이라 개발 안 됨 → 원시적 아름다움 보존. JW 앞.</div>
   <div class="it"><b>🏨 JW Marriott</b> · 남부 2박<br>Bill Bensley 설계. 19세기 프랑스 대학교 컨셉(로비=학장도서관). 풀 3개(Shell Pool 성인전용). 미슐랭 셰프 Pink Pearl. 체크아웃 후 짐보관 가능(24h).<br>공항: Grab 22만~32만(약 1.2만~1.8만원) 추천.</div>
 </div></div>
+</div>
+
 </div>
 
 <!-- ═══ 팁 ═══ -->
@@ -720,7 +757,16 @@ JW 조식뷔페 06:30~11:00 (서양·중·일·아시안, 푸꾸옥 최고급)
 
 <!-- ═══ 지도 ═══ -->
 <div id="tab-mp" class="tc">
-<div class="ib">📍 가게 이름을 탭하면 Google Maps로 이동. 아래 지도에서 전체 위치 확인 가능.</div>
+<div class="ib">📍 가게 이름을 탭하면 Google Maps로 이동. 색상 마커로 종류 구분.</div>
+<div style="margin:6px 14px;display:flex;flex-wrap:wrap;gap:6px;font-size:11px">
+  <span style="display:inline-flex;align-items:center;gap:3px"><span style="width:14px;height:14px;border-radius:50%;background:#e07a5f;display:inline-block"></span>🍜식당</span>
+  <span style="display:inline-flex;align-items:center;gap:3px"><span style="width:14px;height:14px;border-radius:50%;background:#c9a84c;display:inline-block"></span>☕카페</span>
+  <span style="display:inline-flex;align-items:center;gap:3px"><span style="width:14px;height:14px;border-radius:50%;background:#9c27b0;display:inline-block"></span>💆스파</span>
+  <span style="display:inline-flex;align-items:center;gap:3px"><span style="width:14px;height:14px;border-radius:50%;background:#1a6b5a;display:inline-block"></span>📍스팟</span>
+  <span style="display:inline-flex;align-items:center;gap:3px"><span style="width:14px;height:14px;border-radius:50%;background:#3a7bd5;display:inline-block"></span>🏨숙소</span>
+  <span style="display:inline-flex;align-items:center;gap:3px"><span style="width:14px;height:14px;border-radius:50%;background:#ff9800;display:inline-block"></span>🛒쇼핑</span>
+  <span style="display:inline-flex;align-items:center;gap:3px"><span style="width:14px;height:14px;border-radius:50%;background:#e91e63;display:inline-block"></span>⭐내핀</span>
+</div>
 <div style="margin:10px 14px;border-radius:var(--r);overflow:hidden;height:55vh;position:relative" id="map-wrap">
   <div id="map" style="width:100%;height:100%"></div>
 </div>
@@ -796,6 +842,141 @@ function sw(id){
   if(id==='mp'&&map){setTimeout(function(){map.invalidateSize()},100)}
   if(id==='mp'&&!map){initMap()}
 }
+function scrollToSec(id){
+  document.getElementById(id).scrollIntoView({behavior:'smooth'})
+}
+
+// === MASTER / VISITOR MODE ===
+var masterMode=localStorage.getItem('pq-master')==='true';
+function toggleMode(){
+  if(masterMode){
+    masterMode=false;
+    localStorage.setItem('pq-master','false');
+    applyMode();
+  } else {
+    var pw=prompt('Master 비밀번호:');
+    if(pw==='1234'){
+      masterMode=true;
+      localStorage.setItem('pq-master','true');
+      applyMode();
+    } else if(pw!==null){
+      alert('비밀번호가 틀렸어요');
+    }
+  }
+}
+function applyMode(){
+  var btn=document.getElementById('mode-btn');
+  if(masterMode){
+    btn.innerHTML='✏️ Master';
+    btn.style.background='rgba(201,168,76,.8)';
+    document.body.classList.add('master-mode');
+    // Make key elements editable
+    document.querySelectorAll('.dtt,.sct,.rn,.sd,.it').forEach(function(el){
+      el.setAttribute('contenteditable','true');
+      el.classList.add('editable');
+      el.addEventListener('blur',saveEdits);
+    });
+  } else {
+    btn.innerHTML='👁️ Visitor';
+    btn.style.background='rgba(0,0,0,.4)';
+    document.body.classList.remove('master-mode');
+    document.querySelectorAll('.editable').forEach(function(el){
+      el.removeAttribute('contenteditable');
+      el.classList.remove('editable');
+    });
+  }
+}
+function saveEdits(){
+  // Save all editable content to localStorage
+  var edits={};
+  document.querySelectorAll('.editable').forEach(function(el,i){
+    if(el.dataset.origHtml===undefined) el.dataset.origHtml=el.innerHTML;
+    if(el.innerHTML!==el.dataset.origHtml){
+      edits['edit-'+i]=el.innerHTML;
+    }
+  });
+  var existing=JSON.parse(localStorage.getItem('pq-edits')||'{}');
+  Object.assign(existing,edits);
+  localStorage.setItem('pq-edits',JSON.stringify(existing));
+}
+function loadEdits(){
+  var edits=JSON.parse(localStorage.getItem('pq-edits')||'{}');
+  document.querySelectorAll('.dtt,.sct,.rn,.sd,.it').forEach(function(el,i){
+    el.dataset.origHtml=el.innerHTML;
+    if(edits['edit-'+i]) el.innerHTML=edits['edit-'+i];
+  });
+}
+// Init mode on load
+document.addEventListener('DOMContentLoaded',function(){
+  loadEdits();
+  applyMode();
+});
+
+// === AUTO WEATHER UPDATE ===
+function updateWeather(){
+  var dates=['2026-04-13','2026-04-14','2026-04-15','2026-04-16','2026-04-17','2026-04-18'];
+  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&hourly=temperature_2m,precipitation_probability&timezone=Asia%2FHo_Chi_Minh&start_date='+dates[0]+'&end_date='+dates[dates.length-1];
+  
+  fetch(url).then(function(r){return r.json()}).then(function(data){
+    if(!data.hourly)return;
+    var times=data.hourly.time;
+    var temps=data.hourly.temperature_2m;
+    var rain=data.hourly.precipitation_probability;
+    
+    // Group by date, morning(6-12), afternoon(12-18), evening(18-24)
+    var table=document.querySelector('.wx table');
+    if(!table)return;
+    var rows=table.querySelectorAll('tr');
+    
+    dates.forEach(function(date,di){
+      var dayTemps=[],amRain=[],pmRain=[],evRain=[];
+      times.forEach(function(t,i){
+        if(!t.startsWith(date))return;
+        var h=parseInt(t.split('T')[1].split(':')[0]);
+        dayTemps.push(temps[i]);
+        if(h>=6&&h<12) amRain.push(rain[i]);
+        else if(h>=12&&h<18) pmRain.push(rain[i]);
+        else if(h>=18) evRain.push(rain[i]);
+      });
+      
+      if(dayTemps.length===0)return;
+      var hi=Math.round(Math.max.apply(null,dayTemps));
+      var lo=Math.round(Math.min.apply(null,dayTemps));
+      var amAvg=amRain.length?Math.round(amRain.reduce(function(a,b){return a+b},0)/amRain.length):0;
+      var pmAvg=pmRain.length?Math.round(pmRain.reduce(function(a,b){return a+b},0)/pmRain.length):0;
+      var evAvg=evRain.length?Math.round(evRain.reduce(function(a,b){return a+b},0)/evRain.length):0;
+      
+      function rainIcon(p){return p>40?'🌦️ '+p+'%':p>15?'🌤️ '+p+'%':'☀️ '+p+'%'}
+      
+      var row=rows[di+1]; // skip header
+      if(!row)return;
+      var cells=row.querySelectorAll('td');
+      if(cells.length>=5){
+        cells[1].textContent=hi+'°/'+lo+'°';
+        cells[2].textContent=rainIcon(amAvg);
+        cells[3].textContent=rainIcon(pmAvg);
+        cells[4].textContent=rainIcon(evAvg);
+      }
+    });
+    
+    document.getElementById('wx-status').innerHTML='<span style="color:#1a6b5a">✅ Open-Meteo 실시간 반영</span> · '+new Date().toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    localStorage.setItem('pq-wx-cache',JSON.stringify({data:data,ts:Date.now()}));
+  }).catch(function(e){
+    // Try cache
+    var cache=JSON.parse(localStorage.getItem('pq-wx-cache')||'null');
+    if(cache){
+      var ago=Math.round((Date.now()-cache.ts)/3600000);
+      document.getElementById('wx-status').textContent='(캐시 · '+ago+'시간 전)';
+    } else {
+      document.getElementById('wx-status').textContent='(오프라인 · 수동 예보)';
+    }
+  });
+}
+// Run weather update
+updateWeather();
+// Refresh every 3 hours
+setInterval(updateWeather,3*3600*1000);
+
 // PWA Service Worker
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registered')).catch(e=>console.log('SW failed',e));
@@ -830,36 +1011,48 @@ var places=[
   {n:"Giraffe Restaurant",c:"food",lat:10.337,lng:103.853,d:"Safari 내 · 기린 옆 식사"},
   {n:"Kien Xay",c:"food",lat:10.322,lng:103.860,d:"분꾸아이 원조"},
   {n:"Jack's Pizzeria",c:"food",lat:10.321,lng:103.859,d:"이탈리안"},
-  {n:"Mai Huong",c:"food",lat:10.322,lng:103.860,d:"해산물BBQ · 15:00~"},
-  {n:"Bep Nha",c:"food",lat:10.321,lng:103.860,d:"가정식"},
+  {n:"Mai Huong",c:"food",lat:10.322,lng:103.860,d:"⭐4.8 (2,430) · 해산물BBQ · 15:00~"},
+  {n:"Bep Nha",c:"food",lat:10.321,lng:103.860,d:"⭐4.5 (765) · 가정식 · 운하뷰"},
   {n:"Volcano Beefsteak",c:"food",lat:10.322,lng:103.861,d:"용암석 스테이크"},
   {n:"The Coffee House",c:"cafe",lat:10.322,lng:103.860,d:"Grand World · 에어컨"},
   {n:"Teddy Bear Museum",c:"spot",lat:10.321,lng:103.860,d:"실내 전시"},
   {n:"Crown Spa",c:"spa",lat:10.322,lng:103.859,d:"60분 2인 72만"},
   {n:"La Spa 3",c:"spa",lat:10.310,lng:103.855,d:"무료픽업"},
   {n:"Lahana Resort",c:"hotel",lat:10.240,lng:103.960,d:"중부 숙소 · 4/15"},
-  {n:"Xin Chao Seafood",c:"food",lat:10.218,lng:103.960,d:"해산물"},
-  {n:"Crab House",c:"food",lat:10.217,lng:103.959,d:"게요리 전문"},
+  {n:"Xin Chao Seafood",c:"food",lat:10.218,lng:103.960,d:"⭐4.2 (4,862) · 해산물"},
+  {n:"Crab House",c:"food",lat:10.217,lng:103.959,d:"⭐4.5+ · 게요리 전문"},
   {n:"Ra Khoi",c:"food",lat:10.216,lng:103.961,d:"현지식"},
   {n:"Nemo",c:"food",lat:10.219,lng:103.960,d:"해산물·양식"},
   {n:"즈엉동 야시장",c:"food",lat:10.215,lng:103.960,d:"본섬 최대 야시장"},
   {n:"King Kong Mart",c:"shop",lat:10.216,lng:103.961,d:"과자·기념품 · 환전"},
-  {n:"Chuồn Chuồn Bistro",c:"cafe",lat:10.213,lng:103.958,d:"선셋뷰 1위"},
+  {n:"Chuồn Chuồn Bistro",c:"cafe",lat:10.213,lng:103.958,d:"⭐4.6+ · 선셋뷰 1위"},
   {n:"Zyzu Kafé",c:"cafe",lat:10.225,lng:103.962,d:"정원·나무텐트"},
   {n:"Skyline Cafe",c:"cafe",lat:10.217,lng:103.960,d:"루프탑 4층"},
-  {n:"Ann Cafe",c:"cafe",lat:10.218,lng:103.961,d:"브런치"},
+  {n:"Ann Cafe",c:"cafe",lat:10.218,lng:103.961,d:"⭐4.8 (531) · 브런치"},
   {n:"Zen Spa",c:"spa",lat:10.218,lng:103.959,d:"60분 2인 76만"},
   {n:"Nu Spa",c:"spa",lat:10.216,lng:103.960,d:"가성비 60분 2인 56만"},
   {n:"Moonlight Resort",c:"hotel",lat:10.045,lng:104.010,d:"남부 숙소 · 4/16"},
   {n:"Sunset Town",c:"spot",lat:10.048,lng:104.005,d:"Kiss Bridge·공연"},
   {n:"Kiss of the Sea",c:"spot",lat:10.048,lng:104.006,d:"21:00 야외공연"},
-  {n:"Cai Mam",c:"food",lat:10.047,lng:104.005,d:"Sunset Town 가정식"},
+  {n:"Cai Mam",c:"food",lat:10.047,lng:104.005,d:"⭐4.8 (1,214) · Sunset Town 가정식"},
   {n:"Oasis Spa",c:"spa",lat:10.046,lng:104.007,d:"60분 2인 120만"},
   {n:"JW Marriott",c:"hotel",lat:10.040,lng:104.023,d:"남부 · 4/17~18 · Khem Beach"},
   {n:"Khem Beach",c:"spot",lat:10.041,lng:104.024,d:"세계50대 해변 · 수영OK"},
   {n:"Pink Pearl",c:"food",lat:10.040,lng:104.023,d:"JW 프렌치 파인다이닝"},
   {n:"Tempus Fugit",c:"food",lat:10.040,lng:104.023,d:"JW 인터내셔널"},
   {n:"PQC Airport",c:"spot",lat:10.170,lng:103.993,d:"푸꾸옥 국제공항"},
+  {n:"Lobster Cave (동똠훔)",c:"food",lat:10.2188,lng:103.9583,d:"⭐4.8 (7,568) · 해산물 · 선셋뷰 · 중부"},
+  {n:"Madam Thảo",c:"food",lat:10.3256,lng:103.8605,d:"⭐4.8 (2,509) · 베트남 가정식 · Grand World"},
+  {n:"GW Food Court",c:"food",lat:10.3236,lng:103.8530,d:"⭐4.9 (1,578) · 비치프론트 · Grand World"},
+  {n:"Bếp An",c:"food",lat:10.2054,lng:103.9634,d:"⭐4.7 (2,214) · 베트남식 · 중부"},
+  {n:"Camia Restaurant",c:"food",lat:10.2640,lng:103.9299,d:"⭐4.8 (2,310) · 비치 파인다이닝 · Ong Lang"},
+  {n:"Mai Hương Sunset Town",c:"food",lat:10.0355,lng:104.0061,d:"⭐5.0 (269) · 해산물 · Sunset Town"},
+  {n:"MEDITERRAN",c:"food",lat:10.0379,lng:104.0089,d:"⭐4.9 (238) · 그리스·이탈리안 · Sunset Town"},
+  {n:"Café Green (카페그린)",c:"cafe",lat:10.2151,lng:103.9600,d:"⭐4.9 (1,673) · 망고빙수 · 한국인多 · 중부"},
+  {n:"ANBA Coffee",c:"cafe",lat:10.1972,lng:103.9690,d:"⭐4.6 (1,296) · 정원카페 · 중부"},
+  {n:"AROMA Cafe",c:"cafe",lat:10.2146,lng:103.9667,d:"⭐4.9 (442) · 브런치 · 중부"},
+  {n:"Là-Men Coffee",c:"cafe",lat:10.2140,lng:103.9591,d:"⭐4.9 (301) · 브런치·갤러리 · 중부"},
+  {n:"Tarapaca Cafe",c:"cafe",lat:10.1969,lng:103.9682,d:"⭐4.7 (701) · 에어컨·조용 · 중부"},
   {n:"Son Tra Hill Coffee",c:"cafe",lat:10.222,lng:103.958,d:"수영장 카페"},
 ];
 var icons={
@@ -888,11 +1081,11 @@ function toggleMapOverlay(){
     var om=L.map(document.getElementById('map-overlay-body')).setView([10.22,103.96],11);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM',maxZoom:18}).addTo(om);
     places.forEach(function(p){
-      L.marker([p.lat,p.lng]).addTo(om).bindPopup('<b>'+icons[p.c]+' '+p.n+'</b><br>'+p.d);
+      L.marker([p.lat,p.lng],{icon:L.divIcon({className:'',html:'<div class="mk mk-'+p.c+'">'+icons[p.c]+'</div>',iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-16]})}).addTo(om).bindPopup('<b>'+icons[p.c]+' '+p.n+'</b><br>'+p.d);
     });
     var pins=JSON.parse(localStorage.getItem('pq-pins')||'[]');
     pins.forEach(function(p){
-      L.marker([p.lat,p.lng]).addTo(om).bindPopup('<b>⭐ '+p.n+'</b>'+(p.note?'<br>'+p.note:''));
+      L.marker([p.lat,p.lng],{icon:L.divIcon({className:'',html:'<div class="mk mk-'+p.c+'">'+icons[p.c]+'</div>',iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-16]})}).addTo(om).bindPopup('<b>⭐ '+p.n+'</b>'+(p.note?'<br>'+p.note:''));
     });
     mapOverlay=om;
   }
@@ -905,7 +1098,8 @@ function initMap(){
   map=L.map('map').setView([10.22,103.96],11);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OSM',maxZoom:18}).addTo(map);
   places.forEach(function(p){
-    var m=L.marker([p.lat,p.lng]).addTo(map);
+    var ic=L.divIcon({className:'',html:'<div class="mk mk-'+p.c+'">'+icons[p.c]+'</div>',iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-16]});
+    var m=L.marker([p.lat,p.lng],{icon:ic}).addTo(map);
     m.bindPopup('<b>'+icons[p.c]+' '+p.n+'</b><br>'+p.d+'<br><a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc')+'" target="_blank" style="color:#1a6b5a">Google Maps 열기</a>');
     m._cat=p.c;
     markers.push(m);
@@ -956,7 +1150,8 @@ function addCustomPin(){
 function addCustomMarker(p){
   var ic=icons[p.type]||'⭐';
   var rg=regionLabels[p.region]||'';
-  var m=L.marker([p.lat,p.lng],{}).addTo(map);
+  var cic=L.divIcon({className:'',html:'<div class="mk mk-'+(p.type||'custom')+'">'+ic+'</div>',iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-16]});
+  var m=L.marker([p.lat,p.lng],{icon:cic}).addTo(map);
   m.bindPopup('<b>'+ic+' '+p.n+'</b>'+(rg?' <span style="font-size:10px">'+rg+'</span>':'')+(p.note?'<br>'+p.note:'')+(p.url?'<br><a href="'+p.url+'" target="_blank" style="color:#1a6b5a;font-size:11px">Google Maps</a>':'')+'<br><button onclick="delPin('+p.lat+','+p.lng+')" style="margin-top:4px;padding:2px 8px;background:#e07a5f;color:#fff;border:none;border-radius:4px;font-size:11px">삭제</button>');
   m._cat=p.type||'custom';
   customMarkers.push(m);
@@ -1014,6 +1209,7 @@ function loadComments(){
 
   if(id==='mp'&&map){setTimeout(function(){map.invalidateSize()},100)}
   if(id==='mp'&&!map){initMap()}
+}
 </script>
 
 </body>
