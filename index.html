@@ -419,6 +419,8 @@ body.font-lg .ti em{font-size:19px}
     <div class="set-group"><label>예산·팁 내 첫 번째 탭</label><input type="text" id="set-tip-label" value="팁"></div>
     <div class="set-group"><label>예산·팁 내 두 번째 탭</label><input type="text" id="set-budget-label" value="예산"></div>
     <div class="set-group"><label>저장 완료 메시지</label><input type="text" id="set-save-msg" value="저장 완료!"></div>
+    <div class="set-group"><label>비밀번호 입력 메시지</label><input type="text" id="set-pw-prompt" value="비밀번호 4자리를 입력하세요"></div>
+    <div class="set-group"><label>비밀번호 오류 메시지</label><input type="text" id="set-pw-error" value="비밀번호가 틀렸습니다"></div>
     <button class="set-save" onclick="saveSettings()">저장</button>
     <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee">
       <div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:8px">데이터 초기화</div>
@@ -485,7 +487,7 @@ var CM={food:{i:'🍜',co:'#e07a5f'},cafe:{i:'☕',co:'#c9a84c'},spa:{i:'💆',c
 function dReg(lat){return lat>10.28?'북부':lat>10.12?'중부':'남부'}
 
 // ===== SETTINGS =====
-var appSettings={title:'🌴 Phú Quốc',diaryTitle:'🌴 푸꾸옥 여행 다이어리',weatherTitle:'날씨',tab_schedule:'일정',tab_map:'지도',tab_diary:'다이어리',tab_budget:'예산·팁',saveMsg:'저장 완료!',tipLabel:'팁',budgetLabel:'예산',adminLabel:'Admin',visitorLabel:'Visitor'};
+var appSettings={title:'🌴 Phú Quốc',diaryTitle:'🌴 푸꾸옥 여행 다이어리',weatherTitle:'날씨',tab_schedule:'일정',tab_map:'지도',tab_diary:'다이어리',tab_budget:'예산·팁',saveMsg:'저장 완료!',pwPrompt:'비밀번호 4자리를 입력하세요',pwError:'비밀번호가 틀렸습니다',tipLabel:'팁',budgetLabel:'예산',adminLabel:'Admin',visitorLabel:'Visitor'};
 fbGet('settings',function(val){
   if(val){appSettings=val;applySettings()}
 });
@@ -510,6 +512,8 @@ function openSettings(){
   document.getElementById('set-tab-diary').value=appSettings.tab_diary||'다이어리';
   document.getElementById('set-tab-budget').value=appSettings.tab_budget||'예산·팁';
   document.getElementById('set-save-msg').value=appSettings.saveMsg||'저장 완료!';
+  document.getElementById('set-pw-prompt').value=appSettings.pwPrompt||'비밀번호 4자리를 입력하세요';
+  document.getElementById('set-pw-error').value=appSettings.pwError||'비밀번호가 틀렸습니다';
   document.getElementById('set-tip-label').value=appSettings.tipLabel||'팁';
   document.getElementById('set-budget-label').value=appSettings.budgetLabel||'예산';
   document.getElementById('set-admin-label').value=appSettings.adminLabel||'Admin';
@@ -526,7 +530,11 @@ function saveSettings(){
   appSettings.tab_diary=document.getElementById('set-tab-diary').value;
   appSettings.tab_budget=document.getElementById('set-tab-budget').value;
   appSettings.saveMsg=document.getElementById('set-save-msg').value;
-  appSettings.tipLabel=document.getElementById('set-tip-label').value;
+  appSettings.pwPrompt=document.getElementById('set-pw-prompt').value;
+  appSettings.pwError=document.getElementById('set-pw-error').value;
+  appSettings.tipLabel=document.getElementById('set-pw-prompt').value=appSettings.pwPrompt||'비밀번호 4자리를 입력하세요';
+  document.getElementById('set-pw-error').value=appSettings.pwError||'비밀번호가 틀렸습니다';
+  document.getElementById('set-tip-label').value;
   appSettings.budgetLabel=document.getElementById('set-budget-label').value;
   appSettings.adminLabel=document.getElementById('set-admin-label').value;
   appSettings.visitorLabel=document.getElementById('set-visitor-label').value;
@@ -930,6 +938,9 @@ function addUserPlace(){
   if(url){var m=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}if(isNaN(lat)){m=url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}if(!name){var nm=url.match(/place\/([^/@?]+)/);if(nm)try{name=decodeURIComponent(nm[1]).replace(/\+/g,' ')}catch(e){name=nm[1]}}}
   if(!name){alert('장소 이름을 입력해주세요');return}
   if(isNaN(lat)||isNaN(lng)){alert('Google Maps 전체 URL을 붙여넣어주세요');return}
+  // Check duplicate
+  var dup=gAll().find(function(p){return p.n.toLowerCase()===name.toLowerCase()});
+  if(dup){if(!confirm('"'+name+'" 이미 등록된 장소입니다. 그래도 추가하시겠습니까?'))return}
   db.ref('places').push({n:name,c:cat,lat:lat,lng:lng,r:0,pr:'',d:note});
   ['apUrl','apName','apNote'].forEach(function(id){document.getElementById(id).value=''});
   alert(appSettings.saveMsg||'저장 완료!');
@@ -1064,8 +1075,8 @@ function startEditDE(id){
   if(!found)return;
   // Check password or admin
   if(!isAdmin){
-    var pw=prompt('수정하려면 게시 시 입력한 비밀번호 4자리를 입력하세요');
-    if(!pw||pw!==found.pw){alert('비밀번호가 틀렸습니다');return}
+    var pw=prompt(appSettings.pwPrompt||'비밀번호 4자리를 입력하세요');
+    if(!pw||pw!==found.pw){alert(appSettings.pwError||'비밀번호가 틀렸습니다');return}
   }
   document.getElementById('dv_'+id).style.display='none';
   document.getElementById('de_'+id).style.display='block';
@@ -1102,12 +1113,12 @@ function delDE(id){
     moveToTrash(id,found);return;
   }
   // Normal user: ask for password
-  var pw=prompt('삭제하려면 게시 시 입력한 비밀번호 4자리를 입력하세요');
+  var pw=prompt(appSettings.pwPrompt||'비밀번호 4자리를 입력하세요');
   if(!pw)return;
   if(pw===found.pw){
     moveToTrash(id,found);
   }else{
-    alert('비밀번호가 틀렸습니다');
+    alert(appSettings.pwError||'비밀번호가 틀렸습니다');
   }
 }
 function moveToTrash(id,entry){
