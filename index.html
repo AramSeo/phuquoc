@@ -401,6 +401,25 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 
 <!-- Place Picker -->
 <div class="picker-overlay" id="pickerOverlay" onclick="if(event.target===this)closePicker()">
+
+<!-- Schedule Add Modal -->
+<div class="mo" id="schAddMo" onclick="if(event.target===this)document.getElementById('schAddMo').classList.remove('show')">
+  <div class="md" style="text-align:left;max-width:340px">
+    <h3 id="schAddTitle" style="font-size:15px">항목 추가</h3>
+    <div style="margin-bottom:8px">
+      <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:3px">내용</div>
+      <input type="text" id="schAddInput" placeholder="예: Grab 공항→숙소" style="text-align:left;font-size:14px;margin-bottom:0" onkeydown="if(event.key==='Enter'){document.getElementById('schAddMemo').focus();event.preventDefault()}">
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:3px">메모 (생략 가능)</div>
+      <input type="text" id="schAddMemo" placeholder="예: 38~50만 VND (약 2.1만원)" style="text-align:left;font-size:14px;margin-bottom:0" onkeydown="if(event.key==='Enter'){confirmSchAdd2();event.preventDefault()}">
+    </div>
+    <div class="mdb">
+      <button class="cc" onclick="document.getElementById('schAddMo').classList.remove('show')">취소</button>
+      <button class="cf" onclick="confirmSchAdd2()">추가</button>
+    </div>
+  </div>
+</div>
   <div class="picker-panel">
     <div class="picker-head"><b id="pickerTitle">장소 선택</b><button class="picker-close" onclick="closePicker()">✕</button></div>
     <div class="picker-region" id="pickerRegion"></div>
@@ -585,12 +604,12 @@ function renderSch(){
       if(isAdmin){
         var hasPicker=(sec.cls==='food'||sec.key==='activity');
         if(hasPicker){
-          addHtml='<div style="display:flex;gap:4px;margin-top:4px" data-addbtn="'+d.day+'_'+sec.key+'">'
+          addHtml='<div style="display:flex;gap:4px;margin-top:4px">'
             +'<button style="flex:1;padding:6px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit" onclick="openSchPicker('+d.day+',\''+sec.key+'\')">📍 장소에서 선택</button>'
             +'<button style="padding:6px 10px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit" onclick="addSchText('+d.day+',\''+sec.key+'\')">✏️ 직접 입력</button>'
             +'</div>';
         } else {
-          addHtml='<button data-addbtn="'+d.day+'_'+sec.key+'" style="width:100%;padding:6px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px" onclick="addSchText('+d.day+',\''+sec.key+'\')">+ 추가</button>';
+          addHtml='<button style="width:100%;padding:6px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px" onclick="addSchText('+d.day+',\''+sec.key+'\')">+ 추가</button>';
         }
       }
 
@@ -622,34 +641,25 @@ function saveDayLabel(day,field,val){
 }
 
 // Add text item
-var textMoDay=0,textMoSec='';
+var _schDay=0,_schSec='';
 function addSchText(day,sec){
-  // Show inline input right in the section
-  var containerId='add_'+day+'_'+sec;
-  var existing=document.getElementById(containerId);
-  if(existing){existing.style.display='block';existing.querySelector('input').focus();return}
-  // Find the button and insert before it
-  var btns=document.querySelectorAll('[data-addbtn="'+day+'_'+sec+'"]');
-  if(!btns.length)return;
-  var btn=btns[0];
-  var div=document.createElement('div');
-  div.id=containerId;
-  div.style.cssText='margin:6px 0;padding:8px;background:#fff;border:1.5px solid var(--ac);border-radius:8px';
-  div.innerHTML='<input type="text" placeholder="내용 입력" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none;margin-bottom:4px" id="si_'+day+'_'+sec+'">'
-    +'<input type="text" placeholder="메모 — 가격 등 (생략 가능)" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none;margin-bottom:6px" id="sm_'+day+'_'+sec+'">'
-    +'<div style="display:flex;gap:4px"><button style="flex:1;padding:7px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer" onclick="confirmSchAdd('+day+',\''+sec+'\')">추가</button>'
-    +'<button style="padding:7px 12px;background:#eee;border:none;border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer" onclick="document.getElementById(\''+containerId+'\').style.display=\'none\'">취소</button></div>';
-  btn.parentElement.insertBefore(div,btn);
-  setTimeout(function(){document.getElementById('si_'+day+'_'+sec).focus()},50);
+  _schDay=day;_schSec=sec;
+  var sl=SEC_DEF.find(function(s){return s.key===sec});
+  document.getElementById('schAddTitle').textContent=(sl?sl.icon+' ':'')+sl.label+' 추가 (4/'+day+')';
+  document.getElementById('schAddInput').value='';
+  document.getElementById('schAddMemo').value='';
+  document.getElementById('schAddMo').classList.add('show');
+  setTimeout(function(){document.getElementById('schAddInput').focus()},150);
 }
-function confirmSchAdd(day,sec){
-  var text=document.getElementById('si_'+day+'_'+sec).value.trim();
-  if(!text){return}
-  var memo=document.getElementById('sm_'+day+'_'+sec).value.trim();
-  if(!schData[day])schData[day]={};
-  if(!schData[day][sec])schData[day][sec]=[];
-  schData[day][sec].push({text:text,memo:memo||''});
-  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
+function confirmSchAdd2(){
+  var text=document.getElementById('schAddInput').value.trim();
+  if(!text)return;
+  var memo=document.getElementById('schAddMemo').value.trim();
+  if(!schData[_schDay])schData[_schDay]={};
+  if(!schData[_schDay][_schSec])schData[_schDay][_schSec]=[];
+  schData[_schDay][_schSec].push({text:text,memo:memo||''});
+  fbSet('schedule_v2/'+_schDay+'/'+_schSec,schData[_schDay][_schSec]);
+  document.getElementById('schAddMo').classList.remove('show');
 }
 
 // Delete item
