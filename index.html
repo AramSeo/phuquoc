@@ -237,8 +237,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .cal-t th:first-child{background:#e0f2ee;color:var(--ac);text-align:left;font-size:11px;width:58px}
 .cal-t td{padding:6px;border-bottom:1px solid #eee;vertical-align:top;word-break:break-word}
 .cal-t tr:nth-child(even) td{background:#fafaf7}
-.cal-t .cal-cat{font-weight:700;color:var(--ac);white-space:nowrap;font-size:11px;background:#e0f2ee!important;border-right:1px solid #d0e8e0}
+.cal-t .cal-cat{font-weight:600;color:var(--ac);white-space:nowrap;font-size:9px;background:#e0f2ee!important;border-right:1px solid #d0e8e0;padding:4px 5px}
 .cal-item{font-size:10.5px;line-height:1.4;padding:2px 0}
+.cal-item::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ac);margin-right:4px;vertical-align:middle}
 .cal-item a{color:var(--ac);text-decoration:none;font-weight:600}
 .cal-memo{font-size:10.5px;color:var(--tx2);padding:2px 0;line-height:1.4}
 </style>
@@ -280,13 +281,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 <!-- SCHEDULE -->
 <div class="tc" id="tab-schedule">
   <div class="wx-strip"><table class="wxt">
-    <tr><th>날짜</th><th>기온</th><th>☀️오전</th><th>🌤오후</th><th>🌙저녁</th><th>메모</th></tr>
-    <tr><td class="wd">4/13 월</td><td>32°/27°</td><td>☀️</td><td>🌤 10%</td><td>🌙 맑음</td><td class="wm">도착일 밤</td></tr>
-    <tr><td class="wd">4/14 화</td><td>31°/27°</td><td>☀️</td><td>🌦 40%</td><td>🌤 15%</td><td class="wm">Safari OK</td></tr>
-    <tr><td class="wd">4/15 수</td><td>31°/27°</td><td>🌤 15%</td><td>🌦 45%</td><td>🌤 20%</td><td class="wm">카페 추천</td></tr>
-    <tr><td class="wd">4/16 목</td><td>31°/27°</td><td>☀️</td><td>🌤 20%</td><td>🌤 10%</td><td class="wm">스노클링 적합</td></tr>
-    <tr><td class="wd">4/17 금</td><td>32°/27°</td><td>☀️</td><td>🌤 15%</td><td>🌙 맑음</td><td class="wm">Kiss 21시 OK</td></tr>
-    <tr><td class="wd">4/18 토</td><td>30°/26°</td><td>🌤 10%</td><td>🌦 30%</td><td>🌤 15%</td><td class="wm">출발일</td></tr>
+    <tr><th>날짜</th><th>기온</th><th>☀️오전</th><th>🌤오후</th><th>🌙저녁</th></tr>
+    <tr><td class="wd">4/13 월</td><td>32°/27°</td><td>☀️</td><td>🌤 10%</td><td>🌙 맑음</td></tr>
+    <tr><td class="wd">4/14 화</td><td>31°/27°</td><td>☀️</td><td>🌦 40%</td><td>🌤 15%</td></tr>
+    <tr><td class="wd">4/15 수</td><td>31°/27°</td><td>🌤 15%</td><td>🌦 45%</td><td>🌤 20%</td></tr>
+    <tr><td class="wd">4/16 목</td><td>31°/27°</td><td>☀️</td><td>🌤 20%</td><td>🌤 10%</td></tr>
+    <tr><td class="wd">4/17 금</td><td>32°/27°</td><td>☀️</td><td>🌤 15%</td><td>🌙 맑음</td></tr>
+    <tr><td class="wd">4/18 토</td><td>30°/26°</td><td>🌤 10%</td><td>🌦 30%</td><td>🌤 15%</td></tr>
   </table></div>
   <div class="wxl">📱 <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> <a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> <a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank">시간별</a></div>
   <div id="schOverview"></div>
@@ -581,7 +582,7 @@ function getDayTitle(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function
 function getDaySub(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.sub)||di.sub}
 
 function renderSch(){
-  var calSecs=[{k:'memo',l:'📝 메모'},{k:'hotel',l:'🏨 숙소'},{k:'activity',l:'🎯 활동'},{k:'breakfast',l:'🌅 아침'},{k:'lunch',l:'🍜 점심'},{k:'dinner',l:'🌙 저녁'},{k:'snack',l:'🍉 간식'}];
+  var calSecs=[{k:'memo',l:'메모'},{k:'hotel',l:'숙소'},{k:'activity',l:'활동'},{k:'breakfast',l:'아침'},{k:'lunch',l:'점심'},{k:'dinner',l:'저녁'},{k:'snack',l:'간식'}];
   var calDays=DAY_INFO.filter(function(d){return d.day!==19});
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
   var ch='<div class="cal-wrap"><table class="cal-t"><tr><th></th>';
