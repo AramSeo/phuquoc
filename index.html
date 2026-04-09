@@ -232,15 +232,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 /* Calendar overview */
 .cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px}
 .cal-wrap::-webkit-scrollbar{display:none}
-.cal-t{border-collapse:collapse;width:100%;min-width:520px;font-size:11px}
-.cal-t th{padding:8px 6px;background:var(--ac);color:#fff;font-weight:700;text-align:center;position:sticky;top:0;white-space:nowrap;font-size:12px}
-.cal-t th:first-child{background:var(--sf2);color:var(--tx);text-align:left;font-size:11px;min-width:60px}
-.cal-t td{padding:5px 6px;border-bottom:1px solid #f0ece4;vertical-align:top;min-width:80px}
-.cal-t tr:nth-child(even) td{background:var(--sf2)}
-.cal-t .cal-cat{font-weight:700;color:var(--ac);white-space:nowrap;font-size:11px;background:var(--sf)!important;border-right:1px solid #eee}
+.cal-t{border-collapse:collapse;width:100%;min-width:520px;font-size:11px;table-layout:fixed}
+.cal-t th{padding:8px 6px;background:#2a8c7a;color:#fff;font-weight:700;text-align:center;white-space:nowrap;font-size:12px;width:14%}
+.cal-t th:first-child{background:#e0f2ee;color:var(--ac);text-align:left;font-size:11px;width:58px}
+.cal-t td{padding:6px;border-bottom:1px solid #eee;vertical-align:top;word-break:break-word}
+.cal-t tr:nth-child(even) td{background:#fafaf7}
+.cal-t .cal-cat{font-weight:700;color:var(--ac);white-space:nowrap;font-size:11px;background:#e0f2ee!important;border-right:1px solid #d0e8e0}
 .cal-item{font-size:10.5px;line-height:1.4;padding:2px 0}
-.cal-item a{color:inherit;text-decoration:none;border-bottom:1px dashed #ccc}
-.cal-memo{font-size:10px;color:var(--tx2);font-style:italic;padding:2px 0}
+.cal-item a{color:var(--ac);text-decoration:none;font-weight:600}
+.cal-memo{font-size:10.5px;color:var(--tx2);padding:2px 0;line-height:1.4}
 </style>
 </head>
 <body>
@@ -587,7 +587,7 @@ function renderSch(){
   document.querySelectorAll('.dc.op').forEach(function(el){openDays[el.dataset.day]=true});
   document.querySelectorAll('.dc').forEach(function(el){if(el.style.display==='none')hiddenDays[el.dataset.day]=true});
   var nav=document.getElementById('dayNav');
-  var lb={13:'월·도착',14:'화·Safari',15:'수·중부',16:'목·스노클링',17:'금·JW',18:'토·출발',19:'일·인천'};
+  var lb={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토',19:'일'};
   var nh='<button class="on" onclick="showD(\'all\',this)">전체</button>';
   DAY_INFO.forEach(function(d){nh+='<button onclick="showD('+d.day+',this)">4/'+d.day+'<br><span style="font-size:10px">'+lb[d.day]+'</span></button>'});
   nav.innerHTML=nh;
@@ -651,10 +651,11 @@ function renderSch(){
     if(hiddenDays[el.dataset.day])el.style.display='none';
   });
   // Build calendar overview
-  var calSecs=[{k:'hotel',l:'🏨 숙소'},{k:'memo',l:'📝 메모'},{k:'activity',l:'🎯 활동'},{k:'breakfast',l:'🌅 아침'},{k:'lunch',l:'🍜 점심'},{k:'dinner',l:'🌙 저녁'},{k:'snack',l:'🍉 간식'},{k:'etc',l:'💡 기타'}];
+  var calSecs=[{k:'memo',l:'📝 메모'},{k:'hotel',l:'🏨 숙소'},{k:'activity',l:'🎯 활동'},{k:'breakfast',l:'🌅 아침'},{k:'lunch',l:'🍜 점심'},{k:'dinner',l:'🌙 저녁'},{k:'snack',l:'🍉 간식'}];
   var calDays=DAY_INFO.filter(function(d){return d.day!==19});
+  var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
   var ch='<div class="cal-wrap"><table class="cal-t"><tr><th></th>';
-  calDays.forEach(function(d){ch+='<th>'+getDayTitle(d.day)+'<br><span style="font-weight:400;font-size:10px">4/'+d.day+'</span></th>'});
+  calDays.forEach(function(d){ch+='<th>4/'+d.day+'<br><span style="font-weight:400;font-size:10px">'+dayNames[d.day]+'</span></th>'});
   ch+='</tr>';
   calSecs.forEach(function(sec){
     ch+='<tr><td class="cal-cat">'+sec.l+'</td>';
@@ -662,7 +663,7 @@ function renderSch(){
       var dd=schData[''+d.day]||{};
       if(sec.k==='memo'){
         var mv=(dayMemos&&dayMemos[''+d.day])||'';
-        ch+='<td>'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').substring(0,40)+(mv.length>40?'...':'')+'</div>':'<span style="color:#ddd">—</span>')+'</td>';
+        ch+='<td>'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'<span style="color:#ddd">—</span>')+'</td>';
       } else {
         var items=dd[sec.k]||[];
         ch+='<td>';
