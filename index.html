@@ -460,8 +460,11 @@ body.font-lg .de{font-size:14px}
     <!-- Already in route mode -->
     <div id="rtExist" style="display:none">
       <div id="rtExistList" style="margin-bottom:12px"></div>
-      <button onclick="showRtAdd()" style="width:100%;padding:10px;background:#fff;color:var(--ac);border:1.5px solid var(--ac);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">📌 다른 날짜에도 추가</button>
-      <button onclick="document.getElementById('rtMo').classList.remove('show');alert(appSettings.saveMsg||'저장 완료!')" style="width:100%;padding:10px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">저장하기</button>
+      <button onclick="showRtAdd()" style="width:100%;padding:10px;background:#fff;color:var(--ac);border:1.5px solid var(--ac);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:6px">📌 다른 날짜에도 추가</button>
+      <div style="display:flex;gap:6px">
+        <button onclick="cancelRtEdit()" style="flex:1;padding:10px;background:#eee;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit">취소</button>
+        <button onclick="saveRtEdit()" style="flex:1;padding:10px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">저장하기</button>
+      </div>
     </div>
   </div>
 </div>
@@ -760,6 +763,7 @@ function rCd(cat){
 var _rtName='';
 function tRt(n){
   _rtName=n;
+  _rtPendingRemoves=[];
   document.getElementById('rtMoTitle').textContent='📌 '+n;
   var inRoute=routeCache.has(n);
   if(inRoute){
@@ -779,7 +783,7 @@ function tRt(n){
         arr.forEach(function(it,idx){
           if(it.text===n){
             found=true;
-            list+='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin:3px 0;background:var(--sf2);border-radius:8px;font-size:13px">'
+            list+='<div id="rti_'+day+'_'+sec+'_'+idx+'" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin:3px 0;background:var(--sf2);border-radius:8px;font-size:13px">'
               +'<span>'+(dayNames[''+day]||'4/'+day)+' · '+(secNames[sec]||sec)+'</span>'
               +'<button onclick="removeOneRt(\''+day+'\',\''+sec+'\','+idx+')" style="background:none;border:none;color:var(--co);font-size:14px;cursor:pointer;padding:2px 8px">✕</button></div>';
           }
@@ -832,18 +836,40 @@ function confirmRt(){
   fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
   document.getElementById('rtMo').classList.remove('show');
 }
+var _rtPendingRemoves=[]; // [{day,sec,idx}]
 function removeOneRt(day,sec,idx){
-  if(!schData[day]||!schData[day][sec])return;
-  schData[day][sec].splice(idx,1);
-  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec].length?schData[day][sec]:null);
-  // Refresh the modal list
-  tRt(_rtName);
+  // Just hide visually and track
+  _rtPendingRemoves.push({day:day,sec:sec,idx:idx});
+  var el=document.getElementById('rti_'+day+'_'+sec+'_'+idx);
+  if(el){el.style.opacity='0.3';el.style.textDecoration='line-through';el.querySelector('button').disabled=true}
 }
-function removeAllRt(){
-  removeFromSchedule(_rtName);
-  var arr=Array.from(routeCache);
-  var i=arr.indexOf(_rtName);
-  if(i>=0){arr.splice(i,1);fbSet('route',arr.length?arr:null)}
+function saveRtEdit(){
+  // Apply pending removals (process in reverse idx order to avoid index shift)
+  _rtPendingRemoves.sort(function(a,b){return b.idx-a.idx});
+  _rtPendingRemoves.forEach(function(r){
+    if(!schData[r.day]||!schData[r.day][r.sec])return;
+    schData[r.day][r.sec].splice(r.idx,1);
+    fbSet('schedule_v2/'+r.day+'/'+r.sec,schData[r.day][r.sec].length?schData[r.day][r.sec]:null);
+  });
+  // Check if place still exists in any schedule
+  var stillExists=false;
+  Object.keys(schData).forEach(function(day){
+    Object.keys(schData[day]||{}).forEach(function(sec){
+      var arr=schData[day][sec];
+      if(Array.isArray(arr)&&arr.some(function(it){return it.text===_rtName}))stillExists=true;
+    });
+  });
+  if(!stillExists){
+    var arr=Array.from(routeCache);
+    var i=arr.indexOf(_rtName);
+    if(i>=0){arr.splice(i,1);fbSet('route',arr.length?arr:null)}
+  }
+  _rtPendingRemoves=[];
+  document.getElementById('rtMo').classList.remove('show');
+  alert(appSettings.saveMsg||'저장 완료!');
+}
+function cancelRtEdit(){
+  _rtPendingRemoves=[];
   document.getElementById('rtMo').classList.remove('show');
 }
 function removeFromSchedule(name){
@@ -1007,8 +1033,7 @@ function saveEditDE(id){
   var found=DD.find(function(x){return x._key===id});
   if(!found)return;
   var memo=document.getElementById('dm_'+id).value.trim();
-  var now=new Date();
-  var updates={memo:memo,date:now.toISOString().split('T')[0],time:now.toTimeString().slice(0,5)};
+  var updates={memo:memo};
   if(_editPhotoData[id])updates.data=_editPhotoData[id];
   db.ref('diary/'+id).update(updates);
   _editPhotoData[id]=null;
@@ -1081,6 +1106,14 @@ function exportDiary(){
   var groups={};all.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
   Object.keys(groups).sort().forEach(function(date){h+='<h2>📅 '+date+'</h2>';groups[date].forEach(function(e){h+='<img src="'+e.data+'">';if(e.memo)h+='<div class="m">'+e.memo+'</div>'})});
   h+='</body></html>';w.document.write(h);w.document.close();
+}
+
+// Font size toggle
+var _fontLg=false;
+function toggleFont(){
+  _fontLg=!_fontLg;
+  document.body.classList.toggle('font-lg',_fontLg);
+  document.getElementById('fontBtn').style.fontWeight=_fontLg?'900':'400';
 }
 
 // INIT
