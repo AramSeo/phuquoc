@@ -127,9 +127,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .mflt{display:flex;gap:5px;padding:8px 10px;overflow-x:auto;background:var(--sf);border-bottom:1px solid #eee;flex-shrink:0;-webkit-overflow-scrolling:touch}
 .mflt::-webkit-scrollbar{display:none}
 .fc{white-space:nowrap;padding:5px 11px;border-radius:16px;font-size:11px;font-weight:600;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-family:inherit;color:#555;flex-shrink:0}
-.fc.on{border-color:var(--ac);background:var(--ac);color:#fff}
+.fc.on{border-color:#4da695;background:#4da695;color:#fff}
 .fc.rt{border-color:var(--pk);color:var(--pk)}.fc.rt.on{background:var(--pk);color:#fff;border-color:var(--pk)}
-.fc.ap{border-color:var(--ac);color:var(--ac);border-style:dashed}.fc.ap.on{background:var(--ac);color:#fff;border-style:solid}
+.fc.ap{border-color:#4da695;color:#4da695;border-style:dashed}.fc.ap.on{background:#4da695;color:#fff;border-style:solid}
 #map{flex:1;min-height:200px;z-index:1}
 .mcards{max-height:30vh;overflow-y:auto;background:var(--sf);border-top:1px solid #eee;display:none;flex-shrink:0}
 .mcards.show{display:block}
@@ -145,7 +145,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .apanel{display:none;padding:16px 12px;background:var(--sf);flex:1;overflow-y:auto;font-size:12px}
 .apanel.show{display:block}
 .apanel input,.apanel select{width:100%;padding:8px 10px;border:1.5px solid #ddd;border-radius:var(--rs);font-size:13px;font-family:inherit;outline:none;margin-bottom:8px}
-.abtn{width:100%;padding:10px;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+.abtn{width:100%;padding:10px;background:#4da695;color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
 .uplace{padding:8px;margin:4px 0;background:var(--sf2);border-radius:var(--rs);font-size:12px;display:flex;justify-content:space-between;align-items:center}
 .uplace .udel{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer}
 
@@ -932,10 +932,11 @@ function doAddPlace(name,cat,lat,lng,note){
   if(!name){alert('장소 이름을 입력해주세요');return}
   var dup=gAll().find(function(p){return p.n.toLowerCase()===name.toLowerCase()});
   if(dup){if(!confirm('"'+name+'" 이미 등록된 장소입니다. 그래도 추가하시겠습니까?'))return}
+  // Unhide if previously deleted
+  if(hiddenPlaces.has(name)){hiddenPlaces.delete(name);fbSet('hidden_places',Array.from(hiddenPlaces))}
   db.ref('places').push({n:name,c:cat,lat:lat,lng:lng,r:0,pr:'',d:note});
   ['apUrl','apName','apNote'].forEach(function(id){document.getElementById(id).value=''});
   alert(appSettings.saveMsg||'저장 완료!');
-  renderUserPlaces();
 }
 function renderUserPlaces(){
   var el=document.getElementById('userPlacesList');
