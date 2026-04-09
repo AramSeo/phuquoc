@@ -522,11 +522,11 @@ var DAY_INFO=[
 ];
 var SEC_DEF=[
   {key:'transport',icon:'🚕',label:'이동',cls:'trans'},
+  {key:'activity',icon:'🎯',label:'활동',cls:'act'},
   {key:'breakfast',icon:'🌅',label:'아침',cls:'food'},
   {key:'lunch',icon:'🍜',label:'점심',cls:'food'},
   {key:'dinner',icon:'🌙',label:'저녁',cls:'food'},
-  {key:'snack',icon:'🍉',label:'야식',cls:'food'},
-  {key:'activity',icon:'🎯',label:'활동',cls:'act'},
+  {key:'snack',icon:'🍉',label:'간식 및 야식',cls:'food'},
   {key:'etc',icon:'💡',label:'기타',cls:'info'}
 ];
 var schData={}; // Firebase: {day: {section: [{text,memo}]}}
@@ -544,6 +544,12 @@ function getDayTitle(day){var dl=dayLabels[day];var di=DAY_INFO.find(function(d)
 function getDaySub(day){var dl=dayLabels[day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.sub)||di.sub}
 
 function renderSch(){
+  // Save open state + hidden state
+  var openDays={};
+  var hiddenDays={};
+  document.querySelectorAll('.dc.op').forEach(function(el){openDays[el.dataset.day]=true});
+  document.querySelectorAll('.dc').forEach(function(el){if(el.style.display==='none')hiddenDays[el.dataset.day]=true});
+
   var nav=document.getElementById('dayNav');
   var lb={13:'월·도착',14:'화·Safari',15:'수·중부',16:'목·스노클링',17:'금·JW',18:'토·출발',19:'일·인천'};
   var nh='<button class="on" onclick="showD(\'all\',this)">전체</button>';
@@ -596,6 +602,12 @@ function renderSch(){
 
     return '<div class="dc" data-day="'+d.day+'"><div class="dch" onclick="tdc(this)"><div class="dcl"><div class="dcb">4/'+d.day+'</div><div>'+titleHtml+subHtml+'</div></div><div class="dca">▾</div></div><div class="dcbd">'+body+'</div></div>';
   }).join('');
+
+  // Restore open + hidden state
+  document.querySelectorAll('.dc').forEach(function(el){
+    if(openDays[el.dataset.day])el.classList.add('op');
+    if(hiddenDays[el.dataset.day])el.style.display='none';
+  });
 }
 
 function tdc(el){el.parentElement.classList.toggle('op')}
