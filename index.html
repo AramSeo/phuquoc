@@ -930,10 +930,19 @@ function addUserPlace(){
 }
 function doAddPlace(name,cat,lat,lng,note){
   if(!name){alert('장소 이름을 입력해주세요');return}
-  var dup=gAll().find(function(p){return p.n.toLowerCase()===name.toLowerCase()});
-  if(dup){if(!confirm('"'+name+'" 이미 등록된 장소입니다. 그래도 추가하시겠습니까?'))return}
-  // Unhide if previously deleted
-  if(hiddenPlaces.has(name)){hiddenPlaces.delete(name);fbSet('hidden_places',Array.from(hiddenPlaces))}
+  // Check against ALL places (including hidden)
+  var allPlaces=P.concat(userPlacesCache);
+  var dup=allPlaces.find(function(p){return p.n.toLowerCase()===name.toLowerCase()});
+  if(dup){
+    // If it was hidden (deleted), just unhide it instead of adding duplicate
+    if(hiddenPlaces.has(dup.n)){
+      hiddenPlaces.delete(dup.n);
+      fbSet('hidden_places',Array.from(hiddenPlaces));
+      alert('삭제했던 장소를 복원했습니다!');
+      return;
+    }
+    if(!confirm('"'+name+'" 이미 등록된 장소입니다. 그래도 추가하시겠습니까?'))return;
+  }
   db.ref('places').push({n:name,c:cat,lat:lat,lng:lng,r:0,pr:'',d:note});
   ['apUrl','apName','apNote'].forEach(function(id){document.getElementById(id).value=''});
   alert(appSettings.saveMsg||'저장 완료!');
