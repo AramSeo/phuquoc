@@ -89,6 +89,38 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .opt-n a{color:inherit;text-decoration:none;border-bottom:1px dashed #aaa}
 .opt-d{color:var(--tx2);font-size:11px;margin-top:1px}
 .opt-p{color:var(--co);font-size:11px;font-weight:600;margin-top:1px}
+/* Schedule picks (editable) */
+.pick-row{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}
+.pick-chip{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;background:var(--sf);border:1.5px solid #ddd;border-radius:20px;font-size:11px;font-weight:600}
+.pick-chip.food{border-color:var(--co);background:#fef8f0}
+.pick-chip.cafe{border-color:var(--gd);background:var(--gdl)}
+.pick-chip.spa{border-color:var(--pu);background:#f8f0fa}
+.pick-chip.spot{border-color:var(--ac);background:var(--acl)}
+.pick-chip .pick-del{background:none;border:none;color:#ccc;font-size:12px;cursor:pointer;padding:0 0 0 2px;display:none}
+.admin-mode .pick-chip .pick-del{display:inline}
+.add-pick{display:none;padding:4px 10px;border:1.5px dashed #bbb;border-radius:20px;font-size:11px;color:#999;cursor:pointer;font-family:inherit;background:none}
+.add-pick:active{background:#f0f0f0}
+.admin-mode .add-pick{display:inline-flex}
+/* Picker modal */
+.picker-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:flex-end;justify-content:center}
+.picker-overlay.show{display:flex}
+.picker-panel{background:var(--sf);border-radius:var(--r) var(--r) 0 0;max-height:70vh;width:100%;max-width:500px;display:flex;flex-direction:column;overflow:hidden}
+.picker-head{padding:12px 16px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.picker-head b{font-size:14px}
+.picker-close{background:none;border:none;font-size:22px;color:#999;cursor:pointer}
+.picker-region{display:flex;gap:4px;padding:8px 16px;flex-shrink:0}
+.picker-region button{padding:4px 10px;border-radius:12px;border:1px solid #ddd;background:#fff;font-size:11px;font-family:inherit;cursor:pointer}
+.picker-region button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.picker-list{flex:1;overflow-y:auto;padding:8px 16px 20px}
+.picker-item{padding:10px;margin:4px 0;border-radius:var(--rs);border:1.5px solid #eee;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:8px}
+.picker-item:active{background:#f0f8f5}
+.picker-item.selected{border-color:var(--ac);background:var(--acl)}
+.picker-item .pi-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0}
+.picker-item .pi-info{flex:1}
+.picker-item .pi-name{font-weight:700}
+.picker-item .pi-meta{font-size:10px;color:var(--tx2);margin-top:1px}
+.picker-item .pi-check{color:var(--ac);font-size:16px;flex-shrink:0;visibility:hidden}
+.picker-item.selected .pi-check{visibility:visible}
 
 /* Map - fixed height for mobile */
 .mwrap{display:flex;flex-direction:column;height:calc(100vh - var(--hh) - var(--th))}
@@ -367,6 +399,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
   </div>
 </div>
 
+<!-- Place Picker -->
+<div class="picker-overlay" id="pickerOverlay" onclick="if(event.target===this)closePicker()">
+  <div class="picker-panel">
+    <div class="picker-head"><b id="pickerTitle">장소 선택</b><button class="picker-close" onclick="closePicker()">✕</button></div>
+    <div class="picker-region" id="pickerRegion"></div>
+    <div class="picker-list" id="pickerList"></div>
+  </div>
+</div>
+
 <!-- PW Modal -->
 <div class="mo" id="pwMo"><div class="md"><h3>🔐 Admin</h3><p class="er" id="pwEr">비밀번호가 틀렸습니다</p><input type="password" id="pwIn" placeholder="비밀번호" maxlength="10"><div class="mdb"><button class="cc" onclick="closePw()">취소</button><button class="cf" onclick="cfPw()">확인</button></div></div></div>
 
@@ -478,9 +519,23 @@ function updMode(){
   if(isAdmin){b.textContent='✏️ Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
   else{b.textContent='👁️ Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
   var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
+  buildSch(); // rebuild schedule to show/hide edit buttons
 }
 
-// SCHEDULE
+// SCHEDULE with editable picks
+var DAY_REGION={13:'북부',14:'북부',15:'중부',16:'남부',17:'남부',18:'남부',19:''};
+var PICK_CATS=[
+  {key:'food',icon:'🍜',label:'식당',cls:'food'},
+  {key:'cafe',icon:'☕',label:'카페',cls:'cafe'},
+  {key:'spa',icon:'💆',label:'마사지',cls:'spa'},
+  {key:'spot',icon:'📍',label:'스팟',cls:'spot'}
+];
+var schPicks={}; // {day: {cat: [placeName,...]}}
+fbGet('schedule_picks',function(val){
+  schPicks=val||{};
+  buildSch();
+});
+
 function buildSch(){
   var nav=document.getElementById('dayNav');
   var lb={13:'월·도착',14:'화·Safari',15:'수·중부',16:'목·스노클링',17:'금·JW',18:'토·출발',19:'일·인천'};
@@ -488,6 +543,7 @@ function buildSch(){
   SCH.forEach(function(d){nh+='<button onclick="showD('+d.day+',this)">4/'+d.day+'<br><span style="font-size:10px">'+lb[d.day]+'</span></button>'});
   nav.innerHTML=nh;
   document.getElementById('schCards').innerHTML=SCH.map(function(d){
+    // Fixed sections from SCH data
     var body=d.sections.map(function(s){
       var items=s.items.map(function(it){
         var c=it.cls||({act:'act',food:'food',trans:'trans',info:'info',spa:'spa'}[s.cls]||'info');
@@ -496,11 +552,91 @@ function buildSch(){
       }).join('');
       return '<div class="dsec"><div class="dsec-t '+s.cls+'">'+s.icon+' '+s.title+'</div>'+items+'</div>';
     }).join('');
+
+    // Editable pick sections (skip day 19)
+    if(d.day!==19){
+      var dayPicks=schPicks[d.day]||{};
+      body+='<div class="dsec" style="border-top:2px dashed var(--gd);background:var(--gdl);border-radius:0 0 var(--r) var(--r)">';
+      body+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin-bottom:8px">🗓️ 우리의 선택</div>';
+      PICK_CATS.forEach(function(pc){
+        var picks=dayPicks[pc.key]||[];
+        body+='<div style="margin-bottom:6px"><span style="font-size:11px;font-weight:700;color:var(--tx2)">'+pc.icon+' '+pc.label+'</span>';
+        body+='<div class="pick-row">';
+        picks.forEach(function(name){
+          var place=gAll().find(function(p){return p.n===name});
+          var pr=place&&place.pr?' · '+place.pr:'';
+          body+='<span class="pick-chip '+pc.cls+'">'+name+'<span style="font-size:9px;color:var(--tx2)">'+pr+'</span><button class="pick-del" onclick="removePick('+d.day+',\''+pc.key+'\',\''+name.replace(/'/g,"\\'")+'\')">✕</button></span>';
+        });
+        body+='<button class="add-pick" onclick="openPicker('+d.day+',\''+pc.key+'\')">+ 추가</button>';
+        body+='</div></div>';
+      });
+      body+='</div>';
+    }
+
     return '<div class="dc" data-day="'+d.day+'"><div class="dch" onclick="tdc(this)"><div class="dcl"><div class="dcb">4/'+d.day+'</div><div><div class="dct">'+d.title+'</div><div class="dcs">'+d.loc+'</div></div></div><div class="dca">▾</div></div><div class="dcbd">'+body+'</div></div>';
   }).join('');
 }
 function tdc(el){el.parentElement.classList.toggle('op')}
 function showD(d,btn){document.querySelectorAll('.dnav button').forEach(function(b){b.classList.remove('on')});if(btn)btn.classList.add('on');document.querySelectorAll('.dc').forEach(function(c){if(d==='all'){c.style.display='';c.classList.remove('op')}else{if(parseInt(c.dataset.day)===d){c.style.display='';c.classList.add('op')}else c.style.display='none'}})}
+
+// ===== PLACE PICKER =====
+var pickerDay=0,pickerCat='',pickerRegionFilter='';
+function openPicker(day,cat){
+  pickerDay=day;pickerCat=cat;pickerRegionFilter=DAY_REGION[day]||'';
+  var catMeta=PICK_CATS.find(function(c){return c.key===cat});
+  document.getElementById('pickerTitle').textContent=(catMeta?catMeta.icon+' '+catMeta.label:'장소')+' 선택 (4/'+day+')';
+  // Region buttons
+  var regions=['전체','북부','중부','남부'];
+  document.getElementById('pickerRegion').innerHTML=regions.map(function(r){
+    var isOn=(r==='전체'&&!pickerRegionFilter)||(r===pickerRegionFilter);
+    return '<button class="'+(isOn?'on':'')+'" onclick="setPickerRegion(\''+r+'\',this)">'+r+'</button>';
+  }).join('');
+  renderPickerList();
+  document.getElementById('pickerOverlay').classList.add('show');
+}
+function closePicker(){document.getElementById('pickerOverlay').classList.remove('show')}
+function setPickerRegion(r,btn){
+  pickerRegionFilter=r==='전체'?'':r;
+  document.querySelectorAll('.picker-region button').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  renderPickerList();
+}
+function renderPickerList(){
+  var el=document.getElementById('pickerList');
+  // Map cat key to place category
+  var catMap={food:'food',cafe:'cafe',spa:'spa',spot:'spot'};
+  var placeCat=catMap[pickerCat];
+  var places=gAll().filter(function(p){return p.c===placeCat});
+  if(pickerRegionFilter){places=places.filter(function(p){return dReg(p.lat)===pickerRegionFilter})}
+  var dayPicks=(schPicks[pickerDay]&&schPicks[pickerDay][pickerCat])||[];
+  var selected=new Set(dayPicks);
+  if(!places.length){el.innerHTML='<div style="padding:20px;text-align:center;color:#999">해당 지역에 장소가 없어요</div>';return}
+  el.innerHTML=places.map(function(p){
+    var m0=CM[p.c]||{i:'⭐',co:'#e91e63'};
+    var isSel=selected.has(p.n);
+    var meta=[dReg(p.lat),p.r?'⭐'+p.r:'',p.pr||''].filter(Boolean).join(' · ');
+    return '<div class="picker-item'+(isSel?' selected':'')+'" onclick="togglePick(\''+p.n.replace(/'/g,"\\'")+'\')">'
+      +'<div class="pi-icon" style="background:'+m0.co+'">'+m0.i+'</div>'
+      +'<div class="pi-info"><div class="pi-name">'+p.n+'</div><div class="pi-meta">'+meta+'</div>'+(p.d?'<div class="pi-meta">'+p.d+'</div>':'')+'</div>'
+      +'<span class="pi-check">✓</span></div>';
+  }).join('');
+}
+function togglePick(name){
+  if(!schPicks[pickerDay])schPicks[pickerDay]={};
+  if(!schPicks[pickerDay][pickerCat])schPicks[pickerDay][pickerCat]=[];
+  var arr=schPicks[pickerDay][pickerCat];
+  var idx=arr.indexOf(name);
+  if(idx>=0)arr.splice(idx,1);else arr.push(name);
+  fbSet('schedule_picks/'+pickerDay+'/'+pickerCat,arr);
+  renderPickerList();
+}
+function removePick(day,cat,name){
+  if(!isAdmin)return;
+  if(!schPicks[day]||!schPicks[day][cat])return;
+  var arr=schPicks[day][cat];
+  var idx=arr.indexOf(name);
+  if(idx>=0){arr.splice(idx,1);fbSet('schedule_picks/'+day+'/'+cat,arr)}
+}
 
 // MAP
 function initMap(){
