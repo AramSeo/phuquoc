@@ -493,150 +493,154 @@ var P=[
 {n:'JW Marriott',c:'hotel',lat:10.0190,lng:104.0290,r:0,pr:'',d:'4/17~18'}
 ];
 
-// SCHEDULE (same structure)
-var SCH=[
-{day:13,title:'도착',loc:'인천→PQC→VinHolidays',sections:[{icon:'✈️',title:'이동',cls:'trans',items:[{n:'19:30 인천→23:20 PQC'},{n:'Grab 공항→숙소',p:'38~50만 VND (약 2.1~2.8만원)'}]},{icon:'💱',title:'환전',cls:'info',items:[{n:'공항 $50~100 소액'}]},{icon:'🍜',title:'야식',cls:'food',items:[{n:'과일노점·편의점',d:'망고 1kg 3~5만 VND'}]}]},
-{day:14,title:'Safari · Grand World',loc:'북부',sections:[{icon:'🎯',title:'메인',cls:'act',items:[{n:'Vinpearl Safari',d:'08:30→버스투어→동물쇼',p:'2인 170만 VND (약 9.5만원, 선결제)',lk:'Vinpearl+Safari+Phu+Quoc'},{n:'Grand World 실내',d:'테디베어+곤돌라',lk:'Grand+World+Phu+Quoc'}]},{icon:'🍜',title:'식당 옵션',cls:'food',items:[{n:'Kien Xay',d:'분꾸아이',p:'2인 15~25만 VND',lk:'Kien+Xay+Grand+World+Phu+Quoc'},{n:'Mai Hương',d:'해산물BBQ',p:'2인 60~100만 VND'},{n:'GW 야시장',p:'2인 25~50만 VND'},{n:'Volcano Beefsteak',p:'2인 70~120만 VND'}]},{icon:'💆',title:'마사지',cls:'spa',items:[{n:'Crown Spa',d:'60분 2인 72만 VND (약 4만원)'}]},{icon:'💡',title:'팁',cls:'info',items:[{n:'GW 전부 카드 OK'},{n:'21:30 분수쇼 (무료)'}]}]},
-{day:15,title:'중부 · 야시장',loc:'Lahana · Duong Dong',sections:[{icon:'🚕',title:'이동',cls:'trans',items:[{n:'Grab 중부',p:'25~35만 VND (약 1.4~2만원)'}]},{icon:'💱',title:'환전',cls:'info',items:[{n:'금은방 본격 환전',d:'King Kong 근처 2~3곳 비교'}]},{icon:'🍜',title:'식당',cls:'food',items:[{n:'즈엉동 야시장',p:'2인 30~60만 VND',lk:'Duong+Dong+Night+Market+Phu+Quoc'},{n:'Lobster Cave',p:'2인 60~120만 VND',lk:'Lobster+Cave+Phu+Quoc'},{n:'Bếp An',p:'2인 20~50만 VND'}]},{icon:'☕',title:'카페',cls:'food',items:[{n:'Chuồn Chuồn Bistro',d:'선셋뷰 1위'},{n:'Café Green',d:'망고빙수'},{n:'Son Tra Hill',d:'수영장 카페'}]},{icon:'💆',title:'마사지',cls:'spa',items:[{n:'ZEN Spa',d:'2인 76만 VND/60분'},{n:'YUJU SPA',d:'40~50만 VND/60분'},{n:'Green Paradise',d:'40~50만 VND'}]},{icon:'🛒',title:'쇼핑',cls:'info',items:[{n:'King Kong Mart',d:'과자·기념품'}]}]},
-{day:16,title:'스노클링 · 남부',loc:'OnBird → Moonlight',sections:[{icon:'🎯',title:'메인',cls:'act',items:[{n:'OnBird 스노클링',d:'An Thoi 군도. 멀미약!',p:'2인 252만 VND (약 14.1만원, 사전결제)'}]},{icon:'🚕',title:'이동',cls:'trans',items:[{n:'남부→Moonlight',p:'Grab 30~39만 VND'}]},{icon:'🍜',title:'남부 식당',cls:'food',items:[{n:'Cái Mâm',p:'2인 40~70만 VND',lk:'Cai+Mam+Sunset+Town+Phu+Quoc'},{n:'MEDITERRAN',d:'그리스·이탈리안'}]},{icon:'📍',title:'산책',cls:'act',items:[{n:'Sunset Town + Kiss Bridge',d:'일몰 18:15'}]},{icon:'💆',title:'마사지',cls:'spa',items:[{n:'Oasis Spa',d:'60분 2인 120만 VND (약 6.7만원)'},{n:'Hanz Sunset Spa',d:'남부 유일'}]}]},
-{day:17,title:'JW · Kiss of the Sea',loc:'JW Marriott',sections:[{icon:'🎯',title:'메인',cls:'act',items:[{n:'Khem Beach',d:'세계 50대 해변',lk:'Khem+Beach+Phu+Quoc'},{n:'JW 탐험',d:"Dean's Library, Shell Pool, 5000+ 앤티크"},{n:'Kiss of the Sea 21:00',d:'물+빛+불꽃. 20:15 도착',p:'JW 무료 확인'}]},{icon:'🚕',title:'이동',cls:'trans',items:[{n:'Moonlight→JW',p:'Grab 12~22만 VND'},{n:'JW↔Sunset Town',p:'Grab 15~25만 VND'}]},{icon:'🍜',title:'식당',cls:'food',items:[{n:'JW 조식뷔페',d:'06:30~11:00 최고급'},{n:'Pink Pearl',d:'프렌치 파인다이닝',p:'2인 150~400만+ VND'},{n:'Cái Mâm (가성비)',p:'2인 40~70만 VND'}]},{icon:'💡',title:'팁',cls:'info',items:[{n:'쉬고 싶으면 → 비치에서 아무것도 안 하기'}]}]},
-{day:18,title:'JW 마지막 · 출발',loc:'02:25 비행',sections:[{icon:'🎯',title:'오전',cls:'act',items:[{n:'JW 조식 (11시까지)'},{n:'Khem Beach 마지막'},{n:'JW 산책'}]},{icon:'🔀',title:'오후 옵션',cls:'info',items:[{n:'A: JW 주변',d:'Sunset Town+Oasis+저녁→공항',cls:'alt-a'},{n:'B: 두엉동',d:'마사지숍 짐 맡기고→시내→공항',cls:'alt-b'}]},{icon:'✈️',title:'출발',cls:'trans',items:[{n:'이른 저녁',p:'30~90만 VND'},{n:'22:00 공항',p:'Grab 22~32만 VND'}]}]},
-{day:19,title:'인천 도착',loc:'09:55 ICN',sections:[{icon:'✈️',title:'도착',cls:'trans',items:[{n:'02:25→09:55 인천'},{n:'수하물·환전 정리'}]}]}
-];
-
-var CLD={app:['eSIM','트래블월렛','Grab+카드','Safari 선결제','OnBird 예약','마사지 예약','Kiss of Sea(JW)','JW 레이트체크아웃'],money:['$100 신권','인천공항 수령'],pack:['여권','선크림+선글라스+모자','수영복2+래시가드','방수폰케이스','멀미약','우산','아쿠아슈즈','멀티어댑터','충전기+보조배터리']};
-
-// TAB
-function sw(t){document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});document.querySelector('[data-tab="'+t+'"]').classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100)}
-
-// MODE
-function toggleMode(){if(isAdmin){isAdmin=false;updMode()}else{document.getElementById('pwMo').classList.add('show');document.getElementById('pwIn').value='';document.getElementById('pwEr').style.display='none';setTimeout(function(){document.getElementById('pwIn').focus()},100)}}
-function closePw(){document.getElementById('pwMo').classList.remove('show')}
-function cfPw(){if(document.getElementById('pwIn').value==='1234'){isAdmin=true;closePw();updMode()}else document.getElementById('pwEr').style.display='block'}
-document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')cfPw()});
-function updMode(){
-  var b=document.getElementById('modeBtn');
-  if(isAdmin){b.textContent='✏️ Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
-  else{b.textContent='👁️ Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
-  var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
-  buildSch(); // rebuild schedule to show/hide edit buttons
-}
-
-// SCHEDULE with editable picks
+// ===== SCHEDULE (Firebase-driven, fully editable) =====
 var DAY_REGION={13:'북부',14:'북부',15:'중부',16:'남부',17:'남부',18:'남부',19:''};
-var PICK_CATS=[
-  {key:'food',icon:'🍜',label:'식당',cls:'food'},
-  {key:'cafe',icon:'☕',label:'카페',cls:'cafe'},
-  {key:'spa',icon:'💆',label:'마사지',cls:'spa'},
-  {key:'spot',icon:'📍',label:'스팟',cls:'spot'}
+var DAY_INFO=[
+  {day:13,title:'도착',sub:'인천→PQC→VinHolidays'},
+  {day:14,title:'Safari · Grand World',sub:'북부'},
+  {day:15,title:'중부 · 카페 · 야시장',sub:'Lahana · Duong Dong'},
+  {day:16,title:'스노클링 · 남부',sub:'OnBird → Moonlight'},
+  {day:17,title:'JW · Kiss of the Sea',sub:'JW Marriott'},
+  {day:18,title:'JW 마지막 · 출발',sub:'02:25 비행'},
+  {day:19,title:'인천 도착',sub:'09:55 ICN'}
 ];
-var schPicks={}; // {day: {cat: [placeName,...]}}
-fbGet('schedule_picks',function(val){
-  schPicks=val||{};
-  buildSch();
+var SEC_DEF=[
+  {key:'transport',icon:'🚕',label:'이동',cls:'trans'},
+  {key:'breakfast',icon:'🌅',label:'아침',cls:'food'},
+  {key:'lunch',icon:'🍜',label:'점심',cls:'food'},
+  {key:'dinner',icon:'🌙',label:'저녁',cls:'food'},
+  {key:'snack',icon:'🍉',label:'야식',cls:'food'},
+  {key:'activity',icon:'🎯',label:'활동',cls:'act'},
+  {key:'etc',icon:'💡',label:'기타',cls:'info'}
+];
+var schData={}; // Firebase: {day: {section: [{text,memo}]}}
+fbGet('schedule_v2',function(val){
+  schData=val||{};
+  renderSch();
 });
 
-function buildSch(){
+function renderSch(){
   var nav=document.getElementById('dayNav');
   var lb={13:'월·도착',14:'화·Safari',15:'수·중부',16:'목·스노클링',17:'금·JW',18:'토·출발',19:'일·인천'};
   var nh='<button class="on" onclick="showD(\'all\',this)">전체</button>';
-  SCH.forEach(function(d){nh+='<button onclick="showD('+d.day+',this)">4/'+d.day+'<br><span style="font-size:10px">'+lb[d.day]+'</span></button>'});
+  DAY_INFO.forEach(function(d){nh+='<button onclick="showD('+d.day+',this)">4/'+d.day+'<br><span style="font-size:10px">'+lb[d.day]+'</span></button>'});
   nav.innerHTML=nh;
-  document.getElementById('schCards').innerHTML=SCH.map(function(d){
-    // Fixed sections from SCH data
-    var body=d.sections.map(function(s){
-      var items=s.items.map(function(it){
-        var c=it.cls||({act:'act',food:'food',trans:'trans',info:'info',spa:'spa'}[s.cls]||'info');
-        var nm=it.lk?'<a href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(it.lk)+'" target="_blank">'+it.n+'</a>':it.n;
-        return '<div class="opt '+c+'"><div class="opt-n">'+nm+'</div>'+(it.d?'<div class="opt-d">'+it.d+'</div>':'')+(it.p?'<div class="opt-p">'+it.p+'</div>':'')+'</div>';
+
+  document.getElementById('schCards').innerHTML=DAY_INFO.map(function(d){
+    var dayData=schData[d.day]||{};
+    var body=SEC_DEF.map(function(sec){
+      var items=dayData[sec.key]||[];
+      var clsMap={trans:'trans',food:'food',act:'act',info:'info'};
+      var itemCls=clsMap[sec.cls]||'info';
+
+      var itemsHtml=items.map(function(it,idx){
+        var gl=it.placeKey?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(it.text+' Phu Quoc'):'';
+        var nameHtml=gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':it.text;
+        var delBtn=isAdmin?'<button style="position:absolute;top:4px;right:4px;background:none;border:none;color:#ccc;font-size:12px;cursor:pointer" onclick="delSchItem('+d.day+',\''+sec.key+'\','+idx+')">✕</button>':'';
+        return '<div class="opt '+itemCls+'" style="position:relative">'+delBtn+'<div class="opt-n">'+nameHtml+'</div>'+(it.memo?'<div class="opt-d">'+it.memo+'</div>':'')+'</div>';
       }).join('');
-      return '<div class="dsec"><div class="dsec-t '+s.cls+'">'+s.icon+' '+s.title+'</div>'+items+'</div>';
+
+      // Admin: add button
+      var addHtml='';
+      if(isAdmin){
+        var hasPicker=(sec.cls==='food'||sec.key==='activity');
+        if(hasPicker){
+          addHtml='<div style="display:flex;gap:4px;margin-top:4px">'
+            +'<button style="flex:1;padding:6px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit" onclick="openSchPicker('+d.day+',\''+sec.key+'\')">📍 장소에서 선택</button>'
+            +'<button style="padding:6px 10px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit" onclick="addSchText('+d.day+',\''+sec.key+'\')">✏️ 직접 입력</button>'
+            +'</div>';
+        } else {
+          addHtml='<button style="width:100%;padding:6px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px" onclick="addSchText('+d.day+',\''+sec.key+'\')">+ 추가</button>';
+        }
+      }
+
+      // Hide empty sections for visitor (no items and not admin)
+      if(!items.length && !isAdmin) return '';
+
+      return '<div class="dsec"><div class="dsec-t '+sec.cls+'">'+sec.icon+' '+sec.label+'</div>'+itemsHtml+addHtml+'</div>';
     }).join('');
 
-    // Editable pick sections (skip day 19)
-    if(d.day!==19){
-      var dayPicks=schPicks[d.day]||{};
-      body+='<div class="dsec" style="border-top:2px dashed var(--gd);background:var(--gdl);border-radius:0 0 var(--r) var(--r)">';
-      body+='<div style="font-size:11px;font-weight:700;color:var(--gd);margin-bottom:8px">🗓️ 우리의 선택</div>';
-      PICK_CATS.forEach(function(pc){
-        var picks=dayPicks[pc.key]||[];
-        body+='<div style="margin-bottom:6px"><span style="font-size:11px;font-weight:700;color:var(--tx2)">'+pc.icon+' '+pc.label+'</span>';
-        body+='<div class="pick-row">';
-        picks.forEach(function(name){
-          var place=gAll().find(function(p){return p.n===name});
-          var pr=place&&place.pr?' · '+place.pr:'';
-          body+='<span class="pick-chip '+pc.cls+'">'+name+'<span style="font-size:9px;color:var(--tx2)">'+pr+'</span><button class="pick-del" onclick="removePick('+d.day+',\''+pc.key+'\',\''+name.replace(/'/g,"\\'")+'\')">✕</button></span>';
-        });
-        body+='<button class="add-pick" onclick="openPicker('+d.day+',\''+pc.key+'\')">+ 추가</button>';
-        body+='</div></div>';
-      });
-      body+='</div>';
-    }
-
-    return '<div class="dc" data-day="'+d.day+'"><div class="dch" onclick="tdc(this)"><div class="dcl"><div class="dcb">4/'+d.day+'</div><div><div class="dct">'+d.title+'</div><div class="dcs">'+d.loc+'</div></div></div><div class="dca">▾</div></div><div class="dcbd">'+body+'</div></div>';
+    return '<div class="dc" data-day="'+d.day+'"><div class="dch" onclick="tdc(this)"><div class="dcl"><div class="dcb">4/'+d.day+'</div><div><div class="dct">'+d.title+'</div><div class="dcs">'+d.sub+'</div></div></div><div class="dca">▾</div></div><div class="dcbd">'+body+'</div></div>';
   }).join('');
 }
+
 function tdc(el){el.parentElement.classList.toggle('op')}
 function showD(d,btn){document.querySelectorAll('.dnav button').forEach(function(b){b.classList.remove('on')});if(btn)btn.classList.add('on');document.querySelectorAll('.dc').forEach(function(c){if(d==='all'){c.style.display='';c.classList.remove('op')}else{if(parseInt(c.dataset.day)===d){c.style.display='';c.classList.add('op')}else c.style.display='none'}})}
 
-// ===== PLACE PICKER =====
-var pickerDay=0,pickerCat='',pickerRegionFilter='';
-function openPicker(day,cat){
-  pickerDay=day;pickerCat=cat;pickerRegionFilter=DAY_REGION[day]||'';
-  var catMeta=PICK_CATS.find(function(c){return c.key===cat});
-  document.getElementById('pickerTitle').textContent=(catMeta?catMeta.icon+' '+catMeta.label:'장소')+' 선택 (4/'+day+')';
-  // Region buttons
+// Add text item
+function addSchText(day,sec){
+  var text=prompt('입력:');
+  if(!text)return;
+  var memo=prompt('메모 (가격, 상세 등 — 생략 가능):');
+  if(!schData[day])schData[day]={};
+  if(!schData[day][sec])schData[day][sec]=[];
+  schData[day][sec].push({text:text,memo:memo||''});
+  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
+}
+
+// Delete item
+function delSchItem(day,sec,idx){
+  if(!isAdmin)return;
+  if(!schData[day]||!schData[day][sec])return;
+  schData[day][sec].splice(idx,1);
+  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
+}
+
+// Picker for schedule (reuse picker overlay)
+var schPickerDay=0,schPickerSec='';
+function openSchPicker(day,sec){
+  schPickerDay=day;schPickerSec=sec;
+  var region=DAY_REGION[day]||'';
+  // Determine which place categories to show
+  var catFilter=[];
+  if(sec==='breakfast'||sec==='lunch'||sec==='dinner'||sec==='snack') catFilter=['food','cafe'];
+  else if(sec==='activity') catFilter=['spot','food','cafe','spa'];
+
+  document.getElementById('pickerTitle').textContent=SEC_DEF.find(function(s){return s.key===sec}).icon+' '+SEC_DEF.find(function(s){return s.key===sec}).label+' 선택 (4/'+day+')';
   var regions=['전체','북부','중부','남부'];
+  pickerRegionFilter=region;
   document.getElementById('pickerRegion').innerHTML=regions.map(function(r){
-    var isOn=(r==='전체'&&!pickerRegionFilter)||(r===pickerRegionFilter);
-    return '<button class="'+(isOn?'on':'')+'" onclick="setPickerRegion(\''+r+'\',this)">'+r+'</button>';
+    var isOn=(r==='전체'&&!region)||(r===region);
+    return '<button class="'+(isOn?'on':'')+'" onclick="setSchPickerRegion(\''+r+'\',this)">'+r+'</button>';
   }).join('');
-  renderPickerList();
+  renderSchPickerList(catFilter);
   document.getElementById('pickerOverlay').classList.add('show');
 }
-function closePicker(){document.getElementById('pickerOverlay').classList.remove('show')}
-function setPickerRegion(r,btn){
+var pickerRegionFilter='';
+function setSchPickerRegion(r,btn){
   pickerRegionFilter=r==='전체'?'':r;
   document.querySelectorAll('.picker-region button').forEach(function(b){b.classList.remove('on')});
   btn.classList.add('on');
-  renderPickerList();
+  // Re-determine catFilter from schPickerSec
+  var catFilter=[];
+  if(['breakfast','lunch','dinner','snack'].indexOf(schPickerSec)>=0) catFilter=['food','cafe'];
+  else catFilter=['spot','food','cafe','spa'];
+  renderSchPickerList(catFilter);
 }
-function renderPickerList(){
+function renderSchPickerList(catFilter){
   var el=document.getElementById('pickerList');
-  // Map cat key to place category
-  var catMap={food:'food',cafe:'cafe',spa:'spa',spot:'spot'};
-  var placeCat=catMap[pickerCat];
-  var places=gAll().filter(function(p){return p.c===placeCat});
-  if(pickerRegionFilter){places=places.filter(function(p){return dReg(p.lat)===pickerRegionFilter})}
-  var dayPicks=(schPicks[pickerDay]&&schPicks[pickerDay][pickerCat])||[];
-  var selected=new Set(dayPicks);
-  if(!places.length){el.innerHTML='<div style="padding:20px;text-align:center;color:#999">해당 지역에 장소가 없어요</div>';return}
+  var places=gAll().filter(function(p){return catFilter.indexOf(p.c)>=0});
+  if(pickerRegionFilter) places=places.filter(function(p){return dReg(p.lat)===pickerRegionFilter});
+  if(!places.length){el.innerHTML='<div style="padding:20px;text-align:center;color:#999">장소 없음</div>';return}
   el.innerHTML=places.map(function(p){
     var m0=CM[p.c]||{i:'⭐',co:'#e91e63'};
-    var isSel=selected.has(p.n);
     var meta=[dReg(p.lat),p.r?'⭐'+p.r:'',p.pr||''].filter(Boolean).join(' · ');
-    return '<div class="picker-item'+(isSel?' selected':'')+'" onclick="togglePick(\''+p.n.replace(/'/g,"\\'")+'\')">'
+    return '<div class="picker-item" onclick="selectSchPlace(\''+p.n.replace(/'/g,"\\'")+'\',\''+((p.pr||'')+' '+(p.d||'')).replace(/'/g,"\\'")+'\')">'
       +'<div class="pi-icon" style="background:'+m0.co+'">'+m0.i+'</div>'
-      +'<div class="pi-info"><div class="pi-name">'+p.n+'</div><div class="pi-meta">'+meta+'</div>'+(p.d?'<div class="pi-meta">'+p.d+'</div>':'')+'</div>'
-      +'<span class="pi-check">✓</span></div>';
+      +'<div class="pi-info"><div class="pi-name">'+p.n+'</div><div class="pi-meta">'+meta+'</div>'+(p.d?'<div class="pi-meta">'+p.d+'</div>':'')+'</div></div>';
   }).join('');
 }
-function togglePick(name){
-  if(!schPicks[pickerDay])schPicks[pickerDay]={};
-  if(!schPicks[pickerDay][pickerCat])schPicks[pickerDay][pickerCat]=[];
-  var arr=schPicks[pickerDay][pickerCat];
-  var idx=arr.indexOf(name);
-  if(idx>=0)arr.splice(idx,1);else arr.push(name);
-  fbSet('schedule_picks/'+pickerDay+'/'+pickerCat,arr);
-  renderPickerList();
+function selectSchPlace(name,info){
+  var day=schPickerDay,sec=schPickerSec;
+  if(!schData[day])schData[day]={};
+  if(!schData[day][sec])schData[day][sec]=[];
+  // Check duplicate
+  if(schData[day][sec].some(function(it){return it.text===name})){closePicker();return}
+  schData[day][sec].push({text:name,memo:info.trim(),placeKey:true});
+  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
+  closePicker();
 }
-function removePick(day,cat,name){
-  if(!isAdmin)return;
-  if(!schPicks[day]||!schPicks[day][cat])return;
-  var arr=schPicks[day][cat];
-  var idx=arr.indexOf(name);
-  if(idx>=0){arr.splice(idx,1);fbSet('schedule_picks/'+day+'/'+cat,arr)}
-}
+function closePicker(){document.getElementById('pickerOverlay').classList.remove('show')}
 
 // MAP
 function initMap(){
@@ -878,7 +882,7 @@ function exportDiary(){
 }
 
 // INIT
-buildSch();bCl();
+renderSch();bCl();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
 </script>
 </body>
