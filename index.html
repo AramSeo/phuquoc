@@ -133,7 +133,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 #map{flex:1;min-height:200px;z-index:1}
 .mcards{max-height:30vh;overflow-y:auto;background:var(--sf);border-top:1px solid #eee;display:none;flex-shrink:0}
 .mcards.show{display:block}
-.mc{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #f0ece4;cursor:pointer}
+.mc{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #f0ece4;cursor:pointer;position:relative}
 .mc:active{background:#f5f5f0}
 .mc-rt{width:26px;height:26px;border-radius:50%;border:1.5px solid #ddd;background:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0;font-family:inherit}
 .mc-rt.in{border-color:var(--pk);background:var(--pk);color:#fff}
@@ -205,9 +205,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .ql a{padding:5px 10px;border-radius:12px;font-size:10.5px;text-decoration:none;font-weight:500}
 
 /* Settings overlay */
-.settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1001;display:none;overflow-y:auto}
+.settings-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:9999;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .settings-overlay.show{display:block}
-.settings-panel{background:var(--sf);min-height:100%;padding:20px 16px 40px;padding-top:calc(env(safe-area-inset-top, 0px) + 20px)}
+.settings-panel{background:var(--sf);min-height:100%;padding:20px 16px 120px}
+.settings-panel h2{position:sticky;top:0;background:var(--sf);padding:10px 0;z-index:1;margin-bottom:10px}
 .settings-panel h2{font-size:18px;font-weight:900;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
 .settings-panel .close-set{background:none;border:none;font-size:24px;color:var(--tx2);cursor:pointer}
 .set-group{margin-bottom:16px}
@@ -294,6 +295,7 @@ body.font-lg .ti em{font-size:19px}
       <button class="abtn" onclick="addUserPlace()">추가</button>
       <div id="userPlacesList" style="margin-top:12px"></div>
     </div>
+    <div id="placesTrashSection" style="display:none;margin:8px 12px;padding:10px;background:#fafafa;border-radius:var(--r);border:1px solid #eee"></div>
   </div>
 </div>
 
@@ -556,7 +558,7 @@ function updMode(){
   if(isAdmin){b.textContent=appSettings.adminLabel||'Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
   else{b.textContent=appSettings.visitorLabel||'Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
   var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
-  renderSch();renderKeyInfo();renderTips();renderBudgetSummary();rMk();if(aFil!=='all')rCd(aFil);
+  renderSch();renderKeyInfo();renderTips();renderBudgetSummary();renderPlacesTrash();rMk();if(aFil!=='all')rCd(aFil);
 }
 
 // ===== PLACES =====
@@ -740,7 +742,11 @@ function sFlt(c,btn){
   else{mc.classList.add('show');rCd(c)}
 }
 var userPlacesCache=[],routeCache=new Set();
-function gAll(){return P.concat(userPlacesCache)}
+var hiddenPlaces=new Set();
+fbGet('hidden_places',function(val){hiddenPlaces=new Set(val||[]);rMk();if(aFil!=='all')rCd(aFil)});
+var placesTrash=[];
+fbGet('places_trash',function(val){placesTrash=val||[]});
+function gAll(){return P.concat(userPlacesCache).filter(function(p){return !hiddenPlaces.has(p.n)})}
 function gRt(){return routeCache}
 function rMk(){
   if(!lmap)return;amk.forEach(function(m){lmap.removeLayer(m)});amk=[];
@@ -805,7 +811,9 @@ function rCd(cat){
         html+='<div class="mc-mt">'+noteVal+'</div>';
       }
       html+='</div>';
-      html+='<a class="mc-lk" href="'+gl+'" target="_blank" onclick="event.stopPropagation()">↗</a></div>';
+      html+='<a class="mc-lk" href="'+gl+'" target="_blank" onclick="event.stopPropagation()">↗</a>';
+      if(isAdmin)html+='<button onclick="event.stopPropagation();deletePlace(window._mcPlaces['+idx+'].n)" style="position:absolute;top:4px;right:4px;background:none;border:none;color:#ddd;cursor:pointer;font-size:12px;padding:2px 4px">✕</button>';
+      html+='</div>';
     });
   });
   el.innerHTML=html;
@@ -937,37 +945,10 @@ function removeFromSchedule(name){
 }
 function addUserPlace(){
   var url=document.getElementById('apUrl').value.trim(),name=document.getElementById('apName').value.trim(),cat=document.getElementById('apCat').value,note=document.getElementById('apNote').value.trim();
-  // Short URL detection
-  if(url&&(url.indexOf('goo.gl/')>=0||url.indexOf('maps.app')>=0)){
-    var btn=document.getElementById('addPlaceBtn');
-    if(btn)btn.textContent='검색 중...';
-    fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(url))
-      .then(function(r){return r.text()})
-      .then(function(html){
-        var lat=NaN,lng=NaN,autoName='';
-        var m=html.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-        if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}
-        if(isNaN(lat)){m=html.match(/center=(-?\d+\.\d+)%2C(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}
-        if(isNaN(lat)){m=html.match(/"lat":(-?\d+\.\d+).*?"lng":(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}
-        // Extract name from URL or HTML
-        var nm=html.match(/place\/([^/@?]+)/);
-        if(nm)try{autoName=decodeURIComponent(nm[1]).replace(/\+/g,' ')}catch(e){}
-        if(!autoName){nm=html.match(/<title>([^<]+)/);if(nm)autoName=nm[1].replace(/ - Google.*/,'').trim()}
-        if(!name&&autoName)document.getElementById('apName').value=autoName;
-        if(!isNaN(lat)&&!isNaN(lng)){
-          document.getElementById('apUrl').value=url+' → '+lat.toFixed(4)+','+lng.toFixed(4);
-          doAddPlace(name||autoName,cat,lat,lng,note);
-        } else {
-          alert('좌표를 찾을 수 없습니다');
-        }
-        if(btn)btn.textContent='추가';
-      }).catch(function(){alert('URL을 확인할 수 없습니다');if(btn)btn.textContent='추가'});
-    return;
-  }
   var lat=NaN,lng=NaN;
   if(url){var m=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}if(isNaN(lat)){m=url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}if(!name){var nm=url.match(/place\/([^/@?]+)/);if(nm)try{name=decodeURIComponent(nm[1]).replace(/\+/g,' ')}catch(e){name=nm[1]}}}
   if(!name){alert('장소 이름을 입력해주세요');return}
-  if(isNaN(lat)||isNaN(lng)){alert('Google Maps 전체 URL을 붙여넣어주세요');return}
+  if(isNaN(lat)||isNaN(lng)){alert('Google Maps 전체 URL을 붙여넣어주세요\n\n짧은 URL(goo.gl)인 경우:\nSafari/Chrome에서 열어 긴 URL을 복사하세요');return}
   doAddPlace(name,cat,lat,lng,note);
 }
 function doAddPlace(name,cat,lat,lng,note){
@@ -1359,39 +1340,57 @@ function savePlaceCoords(name,lat,lng){
   placeCoords[key]={lat:lat,lng:lng};
   fbSet('place_coords/'+key,{lat:lat,lng:lng});
 }
+function deletePlace(name){
+  if(!confirm('"'+name+'" 삭제하시겠습니까?'))return;
+  // Add to hidden
+  hiddenPlaces.add(name);
+  fbSet('hidden_places',Array.from(hiddenPlaces));
+  // Save to trash
+  var p=P.concat(userPlacesCache).find(function(x){return x.n===name});
+  if(p){placesTrash.push({n:p.n,c:p.c,lat:p.lat,lng:p.lng,r:p.r,pr:p.pr,d:p.d});fbSet('places_trash',placesTrash)}
+  // Also remove from route/schedule
+  removeFromSchedule(name);
+  var arr=Array.from(routeCache);
+  var ri=arr.indexOf(name);
+  if(ri>=0){arr.splice(ri,1);fbSet('route',arr.length?arr:null)}
+  rMk();if(aFil!=='all')rCd(aFil);renderPlacesTrash();
+}
+function restorePlace(i){
+  var p=placesTrash.splice(i,1)[0];
+  if(p){hiddenPlaces.delete(p.n);fbSet('hidden_places',Array.from(hiddenPlaces))}
+  fbSet('places_trash',placesTrash.length?placesTrash:null);
+  rMk();if(aFil!=='all')rCd(aFil);renderPlacesTrash();
+}
+function permDeletePlace(i){
+  placesTrash.splice(i,1);
+  fbSet('places_trash',placesTrash.length?placesTrash:null);
+  renderPlacesTrash();
+}
+function renderPlacesTrash(){
+  var el=document.getElementById('placesTrashSection');
+  if(!el||!isAdmin){if(el)el.style.display='none';return}
+  if(!placesTrash.length){el.style.display='none';return}
+  el.style.display='block';
+  var h='<div style="font-size:12px;font-weight:700;color:#999;margin-bottom:6px">삭제된 장소</div>';
+  placesTrash.forEach(function(p,i){
+    h+='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;margin:3px 0;background:#fff;border-radius:6px;font-size:12px;opacity:0.6">';
+    h+='<span>'+p.n+'</span>';
+    h+='<span><button onclick="restorePlace('+i+')" style="background:none;border:none;color:var(--ac);cursor:pointer;font-size:11px;padding:2px 6px">복원</button>';
+    h+='<button onclick="permDeletePlace('+i+')" style="background:none;border:none;color:var(--co);cursor:pointer;font-size:11px;padding:2px 6px">삭제</button></span></div>';
+  });
+  el.innerHTML=h;
+}
 function updateCoordsFromUrl(idx){
   var p=window._mcPlaces[idx];
-  var input=prompt('Google Maps URL 또는 좌표 입력\n(예: 10.329, 103.862)\n\n짧은 URL(maps.app.goo.gl)도 OK!');
+  var input=prompt('Google Maps URL 또는 좌표 입력\n(예: 10.329, 103.862)\n\n짧은 URL(goo.gl)인 경우:\n1. Safari/Chrome에서 열기\n2. 주소창의 긴 URL 복사\n3. 여기에 붙여넣기');
   if(!input)return;
   input=input.trim();
-  // Check if short URL
-  if(input.indexOf('goo.gl/')>=0||input.indexOf('maps.app')>=0){
-    alert('좌표 검색 중...');
-    fetch('https://api.allorigins.win/raw?url='+encodeURIComponent(input))
-      .then(function(r){return r.text()})
-      .then(function(html){
-        var lat=NaN,lng=NaN;
-        var m=html.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-        if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}
-        if(isNaN(lat)){m=html.match(/center=(-?\d+\.\d+)%2C(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}
-        if(isNaN(lat)){m=html.match(/ll=(-?\d+\.\d+),(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}
-        if(isNaN(lat)){m=html.match(/"lat":(-?\d+\.\d+).*?"lng":(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}
-        if(!isNaN(lat)&&!isNaN(lng)){
-          savePlaceCoords(p.n,lat,lng);
-          alert('좌표 업데이트: '+lat.toFixed(4)+', '+lng.toFixed(4));
-        } else {
-          alert('좌표를 찾을 수 없습니다.\n직접 입력해주세요 (예: 10.329, 103.862)');
-        }
-      }).catch(function(){alert('URL을 확인할 수 없습니다.\n직접 좌표를 입력해주세요.')});
-    return;
-  }
-  // Try URL patterns
   var lat=NaN,lng=NaN;
   var m=input.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
   if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}
   if(isNaN(lat)){m=input.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}
   if(isNaN(lat)){m=input.match(/(-?\d+\.?\d*)\s*[,\s]\s*(-?\d+\.?\d*)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}
-  if(isNaN(lat)||isNaN(lng)){alert('좌표를 추출할 수 없습니다');return}
+  if(isNaN(lat)||isNaN(lng)){alert('좌표를 추출할 수 없습니다.\n직접 좌표를 입력해주세요.\n(예: 10.329, 103.862)');return}
   savePlaceCoords(p.n,lat,lng);
   alert('좌표 업데이트: '+lat.toFixed(4)+', '+lng.toFixed(4));
 }
