@@ -399,6 +399,21 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
   </div>
 </div>
 
+<!-- Text Input Modal -->
+<div class="mo" id="textMo">
+  <div class="md" style="text-align:left">
+    <h3 id="textMoTitle">항목 추가</h3>
+    <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">입력</div>
+    <input type="text" id="textMoInput" placeholder="내용" style="text-align:left;font-size:14px">
+    <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">메모 (가격 등, 생략 가능)</div>
+    <input type="text" id="textMoMemo" placeholder="메모" style="text-align:left;font-size:14px">
+    <div class="mdb">
+      <button class="cc" onclick="closeTextMo()">취소</button>
+      <button class="cf" onclick="confirmTextMo()">추가</button>
+    </div>
+  </div>
+</div>
+
 <!-- Place Picker -->
 <div class="picker-overlay" id="pickerOverlay" onclick="if(event.target===this)closePicker()">
   <div class="picker-panel">
@@ -622,14 +637,29 @@ function saveDayLabel(day,field,val){
 }
 
 // Add text item
+var textMoDay=0,textMoSec='';
 function addSchText(day,sec){
-  var text=prompt('입력:');
-  if(!text)return;
-  var memo=prompt('메모 (가격, 상세 등 — 생략 가능):');
+  textMoDay=day;textMoSec=sec;
+  var secLabel=SEC_DEF.find(function(s){return s.key===sec});
+  document.getElementById('textMoTitle').textContent=(secLabel?secLabel.icon+' ':'')+' 항목 추가 (4/'+day+')';
+  document.getElementById('textMoInput').value='';
+  document.getElementById('textMoMemo').value='';
+  document.getElementById('textMo').classList.add('show');
+  setTimeout(function(){document.getElementById('textMoInput').focus()},100);
+}
+function closeTextMo(){document.getElementById('textMo').classList.remove('show')}
+document.getElementById('textMoMemo').addEventListener('keydown',function(e){if(e.key==='Enter')confirmTextMo()});
+document.getElementById('textMoInput').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('textMoMemo').focus()});
+function confirmTextMo(){
+  var text=document.getElementById('textMoInput').value.trim();
+  if(!text){alert('내용을 입력해주세요');return}
+  var memo=document.getElementById('textMoMemo').value.trim();
+  var day=textMoDay,sec=textMoSec;
   if(!schData[day])schData[day]={};
   if(!schData[day][sec])schData[day][sec]=[];
   schData[day][sec].push({text:text,memo:memo||''});
   fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
+  closeTextMo();
 }
 
 // Delete item
