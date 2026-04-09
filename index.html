@@ -751,7 +751,8 @@ function rMk(){
   ps.forEach(function(p){
     var m0=CM[p.c]||{i:'⭐',co:'#e91e63'};
     var ic=L.divIcon({className:'',html:'<div class="cmk" style="background:'+m0.co+'">'+m0.i+'</div>',iconSize:[28,28],iconAnchor:[14,14]});
-    var mk=L.marker([p.lat,p.lng],{icon:ic}).addTo(lmap);
+    var oc=getPlaceCoords(p.n);var plat=oc?oc.lat:p.lat,plng=oc?oc.lng:p.lng;
+    var mk=L.marker([plat,plng],{icon:ic}).addTo(lmap);
     var gl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc');
     var inRoute=gRt().has(p.n);
     var rtLabel=inRoute?'MY루트 수정':'MY루트에 추가';
@@ -761,7 +762,7 @@ function rMk(){
     var pNote=getPlaceNote(p.n)!==null?getPlaceNote(p.n):(p.d||'');
     var pPrice=getPlacePrice(p.n)!==null?getPlacePrice(p.n):(p.pr||'');
     var routeBtnHtml=isAdmin?'<br><button id="rb_'+pidx+'" style="margin-top:4px;padding:5px 12px;'+rtSt+';border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 '+rtLabel+'</button>':'';
-    mk.bindPopup('<b>'+m0.i+' <a href="'+gl+'" target="_blank" style="color:var(--ac);text-decoration:none;border-bottom:1px dashed var(--ac)">'+p.n+'</a></b><br>'+dReg(p.lat)+(pNote?' · '+pNote:'')+(pPrice?'<br>💰 '+pPrice:'')+routeBtnHtml);
+    mk.bindPopup('<b>'+m0.i+' <a href="'+gl+'" target="_blank" style="color:var(--ac);text-decoration:none;border-bottom:1px dashed var(--ac)">'+p.n+'</a></b><br>'+dReg(plat)+(pNote?' · '+pNote:'')+(pPrice?'<br>💰 '+pPrice:'')+routeBtnHtml);
     mk.on('popupopen',function(){
       if(!isAdmin)return;
       var btn=document.getElementById('rb_'+pidx);
@@ -788,7 +789,8 @@ function rCd(cat){
       window._mcPlaces.push(p);
       var m0=CM[p.c]||{i:'⭐',co:'#e91e63'},gl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc');
       var inR=rs.has(p.n),mt=[p.r?'⭐'+p.r:''].filter(Boolean).join(' · ');
-      html+='<div class="mc" onclick="lmap.flyTo(['+p.lat+','+p.lng+'],15,{duration:.5})">';
+      var oc2=getPlaceCoords(p.n);var plat2=oc2?oc2.lat:p.lat,plng2=oc2?oc2.lng:p.lng;
+      html+='<div class="mc" onclick="lmap.flyTo(['+plat2+','+plng2+'],15,{duration:.5})">';
       if(isAdmin)html+='<button class="mc-rt '+(inR?'in':'')+'" onclick="event.stopPropagation();tRt(window._mcPlaces['+idx+'].n)">📌</button>';
       html+='<div class="mc-ic" style="background:'+m0.co+'">'+m0.i+'</div>';
       var noteVal=getPlaceNote(p.n)!==null?getPlaceNote(p.n):(p.d||'');
@@ -797,6 +799,7 @@ function rCd(cat){
       if(isAdmin){
         html+='<div class="mc-mt">'+mt+(priceVal?' · ':'')+' <input type="text" value="'+(priceVal).replace(/"/g,'&quot;')+'" placeholder="가격" onclick="event.stopPropagation()" onblur="savePlacePrice(window._mcPlaces['+idx+'].n,this.value)" style="border:none;border-bottom:1px dashed #ccc;background:none;font-size:10px;color:var(--co);font-family:inherit;outline:none;padding:1px 0;width:60%"></div>';
         html+='<div class="mc-mt"><input type="text" value="'+(noteVal).replace(/"/g,'&quot;')+'" placeholder="메모" onclick="event.stopPropagation()" onblur="savePlaceNote(window._mcPlaces['+idx+'].n,this.value)" style="border:none;border-bottom:1px dashed #ccc;background:none;font-size:10px;color:var(--tx2);font-family:inherit;outline:none;width:100%;padding:1px 0"></div>';
+        html+='<div class="mc-mt"><button onclick="event.stopPropagation();updateCoordsFromUrl('+idx+')" style="border:none;border-bottom:1px dashed #ccc;background:none;font-size:9px;color:#999;font-family:inherit;cursor:pointer;padding:1px 0">좌표 수정 (Google Maps URL)</button></div>';
       } else {
         html+='<div class="mc-mt">'+mt+(priceVal?' · '+priceVal:'')+'</div>';
         html+='<div class="mc-mt">'+noteVal+'</div>';
@@ -1318,6 +1321,26 @@ var placePrices={};
 fbGet('place_prices',function(val){placePrices=val||{}});
 function getPlacePrice(name){return placePrices[name]!==undefined?placePrices[name]:null}
 function savePlacePrice(name,val){placePrices[name]=val;fbSet('place_prices/'+name.replace(/[.#$/\[\]]/g,'_'),val)}
+var placeCoords={};
+fbGet('place_coords',function(val){placeCoords=val||{};rMk();if(aFil!=='all')rCd(aFil)});
+function getPlaceCoords(name){return placeCoords[name.replace(/[.#$/\[\]]/g,'_')]||null}
+function savePlaceCoords(name,lat,lng){
+  var key=name.replace(/[.#$/\[\]]/g,'_');
+  placeCoords[key]={lat:lat,lng:lng};
+  fbSet('place_coords/'+key,{lat:lat,lng:lng});
+}
+function updateCoordsFromUrl(idx){
+  var p=window._mcPlaces[idx];
+  var url=prompt('Google Maps URL을 붙여넣으세요:');
+  if(!url)return;
+  var lat=NaN,lng=NaN;
+  var m=url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}
+  if(isNaN(lat)){m=url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);if(m){lat=parseFloat(m[1]);lng=parseFloat(m[2])}}
+  if(isNaN(lat)||isNaN(lng)){alert('좌표를 추출할 수 없습니다');return}
+  savePlaceCoords(p.n,lat,lng);
+  alert('좌표 업데이트: '+lat.toFixed(4)+', '+lng.toFixed(4));
+}
 
 // Font size toggle
 var _fontLg=false;
