@@ -425,23 +425,33 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
   </div>
 </div>
 
-<!-- Route Date/Time Picker -->
+<!-- Route Modal -->
 <div class="mo" id="rtMo">
   <div class="md" style="text-align:left;max-width:320px">
-    <h3 id="rtMoTitle" style="font-size:15px">📌 MY루트에 추가</h3>
-    <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">날짜</div>
-    <select id="rtDay" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:8px">
-      <option value="13">4/13 월</option><option value="14">4/14 화</option><option value="15">4/15 수</option>
-      <option value="16">4/16 목</option><option value="17">4/17 금</option><option value="18">4/18 토</option>
-    </select>
-    <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">시간대</div>
-    <select id="rtTime" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px">
-      <option value="breakfast">🌅 아침</option><option value="lunch">🍜 점심</option><option value="dinner">🌙 저녁</option>
-      <option value="snack">🍉 간식/야식</option><option value="activity">🎯 활동</option><option value="hotel">🏨 숙소</option>
-    </select>
-    <div class="mdb">
-      <button class="cc" onclick="document.getElementById('rtMo').classList.remove('show')">취소</button>
-      <button class="cf" onclick="confirmRt()">추가</button>
+    <h3 id="rtMoTitle" style="font-size:15px">📌 MY루트</h3>
+    <!-- Add mode -->
+    <div id="rtAdd">
+      <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">날짜</div>
+      <select id="rtDay" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:8px">
+        <option value="13">4/13 월</option><option value="14">4/14 화</option><option value="15">4/15 수</option>
+        <option value="16">4/16 목</option><option value="17">4/17 금</option><option value="18">4/18 토</option>
+      </select>
+      <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">시간대</div>
+      <select id="rtTime" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px">
+        <option value="breakfast">🌅 아침</option><option value="lunch">🍜 점심</option><option value="dinner">🌙 저녁</option>
+        <option value="snack">🍉 간식/야식</option><option value="activity">🎯 활동</option><option value="hotel">🏨 숙소</option>
+      </select>
+      <div class="mdb">
+        <button class="cc" onclick="document.getElementById('rtMo').classList.remove('show')">취소</button>
+        <button class="cf" onclick="confirmRt()">추가</button>
+      </div>
+    </div>
+    <!-- Already in route mode -->
+    <div id="rtExist" style="display:none">
+      <div id="rtExistList" style="margin-bottom:12px"></div>
+      <button onclick="showRtAdd()" style="width:100%;padding:10px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">📌 다른 날짜에도 추가</button>
+      <button onclick="removeAllRt()" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">전체 제거</button>
+      <button onclick="document.getElementById('rtMo').classList.remove('show')" style="width:100%;padding:10px;background:#eee;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit">닫기</button>
     </div>
   </div>
 </div>
@@ -735,59 +745,101 @@ function rCd(cat){
 }
 var _rtName='';
 function tRt(n){
-  var arr=Array.from(routeCache);
-  var i=arr.indexOf(n);
-  if(i>=0){
-    // Remove from route
-    arr.splice(i,1);
-    fbSet('route',arr.length?arr:null);
-    // Also remove from schedule
-    removeFromSchedule(n);
+  _rtName=n;
+  document.getElementById('rtMoTitle').textContent='📌 '+n;
+  var inRoute=routeCache.has(n);
+  if(inRoute){
+    // Show existing entries + options
+    document.getElementById('rtAdd').style.display='none';
+    document.getElementById('rtExist').style.display='block';
+    // Build list of current schedule entries
+    var dayNames={13:'4/13 월',14:'4/14 화',15:'4/15 수',16:'4/16 목',17:'4/17 금',18:'4/18 토'};
+    var secNames={hotel:'숙소',transport:'이동',activity:'활동',breakfast:'아침',lunch:'점심',dinner:'저녁',snack:'간식',etc:'기타'};
+    var list='<div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:6px">현재 일정:</div>';
+    var found=false;
+    Object.keys(schData).forEach(function(day){
+      Object.keys(schData[day]||{}).forEach(function(sec){
+        var arr=schData[day][sec];
+        if(!Array.isArray(arr))return;
+        arr.forEach(function(it,idx){
+          if(it.text===n){
+            found=true;
+            list+='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;margin:3px 0;background:var(--sf2);border-radius:6px;font-size:12px">'
+              +'<span>'+(dayNames[day]||'4/'+day)+' · '+(secNames[sec]||sec)+'</span>'
+              +'<button onclick="removeOneRt(\''+day+'\',\''+sec+'\','+idx+')" style="background:none;border:none;color:var(--co);font-size:12px;cursor:pointer;padding:2px 6px">✕</button></div>';
+          }
+        });
+      });
+    });
+    if(!found)list+='<div style="color:#999;font-size:11px;padding:4px">일정에 등록된 항목 없음</div>';
+    document.getElementById('rtExistList').innerHTML=list;
   } else {
-    // Show date/time picker
-    _rtName=n;
-    document.getElementById('rtMoTitle').textContent='📌 '+n;
-    // Auto-select day based on region
+    // Show add mode
+    document.getElementById('rtAdd').style.display='block';
+    document.getElementById('rtExist').style.display='none';
     var place=gAll().find(function(p){return p.n===n});
     if(place){
       var reg=dReg(place.lat);
       var dayMap={'북부':'14','중부':'15','남부':'17'};
       document.getElementById('rtDay').value=dayMap[reg]||'14';
-      // Auto-select time based on category
       var catTime={food:'lunch',cafe:'snack',spa:'activity',spot:'activity',shop:'activity',hotel:'hotel'};
       document.getElementById('rtTime').value=catTime[place.c]||'activity';
     }
-    document.getElementById('rtMo').classList.add('show');
+  }
+  document.getElementById('rtMo').classList.add('show');
+}
+function showRtAdd(){
+  document.getElementById('rtExist').style.display='none';
+  document.getElementById('rtAdd').style.display='block';
+  var place=gAll().find(function(p){return p.n===_rtName});
+  if(place){
+    var reg=dReg(place.lat);
+    var dayMap={'북부':'14','중부':'15','남부':'17'};
+    document.getElementById('rtDay').value=dayMap[reg]||'14';
+    var catTime={food:'lunch',cafe:'snack',spa:'activity',spot:'activity',shop:'activity',hotel:'hotel'};
+    document.getElementById('rtTime').value=catTime[place.c]||'activity';
   }
 }
 function confirmRt(){
   var day=document.getElementById('rtDay').value;
   var sec=document.getElementById('rtTime').value;
-  // Add to route
   var arr=Array.from(routeCache);
   if(arr.indexOf(_rtName)<0) arr.push(_rtName);
   fbSet('route',arr);
-  // Add to schedule
   var place=gAll().find(function(p){return p.n===_rtName});
   var memo=place?((place.pr||'')+' '+(place.d||'')).trim():'';
   day=''+day;if(!schData[day])schData[day]={};
   if(!schData[day][sec])schData[day][sec]=[];
-  if(!schData[day][sec].some(function(it){return it.text===_rtName})){
-    schData[day][sec].push({text:_rtName,memo:memo,placeKey:true});
-    fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
+  if(schData[day][sec].some(function(it){return it.text===_rtName})){
+    document.getElementById('rtMo').classList.remove('show');return;
   }
+  schData[day][sec].push({text:_rtName,memo:memo,placeKey:true});
+  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
+  document.getElementById('rtMo').classList.remove('show');
+}
+function removeOneRt(day,sec,idx){
+  if(!schData[day]||!schData[day][sec])return;
+  schData[day][sec].splice(idx,1);
+  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec].length?schData[day][sec]:null);
+  // Refresh the modal list
+  tRt(_rtName);
+}
+function removeAllRt(){
+  removeFromSchedule(_rtName);
+  var arr=Array.from(routeCache);
+  var i=arr.indexOf(_rtName);
+  if(i>=0){arr.splice(i,1);fbSet('route',arr.length?arr:null)}
   document.getElementById('rtMo').classList.remove('show');
 }
 function removeFromSchedule(name){
-  // Remove from all days/sections
   Object.keys(schData).forEach(function(day){
-    Object.keys(schData[day]).forEach(function(sec){
+    Object.keys(schData[day]||{}).forEach(function(sec){
       var arr=schData[day][sec];
       if(!Array.isArray(arr))return;
       var filtered=arr.filter(function(it){return it.text!==name});
       if(filtered.length!==arr.length){
         schData[day][sec]=filtered;
-        fbSet('schedule_v2/'+day+'/'+sec,filtered);
+        fbSet('schedule_v2/'+day+'/'+sec,filtered.length?filtered:null);
       }
     });
   });
