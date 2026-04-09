@@ -311,11 +311,9 @@ body.font-lg .ti em{font-size:19px}
       <tr><td class="wd">4/17 금</td><td>32°/27°</td><td>☀️</td><td>🌤 15%</td><td>🌙 맑음</td></tr>
       <tr><td class="wd">4/18 토</td><td>30°/26°</td><td>🌤 10%</td><td>🌦 30%</td><td>🌤 15%</td></tr>
     </table></div>
-    <div class="wxl">참고: <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> <a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> <a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank">시간별</a></div>
   </div></div>
+  <div class="ql" style="padding:6px 12px"><span style="font-size:11px;color:var(--tx2);margin-right:4px">참고:</span><a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">AccuWeather</a><a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">rp5.ru</a><a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">시간별</a><a href="https://vinbus.vn/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">VinBus</a><a href="https://kissofthesea.com/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">Kiss of Sea</a><a href="https://onbird.vn/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">OnBird</a></div>
 </div>
-
-<!-- DIARY -->
 <div class="tc" id="tab-diary">
   <div class="drw">
     <div class="dup" onclick="document.getElementById('phIn').click()">
@@ -344,7 +342,6 @@ body.font-lg .ti em{font-size:19px}
         <div style="font-weight:700;font-size:14px;margin-bottom:6px">핵심 정보</div>
         <div id="keyInfoContent"></div>
       </div>
-      <div class="ql"><a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">AccuWeather</a><a href="https://vinbus.vn/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">VinBus</a><a href="https://kissofthesea.com/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">Kiss of Sea</a><a href="https://onbird.vn/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">OnBird</a></div>
       <div id="tipsCards"></div>
     </div>
     <div class="bts" id="bt-budget">
@@ -1187,6 +1184,7 @@ function renderTips(){
       if(i>0)h+='<button onclick="event.stopPropagation();moveTip('+i+',-1)" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:12px;padding:2px">▲</button>';
       if(i<cards.length-1)h+='<button onclick="event.stopPropagation();moveTip('+i+',1)" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:12px;padding:2px">▼</button>';
       h+='<input type="text" value="'+(card.title||'').replace(/"/g,'&quot;')+'" onblur="updTipTitle('+i+',this.value)" onclick="event.stopPropagation()" style="border:none;border-bottom:1px dashed #ccc;font-size:13.5px;font-weight:700;font-family:inherit;outline:none;background:none;padding:2px 4px">';
+      h+='<button onclick="event.stopPropagation();if(confirm(\'삭제하시겠습니까?\'))delTipCard('+i+')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:13px;padding:2px 4px;margin-left:auto">✕</button>';
       h+='</span>';
     } else {
       h+=card.title;
@@ -1225,6 +1223,23 @@ function renderTips(){
     }
     h+='</div></div></div>';
   });
+  // Admin: add new card button + trash
+  if(isAdmin){
+    h+='<div style="margin:8px 12px"><button onclick="addTipCard()" style="width:100%;padding:8px;border:1.5px dashed #bbb;border-radius:var(--r);background:none;font-size:12px;color:#999;cursor:pointer;font-family:inherit">+ 새 카드 추가</button></div>';
+    // Trash
+    var trash=tipsTrash||[];
+    if(trash.length){
+      h+='<div style="margin:12px 12px;padding:10px;background:#fafafa;border-radius:var(--r);border:1px solid #eee">';
+      h+='<div style="font-size:12px;font-weight:700;color:#999;margin-bottom:6px">휴지통</div>';
+      trash.forEach(function(card,i){
+        h+='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;margin:3px 0;background:#fff;border-radius:6px;font-size:12px;opacity:0.6">';
+        h+='<span>'+card.title+'</span>';
+        h+='<span><button onclick="restoreTipCard('+i+')" style="background:none;border:none;color:var(--ac);cursor:pointer;font-size:11px;padding:2px 6px">복원</button>';
+        h+='<button onclick="permDelTipCard('+i+')" style="background:none;border:none;color:var(--co);cursor:pointer;font-size:11px;padding:2px 6px">삭제</button></span></div>';
+      });
+      h+='</div>';
+    }
+  }
   el.innerHTML=h;
   // Re-populate checklist after DOM update
   if(typeof bCl==='function')bCl();
@@ -1235,6 +1250,28 @@ function updTipContent(i,val){tipsData[i].content=val;fbSet('tips_cards',tipsDat
 function updTipCell(i,ri,ci,val){tipsData[i].rows[ri][ci]=val;fbSet('tips_cards',tipsData)}
 function addTipRow(i){tipsData[i].rows.push(['','','']);fbSet('tips_cards',tipsData);renderTips()}
 function delTipRow(i,ri){tipsData[i].rows.splice(ri,1);fbSet('tips_cards',tipsData);renderTips()}
+// Tip card add/delete/trash
+var tipsTrash=[];
+fbGet('tips_trash',function(val){tipsTrash=val||[];renderTips()});
+function addTipCard(){tipsData.push({id:'custom_'+Date.now(),title:'새 카드',content:''});fbSet('tips_cards',tipsData);renderTips()}
+function delTipCard(i){
+  var card=tipsData.splice(i,1)[0];
+  if(!tipsTrash)tipsTrash=[];
+  tipsTrash.push(card);
+  fbSet('tips_cards',tipsData);
+  fbSet('tips_trash',tipsTrash);
+}
+function restoreTipCard(i){
+  var card=tipsTrash.splice(i,1)[0];
+  tipsData.push(card);
+  fbSet('tips_cards',tipsData);
+  fbSet('tips_trash',tipsTrash.length?tipsTrash:null);
+}
+function permDelTipCard(i){
+  tipsTrash.splice(i,1);
+  fbSet('tips_trash',tipsTrash.length?tipsTrash:null);
+  renderTips();
+}
 
 // ===== KEY INFO (editable) =====
 var defaultKeyInfo=['30~33°C / 밤27°C','한국-2시간','10만VND≈5,600원','일몰 18:15','남부>북부>중부','UV 11~15시'];
