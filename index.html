@@ -485,7 +485,7 @@ function saveSettings(){
 }
 
 // ===== TAB SWITCH =====
-function sw(t){document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});document.querySelector('[data-tab="'+t+'"]').classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100)}
+function sw(t){location.hash=t;document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});document.querySelector('[data-tab="'+t+'"]').classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100)}
 
 // ===== MODE =====
 function toggleMode(){if(isAdmin){isAdmin=false;updMode()}else{document.getElementById('pwMo').classList.add('show');document.getElementById('pwIn').value='';document.getElementById('pwEr').style.display='none';setTimeout(function(){document.getElementById('pwIn').focus()},100)}}
@@ -992,6 +992,11 @@ renderSch();bCl();
 fbOnce('schedule_picks').then(function(v){if(v)fbSet('schedule_picks',null)});
 fbOnce('schedule_v2').then(function(v){if(v){var dominated=false;Object.keys(v).forEach(function(k){if(v[k]&&typeof v[k]==='object'&&!Array.isArray(v[k])){/*ok*/}else{dominated=true}});if(dominated)fbSet('schedule_v2',null)}});
 setTimeout(function(){initMap()},100);
+// Hash navigation
+var validTabs=['map','schedule','diary','budget'];
+function loadHash(){var h=location.hash.replace('#','');if(validTabs.indexOf(h)>=0)sw(h)}
+if(location.hash)setTimeout(loadHash,200);
+window.addEventListener('hashchange',loadHash);
 // SW disabled for debugging
 </script>
 </body>
