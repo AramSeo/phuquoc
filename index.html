@@ -565,168 +565,75 @@ function getDayTitle(day){var dl=dayLabels[day];var di=DAY_INFO.find(function(d)
 function getDaySub(day){var dl=dayLabels[day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.sub)||di.sub}
 
 function renderSch(){
-  // Save open state + hidden state
-  var openDays={};
-  var hiddenDays={};
+  var openDays={};var hiddenDays={};
   document.querySelectorAll('.dc.op').forEach(function(el){openDays[el.dataset.day]=true});
   document.querySelectorAll('.dc').forEach(function(el){if(el.style.display==='none')hiddenDays[el.dataset.day]=true});
-
   var nav=document.getElementById('dayNav');
   var lb={13:'월·도착',14:'화·Safari',15:'수·중부',16:'목·스노클링',17:'금·JW',18:'토·출발',19:'일·인천'};
   var nh='<button class="on" onclick="showD(\'all\',this)">전체</button>';
   DAY_INFO.forEach(function(d){nh+='<button onclick="showD('+d.day+',this)">4/'+d.day+'<br><span style="font-size:10px">'+lb[d.day]+'</span></button>'});
   nav.innerHTML=nh;
-
   document.getElementById('schCards').innerHTML=DAY_INFO.map(function(d){
-    var title=getDayTitle(d.day);
-    var sub=getDaySub(d.day);
+    var title=getDayTitle(d.day),sub=getDaySub(d.day);
     var titleHtml,subHtml;
     if(isAdmin){
-      titleHtml='<div class="dct" contenteditable="true" style="border-bottom:1px dashed var(--gd);outline:none;min-width:60px" onclick="event.stopPropagation()" onblur="saveDayLabel('+d.day+',\'title\',this.textContent)">'+title+'</div>';
-      subHtml='<div class="dcs" contenteditable="true" style="border-bottom:1px dashed var(--gd);outline:none;min-width:60px" onclick="event.stopPropagation()" onblur="saveDayLabel('+d.day+',\'sub\',this.textContent)">'+sub+'</div>';
+      titleHtml='<div class="dct" contenteditable="true" style="border-bottom:1px dashed var(--gd);outline:none" onclick="event.stopPropagation()" onblur="saveDayLabel('+d.day+',\'title\',this.textContent)">'+title+'</div>';
+      subHtml='<div class="dcs" contenteditable="true" style="border-bottom:1px dashed var(--gd);outline:none" onclick="event.stopPropagation()" onblur="saveDayLabel('+d.day+',\'sub\',this.textContent)">'+sub+'</div>';
     } else {
       titleHtml='<div class="dct">'+title+'</div>';
       subHtml='<div class="dcs">'+sub+'</div>';
     }
+    // Day memo
+    var memoVal=(dayMemos&&dayMemos[d.day])||'';
+    var memoHtml='<div style="padding:10px 14px;border-bottom:1px solid #f0ece4">'
+      +'<textarea id="memo_'+d.day+'" placeholder="메모 남기기..." style="width:100%;padding:8px;border:1.5px solid #eee;border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:36px;outline:none" onblur="saveDayMemo('+d.day+',this.value)">'+memoVal+'</textarea></div>';
+    // Items from schedule_v2
     var dayData=schData[d.day]||{};
-    var body=SEC_DEF.map(function(sec){
-      var items=dayData[sec.key]||[];
+    var body=memoHtml;
+    var secLabels={transport:{i:'🚕',l:'이동',c:'trans'},activity:{i:'🎯',l:'활동',c:'act'},breakfast:{i:'🌅',l:'아침',c:'food'},lunch:{i:'🍜',l:'점심',c:'food'},dinner:{i:'🌙',l:'저녁',c:'food'},snack:{i:'🍉',l:'간식/야식',c:'food'},etc:{i:'💡',l:'기타',c:'info'}};
+    var secOrder=['transport','activity','breakfast','lunch','dinner','snack','etc'];
+    secOrder.forEach(function(key){
+      var items=dayData[key];
+      if(!items||!items.length)return;
+      var sl=secLabels[key];
       var clsMap={trans:'trans',food:'food',act:'act',info:'info'};
-      var itemCls=clsMap[sec.cls]||'info';
-
-      var itemsHtml=items.map(function(it,idx){
+      var cls=clsMap[sl.c]||'info';
+      body+='<div class="dsec"><div class="dsec-t '+sl.c+'">'+sl.i+' '+sl.l+'</div>';
+      items.forEach(function(it,idx){
         var gl=it.placeKey?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(it.text+' Phu Quoc'):'';
-        var nameHtml=gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':it.text;
-        var delBtn=isAdmin?'<button style="position:absolute;top:4px;right:4px;background:none;border:none;color:#ccc;font-size:12px;cursor:pointer" onclick="delSchItem('+d.day+',\''+sec.key+'\','+idx+')">✕</button>':'';
-        return '<div class="opt '+itemCls+'" style="position:relative">'+delBtn+'<div class="opt-n">'+nameHtml+'</div>'+(it.memo?'<div class="opt-d">'+it.memo+'</div>':'')+'</div>';
-      }).join('');
-
-      // Admin: pre-rendered hidden form + buttons
-      var addHtml='';
-      if(isAdmin){
-        var fid=d.day+'_'+sec.key;
-        var hasPicker=(sec.cls==='food'||sec.key==='activity');
-        // Pre-rendered form (hidden)
-        addHtml+='<div id="af_'+fid+'" style="display:none;margin:6px 0;padding:8px;background:#fff;border:1.5px solid #1a6b5a;border-radius:8px">'
-          +'<input type="text" id="si_'+fid+'" placeholder="내용 입력" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none;margin-bottom:4px">'
-          +'<input type="text" id="sm_'+fid+'" placeholder="메모 (가격 등, 생략 가능)" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none;margin-bottom:6px">'
-          +'<div style="display:flex;gap:4px">'
-          +'<button onclick="confirmSchAdd('+d.day+',\''+sec.key+'\')" style="flex:1;padding:7px;background:#1a6b5a;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">추가</button>'
-          +'<button onclick="document.getElementById(\'af_'+fid+'\').style.display=\'none\'" style="padding:7px 12px;background:#eee;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">취소</button>'
-          +'</div></div>';
-        // Buttons
-        if(hasPicker){
-          addHtml+='<div style="display:flex;gap:4px;margin-top:4px">'
-            +'<button onclick="openSchPicker('+d.day+',\''+sec.key+'\')" style="flex:1;padding:6px;border:1.5px dashed #bbb;border-radius:8px;background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit">📍 장소에서 선택</button>'
-            +'<button onclick="document.getElementById(\'af_'+fid+'\').style.display=\'block\'" style="padding:6px 10px;border:1.5px dashed #bbb;border-radius:8px;background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit">✏️ 직접 입력</button>'
-            +'</div>';
-        } else {
-          addHtml+='<button onclick="document.getElementById(\'af_'+fid+'\').style.display=\'block\'" style="width:100%;padding:6px;border:1.5px dashed #bbb;border-radius:8px;background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px">+ 추가</button>';
-        }
-      }
-
-      // Hide empty sections for visitor (no items and not admin)
-      if(!items.length && !isAdmin) return '';
-
-      return '<div class="dsec" data-sec="'+d.day+'_'+sec.key+'"><div class="dsec-t '+sec.cls+'">'+sec.icon+' '+sec.label+'</div>'+itemsHtml+addHtml+'</div>';
-    }).join('');
-
+        var nm=gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':it.text;
+        var del=isAdmin?'<button style="position:absolute;top:4px;right:4px;background:none;border:none;color:#ccc;font-size:12px;cursor:pointer" onclick="delSchItem('+d.day+',\''+key+'\','+idx+')">✕</button>':'';
+        body+='<div class="opt '+cls+'" style="position:relative">'+del+'<div class="opt-n">'+nm+'</div>'+(it.memo?'<div class="opt-d">'+it.memo+'</div>':'')+'</div>';
+      });
+      body+='</div>';
+    });
+    // Show "일정이 비어있어요" if no items
+    var hasItems=secOrder.some(function(k){return dayData[k]&&dayData[k].length});
+    if(!hasItems) body+='<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">지도에서 📌 MY루트에 추가하면 여기에 표시돼요</div>';
     return '<div class="dc" data-day="'+d.day+'"><div class="dch" onclick="tdc(this)"><div class="dcl"><div class="dcb">4/'+d.day+'</div><div>'+titleHtml+subHtml+'</div></div><div class="dca">▾</div></div><div class="dcbd">'+body+'</div></div>';
   }).join('');
-
-  // Restore open + hidden state
   document.querySelectorAll('.dc').forEach(function(el){
     if(openDays[el.dataset.day])el.classList.add('op');
     if(hiddenDays[el.dataset.day])el.style.display='none';
   });
 }
-
 function tdc(el){el.parentElement.classList.toggle('op')}
 function showD(d,btn){document.querySelectorAll('.dnav button').forEach(function(b){b.classList.remove('on')});if(btn)btn.classList.add('on');document.querySelectorAll('.dc').forEach(function(c){if(d==='all'){c.style.display='';c.classList.remove('op')}else{if(parseInt(c.dataset.day)===d){c.style.display='';c.classList.add('op')}else c.style.display='none'}})}
-
-function saveDayLabel(day,field,val){
-  if(!isAdmin)return;
-  val=val.trim();
-  if(!dayLabels[day])dayLabels[day]={};
-  dayLabels[day][field]=val;
-  fbSet('day_labels/'+day+'/'+field,val);
-}
-
-// Add schedule item
-function confirmSchAdd(day,sec){
-  var ti=document.getElementById('si_'+day+'_'+sec);
-  var tm=document.getElementById('sm_'+day+'_'+sec);
-  if(!ti)return;
-  var text=ti.value.trim();
-  if(!text)return;
-  var memo=tm?tm.value.trim():'';
-  if(!schData[day])schData[day]={};
-  if(!schData[day][sec])schData[day][sec]=[];
-  schData[day][sec].push({text:text,memo:memo});
-  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
-}
-
-// Delete item
+function saveDayLabel(day,field,val){if(!isAdmin)return;if(!dayLabels[day])dayLabels[day]={};dayLabels[day][field]=val.trim();fbSet('day_labels/'+day+'/'+field,val.trim())}
+var dayMemos={};
+fbGet('day_memos',function(val){dayMemos=val||{};renderSch()});
+function saveDayMemo(day,val){dayMemos[day]=val;fbSet('day_memos/'+day,val)}
 function delSchItem(day,sec,idx){
-  if(!isAdmin)return;
   if(!schData[day]||!schData[day][sec])return;
+  var removed=schData[day][sec][idx];
   schData[day][sec].splice(idx,1);
-  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
-}
-
-// Picker for schedule (reuse picker overlay)
-var schPickerDay=0,schPickerSec='';
-function openSchPicker(day,sec){
-  schPickerDay=day;schPickerSec=sec;
-  var region=DAY_REGION[day]||'';
-  // Determine which place categories to show
-  var catFilter=[];
-  if(sec==='breakfast'||sec==='lunch'||sec==='dinner'||sec==='snack') catFilter=['food','cafe'];
-  else if(sec==='activity') catFilter=['spot','food','cafe','spa'];
-
-  document.getElementById('pickerTitle').textContent=SEC_DEF.find(function(s){return s.key===sec}).icon+' '+SEC_DEF.find(function(s){return s.key===sec}).label+' 선택 (4/'+day+')';
-  var regions=['전체','북부','중부','남부'];
-  pickerRegionFilter=region;
-  document.getElementById('pickerRegion').innerHTML=regions.map(function(r){
-    var isOn=(r==='전체'&&!region)||(r===region);
-    return '<button class="'+(isOn?'on':'')+'" onclick="setSchPickerRegion(\''+r+'\',this)">'+r+'</button>';
-  }).join('');
-  renderSchPickerList(catFilter);
-  document.getElementById('pickerOverlay').classList.add('show');
-}
-var pickerRegionFilter='';
-function setSchPickerRegion(r,btn){
-  pickerRegionFilter=r==='전체'?'':r;
-  document.querySelectorAll('.picker-region button').forEach(function(b){b.classList.remove('on')});
-  btn.classList.add('on');
-  // Re-determine catFilter from schPickerSec
-  var catFilter=[];
-  if(['breakfast','lunch','dinner','snack'].indexOf(schPickerSec)>=0) catFilter=['food','cafe'];
-  else catFilter=['spot','food','cafe','spa'];
-  renderSchPickerList(catFilter);
-}
-function renderSchPickerList(catFilter){
-  var el=document.getElementById('pickerList');
-  var places=gAll().filter(function(p){return catFilter.indexOf(p.c)>=0});
-  if(pickerRegionFilter) places=places.filter(function(p){return dReg(p.lat)===pickerRegionFilter});
-  if(!places.length){el.innerHTML='<div style="padding:20px;text-align:center;color:#999">장소 없음</div>';return}
-  el.innerHTML=places.map(function(p){
-    var m0=CM[p.c]||{i:'⭐',co:'#e91e63'};
-    var meta=[dReg(p.lat),p.r?'⭐'+p.r:'',p.pr||''].filter(Boolean).join(' · ');
-    return '<div class="picker-item" onclick="selectSchPlace(\''+p.n.replace(/'/g,"\\'")+'\',\''+((p.pr||'')+' '+(p.d||'')).replace(/'/g,"\\'")+'\')">'
-      +'<div class="pi-icon" style="background:'+m0.co+'">'+m0.i+'</div>'
-      +'<div class="pi-info"><div class="pi-name">'+p.n+'</div><div class="pi-meta">'+meta+'</div>'+(p.d?'<div class="pi-meta">'+p.d+'</div>':'')+'</div></div>';
-  }).join('');
-}
-function selectSchPlace(name,info){
-  var day=schPickerDay,sec=schPickerSec;
-  if(!schData[day])schData[day]={};
-  if(!schData[day][sec])schData[day][sec]=[];
-  // Check duplicate
-  if(schData[day][sec].some(function(it){return it.text===name})){closePicker();return}
-  schData[day][sec].push({text:name,memo:info.trim(),placeKey:true});
-  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
-  closePicker();
+  fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec].length?schData[day][sec]:null);
+  // Also remove from route if it was a place
+  if(removed&&removed.placeKey){
+    var arr=Array.from(routeCache);
+    var ri=arr.indexOf(removed.text);
+    if(ri>=0){arr.splice(ri,1);fbSet('route',arr.length?arr:null)}
+  }
 }
 function closePicker(){document.getElementById('pickerOverlay').classList.remove('show')}
 
@@ -772,7 +679,12 @@ function rMk(){
     var ic=L.divIcon({className:'',html:'<div class="cmk" style="background:'+m0.co+'">'+m0.i+'</div>',iconSize:[28,28],iconAnchor:[14,14]});
     var mk=L.marker([p.lat,p.lng],{icon:ic}).addTo(lmap);
     var gl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc');
-    mk.bindPopup('<b>'+m0.i+' '+p.n+'</b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+'<br><a href="'+gl+'" target="_blank" style="color:#1a6b5a;font-size:11px;font-weight:700">📍 Google Maps 열기</a>');
+    var safeName=p.n.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    var inRoute=gRt().has(p.n);
+    var routeBtn=inRoute
+      ?'<br><button onclick="tRt(\''+safeName+'\')" style="margin-top:4px;padding:4px 10px;background:#e91e63;color:#fff;border:none;border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 MY루트에서 제거</button>'
+      :'<br><button onclick="tRt(\''+safeName+'\')" style="margin-top:4px;padding:4px 10px;background:#fff;color:#e91e63;border:1.5px solid #e91e63;border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 MY루트에 추가</button>';
+    mk.bindPopup('<b>'+m0.i+' '+p.n+'</b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+'<br><a href="'+gl+'" target="_blank" style="color:#1a6b5a;font-size:11px;font-weight:700">📍 Google Maps</a>'+routeBtn);
     amk.push(mk);
   });
   if(amk.length)lmap.fitBounds(L.featureGroup(amk).getBounds().pad(0.1));
@@ -1029,8 +941,10 @@ function exportDiary(){
 
 // INIT
 renderSch();bCl();
+// Clear old schedule data
+fbOnce('schedule_picks').then(function(v){if(v)fbSet('schedule_picks',null)});
 setTimeout(function(){initMap()},100);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
+// SW disabled for debugging
 </script>
 </body>
 </html>
