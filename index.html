@@ -405,32 +405,7 @@ body.font-lg .ti em{font-size:19px}
     </div>
   </div>
 </div>
-<!-- Settings Panel -->
-<div class="settings-overlay" id="settingsOverlay">
-  <div class="settings-panel">
-    <h2>⚙️ 설정 <button class="close-set" onclick="closeSettings()">✕</button></h2>
-    <div class="set-group"><label>앱 제목</label><input type="text" id="set-title" value="🌴 Phú Quốc"></div>
-    <div class="set-group"><label>Admin 버튼 이름</label><input type="text" id="set-admin-label" value="Admin"></div>
-    <div class="set-group"><label>Visitor 버튼 이름</label><input type="text" id="set-visitor-label" value="Visitor"></div>
-    <div class="set-group"><label>다이어리 내보내기 제목</label><input type="text" id="set-diary-title" value="🌴 푸꾸옥 여행 다이어리"></div>
-    <div class="set-group"><label>탭: 일정</label><input type="text" id="set-tab-schedule" value="일정"></div>
-    <div class="set-group"><label>탭: 지도</label><input type="text" id="set-tab-map" value="지도"></div>
-    <div class="set-group"><label>탭: 다이어리</label><input type="text" id="set-tab-diary" value="다이어리"></div>
-    <div class="set-group"><label>날씨 제목</label><input type="text" id="set-weather-title" value="날씨"></div>
-    <div class="set-group"><label>탭: 예산·팁</label><input type="text" id="set-tab-budget" value="예산·팁"></div>
-    <div class="set-group"><label>예산·팁 내 첫 번째 탭</label><input type="text" id="set-tip-label" value="팁"></div>
-    <div class="set-group"><label>예산·팁 내 두 번째 탭</label><input type="text" id="set-budget-label" value="예산"></div>
-    <div class="set-group"><label>저장 완료 메시지</label><input type="text" id="set-save-msg" value="저장 완료!"></div>
-    <div class="set-group"><label>비밀번호 입력 메시지</label><input type="text" id="set-pw-prompt" value="비밀번호 4자리를 입력하세요"></div>
-    <div class="set-group"><label>비밀번호 오류 메시지</label><input type="text" id="set-pw-error" value="비밀번호가 틀렸습니다"></div>
-    <button class="set-save" onclick="saveSettings()">저장</button>
-    <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee">
-      <div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:8px">데이터 초기화</div>
-      <button onclick="if(confirm('일정 데이터를 모두 삭제하시겠습니까?')){fbSet('schedule_v2',null);fbSet('day_memos',null);alert('일정 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:6px">일정 데이터 초기화</button>
-      <button onclick="if(confirm('MY루트를 모두 삭제하시겠습니까?')){fbSet('route',null);fbSet('schedule_v2',null);alert('MY루트 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">MY루트 + 일정 초기화</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- Place Picker -->
 <div class="picker-overlay" id="pickerOverlay" onclick="if(event.target===this)closePicker()">
@@ -1416,5 +1391,31 @@ if(location.hash)setTimeout(loadHash,200);
 window.addEventListener('hashchange',loadHash);
 // SW disabled for debugging
 </script>
+<!-- Settings Panel -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-panel">
+    <h2>⚙️ 설정 <button class="close-set" onclick="closeSettings()">✕</button></h2>
+    <div class="set-group"><label>앱 제목</label><input type="text" id="set-title" value="🌴 Phú Quốc"></div>
+    <div class="set-group"><label>Admin 버튼 이름</label><input type="text" id="set-admin-label" value="Admin"></div>
+    <div class="set-group"><label>Visitor 버튼 이름</label><input type="text" id="set-visitor-label" value="Visitor"></div>
+    <div class="set-group"><label>다이어리 내보내기 제목</label><input type="text" id="set-diary-title" value="🌴 푸꾸옥 여행 다이어리"></div>
+    <div class="set-group"><label>탭: 일정</label><input type="text" id="set-tab-schedule" value="일정"></div>
+    <div class="set-group"><label>탭: 지도</label><input type="text" id="set-tab-map" value="지도"></div>
+    <div class="set-group"><label>탭: 다이어리</label><input type="text" id="set-tab-diary" value="다이어리"></div>
+    <div class="set-group"><label>날씨 제목</label><input type="text" id="set-weather-title" value="날씨"></div>
+    <div class="set-group"><label>탭: 예산·팁</label><input type="text" id="set-tab-budget" value="예산·팁"></div>
+    <div class="set-group"><label>예산·팁 내 첫 번째 탭</label><input type="text" id="set-tip-label" value="팁"></div>
+    <div class="set-group"><label>예산·팁 내 두 번째 탭</label><input type="text" id="set-budget-label" value="예산"></div>
+    <div class="set-group"><label>저장 완료 메시지</label><input type="text" id="set-save-msg" value="저장 완료!"></div>
+    <div class="set-group"><label>비밀번호 입력 메시지</label><input type="text" id="set-pw-prompt" value="비밀번호 4자리를 입력하세요"></div>
+    <div class="set-group"><label>비밀번호 오류 메시지</label><input type="text" id="set-pw-error" value="비밀번호가 틀렸습니다"></div>
+    <button class="set-save" onclick="saveSettings()">저장</button>
+    <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee">
+      <div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:8px">데이터 초기화</div>
+      <button onclick="if(confirm('일정 데이터를 모두 삭제하시겠습니까?')){fbSet('schedule_v2',null);fbSet('day_memos',null);alert('일정 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:6px">일정 데이터 초기화</button>
+      <button onclick="if(confirm('MY루트를 모두 삭제하시겠습니까?')){fbSet('route',null);fbSet('schedule_v2',null);alert('MY루트 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">MY루트 + 일정 초기화</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
