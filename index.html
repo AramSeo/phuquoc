@@ -289,9 +289,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
     <tr><td class="wd">4/18 토</td><td>30°/26°</td><td>🌤 10%</td><td>🌦 30%</td><td>🌤 15%</td><td class="wm">출발일</td></tr>
   </table></div>
   <div class="wxl">📱 <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> <a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> <a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank">시간별</a></div>
-  <div class="dnav" id="dayNav"></div>
   <div id="schOverview"></div>
-  <div id="schCards" style="padding-bottom:40px;display:none"></div>
 </div>
 
 <!-- DIARY -->
@@ -583,74 +581,6 @@ function getDayTitle(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function
 function getDaySub(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.sub)||di.sub}
 
 function renderSch(){
-  var openDays={};var hiddenDays={};
-  document.querySelectorAll('.dc.op').forEach(function(el){openDays[el.dataset.day]=true});
-  document.querySelectorAll('.dc').forEach(function(el){if(el.style.display==='none')hiddenDays[el.dataset.day]=true});
-  var nav=document.getElementById('dayNav');
-  var lb={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토',19:'일'};
-  var nh='<button class="on" onclick="showD(\'all\',this)">전체</button>';
-  DAY_INFO.forEach(function(d){nh+='<button onclick="showD('+d.day+',this)">4/'+d.day+'<br><span style="font-size:10px">'+lb[d.day]+'</span></button>'});
-  nav.innerHTML=nh;
-  document.getElementById('schCards').innerHTML=DAY_INFO.map(function(d){
-    var title=getDayTitle(d.day),sub=getDaySub(d.day);
-    var titleHtml,subHtml;
-    if(isAdmin){
-      titleHtml='<div class="dct" contenteditable="true" style="border-bottom:1px dashed var(--gd);outline:none" onclick="event.stopPropagation()" onblur="saveDayLabel('+d.day+',\'title\',this.textContent)">'+title+'</div>';
-      subHtml='<div class="dcs" contenteditable="true" style="border-bottom:1px dashed var(--gd);outline:none" onclick="event.stopPropagation()" onblur="saveDayLabel('+d.day+',\'sub\',this.textContent)">'+sub+'</div>';
-    } else {
-      titleHtml='<div class="dct">'+title+'</div>';
-      subHtml='<div class="dcs">'+sub+'</div>';
-    }
-    // Day memo
-    var memoVal=(dayMemos&&dayMemos[''+d.day])||'';
-    var memoHtml;
-    if(memoVal){
-      memoHtml='<div style="padding:10px 14px;border-bottom:1px solid #f0ece4">'
-        +'<div id="memov_'+d.day+'" style="font-size:12px;line-height:1.5;white-space:pre-wrap">'+memoVal.replace(/</g,'&lt;').replace(/>/g,'&gt;')+(isAdmin?' <button onclick="editMemo('+d.day+')" style="padding:2px 8px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit;margin-left:4px">수정</button>':'')+'</div>'
-        +'<div id="memoe_'+d.day+'" style="display:none">'
-        +'<textarea id="memo_'+d.day+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:50px;outline:none">'+memoVal+'</textarea>'
-        +'<button onclick="saveMemoAndClose('+d.day+')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
-        +'<div style="clear:both"></div></div></div>';
-    } else if(isAdmin){
-      memoHtml='<div style="padding:10px 14px;border-bottom:1px solid #f0ece4">'
-        +'<div id="memov_'+d.day+'" onclick="editMemo('+d.day+')" style="padding:6px 10px;color:#bbb;font-size:11px;cursor:pointer;border:1.5px dashed #ddd;border-radius:8px;text-align:center">✏️ 메모 남기기</div>'
-        +'<div id="memoe_'+d.day+'" style="display:none">'
-        +'<textarea id="memo_'+d.day+'" placeholder="메모 남기기..." style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:50px;outline:none"></textarea>'
-        +'<button onclick="saveMemoAndClose('+d.day+')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
-        +'<div style="clear:both"></div></div></div>';
-    } else {
-      memoHtml='';
-    }
-    // Items from schedule_v2
-    var dayData=schData[''+d.day]||{};
-    var body=memoHtml;
-    var secLabels={hotel:{i:'🏨',l:'숙소',c:'info'},transport:{i:'🚕',l:'이동',c:'trans'},activity:{i:'🎯',l:'활동',c:'act'},breakfast:{i:'🌅',l:'아침',c:'food'},lunch:{i:'🍜',l:'점심',c:'food'},dinner:{i:'🌙',l:'저녁',c:'food'},snack:{i:'🍉',l:'간식/야식',c:'food'},etc:{i:'💡',l:'기타',c:'info'}};
-    var secOrder=['hotel','transport','activity','breakfast','lunch','dinner','snack','etc'];
-    secOrder.forEach(function(key){
-      var items=dayData[key];
-      if(!items||!items.length)return;
-      var sl=secLabels[key];
-      var clsMap={trans:'trans',food:'food',act:'act',info:'info'};
-      var cls=clsMap[sl.c]||'info';
-      body+='<div class="dsec"><div class="dsec-t '+sl.c+'">'+sl.i+' '+sl.l+'</div>';
-      items.forEach(function(it,idx){
-        var gl=it.placeKey?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(it.text+' Phu Quoc'):'';
-        var nm=gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':it.text;
-        var del=isAdmin?'<button style="position:absolute;top:4px;right:4px;background:none;border:none;color:#ccc;font-size:12px;cursor:pointer" onclick="delSchItem('+d.day+',\''+key+'\','+idx+')">✕</button>':'';
-        body+='<div class="opt '+cls+'" style="position:relative">'+del+'<div class="opt-n">'+nm+'</div>'+(it.memo?'<div class="opt-d">'+it.memo+'</div>':'')+'</div>';
-      });
-      body+='</div>';
-    });
-    // Show "일정이 비어있어요" if no items
-    var hasItems=secOrder.some(function(k){return dayData[k]&&dayData[k].length});
-    if(!hasItems) body+='<div style="padding:20px;text-align:center;color:#bbb;font-size:12px">지도에서 📌 MY루트에 추가하면 여기에 표시돼요</div>';
-    return '<div class="dc" data-day="'+d.day+'"><div class="dch" onclick="tdc(this)"><div class="dcl"><div class="dcb">4/'+d.day+'</div><div>'+titleHtml+subHtml+'</div></div><div class="dca">▾</div></div><div class="dcbd">'+body+'</div></div>';
-  }).join('');
-  document.querySelectorAll('.dc').forEach(function(el){
-    if(openDays[el.dataset.day])el.classList.add('op');
-    if(hiddenDays[el.dataset.day])el.style.display='none';
-  });
-  // Build calendar overview
   var calSecs=[{k:'memo',l:'📝 메모'},{k:'hotel',l:'🏨 숙소'},{k:'activity',l:'🎯 활동'},{k:'breakfast',l:'🌅 아침'},{k:'lunch',l:'🍜 점심'},{k:'dinner',l:'🌙 저녁'},{k:'snack',l:'🍉 간식'}];
   var calDays=DAY_INFO.filter(function(d){return d.day!==19});
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
@@ -663,13 +593,22 @@ function renderSch(){
       var dd=schData[''+d.day]||{};
       if(sec.k==='memo'){
         var mv=(dayMemos&&dayMemos[''+d.day])||'';
-        ch+='<td>'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'<span style="color:#ddd">—</span>')+'</td>';
+        var memoId='cmemo_'+d.day;
+        if(isAdmin){
+          ch+='<td><div id="'+memoId+'v" style="cursor:pointer;min-height:20px'+(mv?'':';color:#ddd')+'" onclick="calEditMemo('+d.day+')">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'✏️')+'</div>'
+            +'<div id="'+memoId+'e" style="display:none"><textarea id="'+memoId+'" style="width:100%;padding:4px;border:1px solid var(--gd);border-radius:4px;font-size:10px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+mv+'</textarea>'
+            +'<button onclick="calSaveMemo('+d.day+')" style="margin-top:2px;padding:2px 8px;background:var(--ac);color:#fff;border:none;border-radius:4px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit">저장</button></div></td>';
+        } else {
+          ch+='<td>'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'<span style="color:#ddd">—</span>')+'</td>';
+        }
       } else {
         var items=dd[sec.k]||[];
         ch+='<td>';
-        if(items.length){items.forEach(function(it){
+        if(items.length){items.forEach(function(it,idx){
           var gl=it.placeKey?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(it.text+' Phu Quoc'):'';
-          ch+='<div class="cal-item">'+(gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':it.text)+'</div>';
+          ch+='<div class="cal-item">'+(gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':it.text);
+          if(isAdmin)ch+=' <span onclick="delSchItem('+d.day+',\''+sec.k+'\','+idx+')" style="color:#ccc;cursor:pointer;font-size:10px">✕</span>';
+          ch+='</div>';
         })}else{ch+='<span style="color:#ddd">—</span>'}
         ch+='</td>';
       }
@@ -679,32 +618,23 @@ function renderSch(){
   ch+='</table></div>';
   document.getElementById('schOverview').innerHTML=ch;
 }
-function tdc(el){el.parentElement.classList.toggle('op')}
-function showD(d,btn){
-  document.querySelectorAll('.dnav button').forEach(function(b){b.classList.remove('on')});
-  if(btn)btn.classList.add('on');
-  var ov=document.getElementById('schOverview'),cd=document.getElementById('schCards');
-  if(d==='all'){ov.style.display='';cd.style.display='none'}
-  else{ov.style.display='none';cd.style.display='';document.querySelectorAll('.dc').forEach(function(c){if(parseInt(c.dataset.day)===d){c.style.display='';c.classList.add('op')}else c.style.display='none'})}
+function calEditMemo(day){
+  document.getElementById('cmemo_'+day+'v').style.display='none';
+  document.getElementById('cmemo_'+day+'e').style.display='block';
+  var ta=document.getElementById('cmemo_'+day);
+  if(ta)ta.focus();
+}
+function calSaveMemo(day){
+  var ta=document.getElementById('cmemo_'+day);
+  var val=ta?ta.value.trim():'';
+  dayMemos[''+day]=val;
+  fbSet('day_memos/'+day,val);
+  renderSch();
 }
 function saveDayLabel(day,field,val){if(!isAdmin)return;if(!dayLabels[''+day])dayLabels[''+day]={};dayLabels[''+day][field]=val.trim();fbSet('day_labels/'+day+'/'+field,val.trim())}
 var dayMemos={};
 fbGet('day_memos',function(val){dayMemos=val||{};renderSch()});
 function saveDayMemo(day,val){dayMemos[''+day]=val;fbSet('day_memos/'+day,val)}
-function editMemo(day){
-  document.getElementById('memov_'+day).style.display='none';
-  document.getElementById('memoe_'+day).style.display='block';
-  var ta=document.getElementById('memo_'+day);
-  if(ta)ta.focus();
-}
-function saveMemoAndClose(day){
-  var ta=document.getElementById('memo_'+day);
-  var val=ta?ta.value.trim():'';
-  saveDayMemo(day,val);
-  var edit=document.getElementById('memoe_'+day);
-  edit.style.display='none';
-  renderSch();
-}
 function delSchItem(day,sec,idx){
   day=''+day;if(!schData[day]||!schData[day][sec])return;
   var removed=schData[day][sec][idx];
