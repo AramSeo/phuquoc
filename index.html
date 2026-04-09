@@ -135,7 +135,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .mcards.show{display:block}
 .mc{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid #f0ece4;cursor:pointer}
 .mc:active{background:#f5f5f0}
-.mc-rt{width:26px;height:26px;border-radius:50%;border:1.5px solid #ddd;background:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.mc-rt{width:26px;height:26px;border-radius:50%;border:1.5px solid #ddd;background:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0;font-family:inherit}
 .mc-rt.in{border-color:var(--pk);background:var(--pk);color:#fff}
 .mc-ic{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:#fff}
 .mc-info{flex:1;min-width:0}.mc-nm{font-weight:700;font-size:12px}.mc-mt{font-size:10px;color:var(--tx2);margin-top:1px}
@@ -396,6 +396,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
     <div class="set-group"><label>탭: 예산·팁</label><input type="text" id="set-tab-budget" value="예산·팁"></div>
     <div class="set-group"><label>저장 완료 메시지</label><input type="text" id="set-save-msg" value="저장 완료!"></div>
     <button class="set-save" onclick="saveSettings()">저장</button>
+    <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee">
+      <div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:8px">⚠️ 데이터 초기화</div>
+      <button onclick="if(confirm('일정 데이터를 모두 삭제하시겠습니까?')){fbSet('schedule_v2',null);fbSet('day_memos',null);alert('일정 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:6px">일정 데이터 초기화</button>
+      <button onclick="if(confirm('MY루트를 모두 삭제하시겠습니까?')){fbSet('route',null);fbSet('schedule_v2',null);alert('MY루트 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">MY루트 + 일정 초기화</button>
+    </div>
   </div>
 </div>
 
@@ -676,17 +681,22 @@ function rMk(){
   var ps=gAll(),rs=gRt();
   if(aFil==='myroute')ps=ps.filter(function(p){return rs.has(p.n)});
   else if(aFil!=='all')ps=ps.filter(function(p){return p.c===aFil});
+  window._mkPlaces=[];
   ps.forEach(function(p){
     var m0=CM[p.c]||{i:'⭐',co:'#e91e63'};
     var ic=L.divIcon({className:'',html:'<div class="cmk" style="background:'+m0.co+'">'+m0.i+'</div>',iconSize:[28,28],iconAnchor:[14,14]});
     var mk=L.marker([p.lat,p.lng],{icon:ic}).addTo(lmap);
     var gl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc');
-    var safeName=p.n.replace(/'/g,"\\'").replace(/"/g,'&quot;');
     var inRoute=gRt().has(p.n);
-    var routeBtn=inRoute
-      ?'<br><button onclick="tRt(\''+safeName+'\')" style="margin-top:4px;padding:4px 10px;background:#e91e63;color:#fff;border:none;border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 MY루트에서 제거</button>'
-      :'<br><button onclick="tRt(\''+safeName+'\')" style="margin-top:4px;padding:4px 10px;background:#fff;color:#e91e63;border:1.5px solid #e91e63;border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 MY루트에 추가</button>';
-    mk.bindPopup('<b>'+m0.i+' '+p.n+'</b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+'<br><a href="'+gl+'" target="_blank" style="color:#1a6b5a;font-size:11px;font-weight:700">📍 Google Maps</a>'+routeBtn);
+    var rtLabel=inRoute?'MY루트에서 제거':'MY루트에 추가';
+    var rtSt=inRoute?'background:#e91e63;color:#fff;border:none':'background:#fff;color:#e91e63;border:1.5px solid #e91e63';
+    var pidx=window._mkPlaces.length;
+    window._mkPlaces.push(p.n);
+    mk.bindPopup('<b>'+m0.i+' '+p.n+'</b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+'<br><a href="'+gl+'" target="_blank" style="color:#1a6b5a;font-size:11px;font-weight:700">Google Maps</a><br><button id="rb_'+pidx+'" style="margin-top:4px;padding:5px 12px;'+rtSt+';border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 '+rtLabel+'</button>');
+    mk.on('popupopen',function(){
+      var btn=document.getElementById('rb_'+pidx);
+      if(btn)btn.onclick=function(){tRt(window._mkPlaces[pidx])};
+    });
     amk.push(mk);
   });
   if(amk.length)lmap.fitBounds(L.featureGroup(amk).getBounds().pad(0.1));
@@ -699,13 +709,20 @@ function rCd(cat){
   var regions={북부:[],중부:[],남부:[]};
   ps.forEach(function(p){var r=dReg(p.lat);regions[r].push(p)});
   var html='';
+  window._mcPlaces=[]; // global array for click handling
   ['북부','중부','남부'].forEach(function(rn){
     if(!regions[rn].length)return;
     html+='<div style="padding:6px 12px;background:var(--acl);font-size:11px;font-weight:700;color:var(--ac)">📍 '+rn+' ('+regions[rn].length+')</div>';
     regions[rn].forEach(function(p){
+      var idx=window._mcPlaces.length;
+      window._mcPlaces.push(p);
       var m0=CM[p.c]||{i:'⭐',co:'#e91e63'},gl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc');
       var inR=rs.has(p.n),mt=[p.r?'⭐'+p.r:''].filter(Boolean).join(' · ');
-      html+='<div class="mc" onclick="lmap.flyTo(['+p.lat+','+p.lng+'],15,{duration:.5})"><div class="mc-rt '+(inR?'in':'')+'" onclick="event.stopPropagation();tRt(\''+p.n.replace(/'/g,"\\'")+'\')">📌</div><div class="mc-ic" style="background:'+m0.co+'">'+m0.i+'</div><div class="mc-info"><div class="mc-nm">'+p.n+'</div><div class="mc-mt">'+mt+(p.pr?' · '+p.pr:'')+'</div><div class="mc-mt">'+(p.d||'')+'</div></div><a class="mc-lk" href="'+gl+'" target="_blank" onclick="event.stopPropagation()">↗</a></div>';
+      html+='<div class="mc" onclick="lmap.flyTo(['+p.lat+','+p.lng+'],15,{duration:.5})">';
+      html+='<button class="mc-rt '+(inR?'in':'')+'" onclick="event.stopPropagation();tRt(window._mcPlaces['+idx+'].n)">📌</button>';
+      html+='<div class="mc-ic" style="background:'+m0.co+'">'+m0.i+'</div>';
+      html+='<div class="mc-info"><div class="mc-nm">'+p.n+'</div><div class="mc-mt">'+mt+(p.pr?' · '+p.pr:'')+'</div><div class="mc-mt">'+(p.d||'')+'</div></div>';
+      html+='<a class="mc-lk" href="'+gl+'" target="_blank" onclick="event.stopPropagation()">↗</a></div>';
     });
   });
   el.innerHTML=html;
