@@ -249,9 +249,9 @@ body.font-lg .ti em{font-size:19px}
 /* Calendar overview */
 .cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px}
 .cal-wrap::-webkit-scrollbar{display:none}
-.cal-t{border-collapse:collapse;width:100%;min-width:560px;font-size:11px;table-layout:fixed}
-.cal-t th{padding:8px 6px;background:#4da695;color:#fff;font-weight:700;text-align:center;white-space:nowrap;font-size:12px;width:13%}
-.cal-t th:first-child{background:#e0f2ee;color:var(--ac);text-align:center;font-size:11px;width:36px}
+.cal-t{border-collapse:collapse;width:100%;min-width:580px;font-size:11px;table-layout:fixed}
+.cal-t th{padding:8px 6px;background:#4da695;color:#fff;font-weight:700;text-align:center;white-space:nowrap;font-size:12px}
+.cal-t th:first-child{background:#e0f2ee;color:var(--ac);text-align:center;font-size:11px;width:40px}
 .cal-t td{padding:6px;border-bottom:1px solid #eee;vertical-align:middle;text-align:center;word-break:break-word;height:44px}
 .cal-t tr.cal-memo-row td{text-align:left;vertical-align:top;height:auto}
 .cal-t tr:nth-child(even) td{background:#fafaf7}
@@ -621,7 +621,7 @@ function getDaySub(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function(d
 function renderSch(){
   var calDays=DAY_INFO.filter(function(d){return d.day!==19});
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
-  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th></th>';
+  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th colspan="2"></th>';
   calDays.forEach(function(d){ch+='<th>4/'+d.day+'<br><span style="font-weight:400;font-size:10px">'+dayNames[d.day]+'</span></th>'});
   ch+='</tr>';
 
@@ -654,18 +654,17 @@ function renderSch(){
   }
 
   // 메모 row
-  ch+='<tr><td class="cal-cat">메모</td>';renderCells('memo',true);ch+='</tr>';
+  ch+='<tr><td class="cal-cat" colspan="2">메모</td>';renderCells('memo',true);ch+='</tr>';
   // 숙소 row
-  ch+='<tr><td class="cal-cat">숙소</td>';renderCells('hotel',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat" colspan="2">숙소</td>';renderCells('hotel',false);ch+='</tr>';
   // 활동 row
-  ch+='<tr><td class="cal-cat">활동</td>';renderCells('activity',false);ch+='</tr>';
-  // 식사 header
-  ch+='<tr><td colspan="'+(calDays.length+1)+'" style="background:#e8f5e9;font-size:9px;font-weight:700;color:var(--ac);padding:3px 6px;text-align:center">식사</td></tr>';
-  ch+='<tr><td class="cal-cat">아침</td>';renderCells('breakfast',false);ch+='</tr>';
-  ch+='<tr><td class="cal-cat">점심</td>';renderCells('lunch',false);ch+='</tr>';
-  ch+='<tr><td class="cal-cat">저녁</td>';renderCells('dinner',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat" colspan="2">활동</td>';renderCells('activity',false);ch+='</tr>';
+  // 식사 group with rowspan
+  ch+='<tr><td class="cal-cat" rowspan="3" style="writing-mode:vertical-lr;text-orientation:upright;letter-spacing:4px;padding:2px;width:18px;text-align:center;font-size:9px">식사</td><td class="cal-cat" style="width:22px">아침</td>';renderCells('breakfast',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat" style="width:22px">점심</td>';renderCells('lunch',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat" style="width:22px">저녁</td>';renderCells('dinner',false);ch+='</tr>';
   // 간식 row
-  ch+='<tr><td class="cal-cat">간식</td>';renderCells('snack',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat" colspan="2">간식</td>';renderCells('snack',false);ch+='</tr>';
 
   ch+='</table></div>';
   document.getElementById('schOverview').innerHTML=ch;
@@ -749,8 +748,10 @@ function rMk(){
     var rtSt=inRoute?'background:#e91e63;color:#fff;border:none':'background:#fff;color:#e91e63;border:1.5px solid #e91e63';
     var pidx=window._mkPlaces.length;
     window._mkPlaces.push(p.n);
-    mk.bindPopup('<b>'+m0.i+' <a href="'+gl+'" target="_blank" style="color:var(--ac);text-decoration:none;border-bottom:1px dashed var(--ac)">'+p.n+'</a></b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+'<br><button id="rb_'+pidx+'" style="margin-top:4px;padding:5px 12px;'+rtSt+';border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 '+rtLabel+'</button>');
+    var routeBtnHtml=isAdmin?'<br><button id="rb_'+pidx+'" style="margin-top:4px;padding:5px 12px;'+rtSt+';border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 '+rtLabel+'</button>':'';
+    mk.bindPopup('<b>'+m0.i+' <a href="'+gl+'" target="_blank" style="color:var(--ac);text-decoration:none;border-bottom:1px dashed var(--ac)">'+p.n+'</a></b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+routeBtnHtml);
     mk.on('popupopen',function(){
+      if(!isAdmin)return;
       var btn=document.getElementById('rb_'+pidx);
       if(btn)btn.onclick=function(){tRt(window._mkPlaces[pidx])};
     });
@@ -776,7 +777,7 @@ function rCd(cat){
       var m0=CM[p.c]||{i:'⭐',co:'#e91e63'},gl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc');
       var inR=rs.has(p.n),mt=[p.r?'⭐'+p.r:''].filter(Boolean).join(' · ');
       html+='<div class="mc" onclick="lmap.flyTo(['+p.lat+','+p.lng+'],15,{duration:.5})">';
-      html+='<button class="mc-rt '+(inR?'in':'')+'" onclick="event.stopPropagation();tRt(window._mcPlaces['+idx+'].n)">📌</button>';
+      if(isAdmin)html+='<button class="mc-rt '+(inR?'in':'')+'" onclick="event.stopPropagation();tRt(window._mcPlaces['+idx+'].n)">📌</button>';
       html+='<div class="mc-ic" style="background:'+m0.co+'">'+m0.i+'</div>';
       html+='<div class="mc-info"><div class="mc-nm">'+p.n+'</div><div class="mc-mt">'+mt+(p.pr?' · '+p.pr:'')+'</div><div class="mc-mt">'+(p.d||'')+'</div></div>';
       html+='<a class="mc-lk" href="'+gl+'" target="_blank" onclick="event.stopPropagation()">↗</a></div>';
