@@ -646,7 +646,11 @@ fbGet('day_memos',function(val){dayMemos=val||{};renderSch()});
 function saveDayMemo(day,val){dayMemos[''+day]=val;fbSet('day_memos/'+day,val)}
 function editMemo(day){
   var view=document.getElementById('memov_'+day);
-  view.parentElement.style.display='none';
+  if(view.parentElement.querySelector('.mc-rt, button')){
+    view.parentElement.style.display='none';
+  } else {
+    view.style.display='none';
+  }
   document.getElementById('memoe_'+day).style.display='block';
   var ta=document.getElementById('memo_'+day);
   if(ta)ta.focus();
@@ -655,20 +659,9 @@ function saveMemoAndClose(day){
   var ta=document.getElementById('memo_'+day);
   var val=ta?ta.value.trim():'';
   saveDayMemo(day,val);
-  // Switch back to display mode without full re-render
-  var view=document.getElementById('memov_'+day);
   var edit=document.getElementById('memoe_'+day);
   edit.style.display='none';
-  view.parentElement.style.display='';
-  if(val){
-    view.parentElement.style.cssText='display:flex;align-items:flex-start;gap:6px';
-    view.style.cssText='flex:1;padding:8px 0;font-size:12px;line-height:1.5;white-space:pre-wrap';
-    view.textContent=val;
-  } else {
-    view.style.cssText='padding:6px 10px;color:#bbb;font-size:11px;cursor:pointer;border:1.5px dashed #ddd;border-radius:8px;text-align:center';
-    view.textContent='✏️ 메모 남기기';
-  }
-  view.style.display='';
+  renderSch();
 }
 function delSchItem(day,sec,idx){
   day=''+day;if(!schData[day]||!schData[day][sec])return;
