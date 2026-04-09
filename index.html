@@ -183,10 +183,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .bt{width:100%;font-size:10px;border-collapse:collapse;min-width:560px}
 .bt th{padding:5px 4px;font-weight:700;background:#fff3e0;border-bottom:2px solid #ffcc80;text-align:left}
 .bt td{padding:3px 4px;border-bottom:1px solid #f0ece4}
-.bt .bd{background:#2c3e50;color:#fff;font-weight:700;font-size:10.5px}.bt .bd td{padding:5px 4px;border:none}
-.bt .bd.d15 td{background:var(--co)}.bt .bd.d16 td{background:var(--bl)}.bt .bd.d17 td{background:var(--gd);color:#333}.bt .bd.d18 td{background:#8b5e3c}
+.bt .bd{background:#616161;color:#fff;font-weight:700;font-size:10.5px}.bt .bd td{padding:5px 4px;border:none}
+
 .bt .bs td{border-top:1px solid #ddd;font-weight:700}
-.bt .btl td{background:#1e2d2f;color:#fff;font-weight:900;padding:6px 4px;border:none;font-size:11px}
+.bt .btl td{background:#424242;color:#fff;font-weight:900;padding:6px 4px;border:none;font-size:11px}
 .bt tr:nth-child(even):not(.bd):not(.bs):not(.btl) td{background:#fafaf7}
 .cl{list-style:none}
 .cl li{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.04);font-size:12.5px}
@@ -332,67 +332,11 @@ body.font-lg .ti em{font-size:19px}
   </div>
 </div>
 
-<!-- BUDGET & TIPS (same as before, abbreviated for space) -->
+<!-- BUDGET & TIPS -->
 <div class="tc" id="tab-budget">
   <div class="btw">
-    <div class="btt"><button class="on" onclick="swBT('budget',this)">예산</button><button onclick="swBT('tips',this)">팁</button></div>
-    <div class="bts on" id="bt-budget">
-      <div class="ib"><b>2인 총액 · 호텔 제외</b><br>4/13~14 트래블월렛 → 4/15 금은방 → 이후 현금</div>
-      <div class="ic op"><div class="ich" onclick="tic(this)">날짜별 상세 <span class="ica">▾</span></div>
-      <div class="icb"><div class="ici" style="padding:0;overflow-x:auto">
-        <table class="bt">
-          <tr><th>항목</th><th>VND (2인)</th><th>원화</th><th>결제</th><th>그날 현금</th></tr>
-          <tr class="bd"><td colspan="5">4/13 월 · 도착</td></tr>
-          <tr><td>Grab 공항→숙소</td><td>38~50만</td><td>(약 2.1~2.8만)</td><td>💳</td><td rowspan="3" style="vertical-align:middle;text-align:center;background:#e8f5e9;font-weight:700;font-size:11px">현금 불필요</td></tr>
-          <tr><td>편의점·과일</td><td>5~25만</td><td>(약 3천~1.4만)</td><td>💳/💵</td></tr>
-          <tr class="bs"><td>소계</td><td>43~75만</td><td style="color:var(--co)">(약 2.4~4.2만)</td><td></td></tr>
-          <tr class="bd"><td colspan="5">4/14 화 · Safari · Grand World</td></tr>
-          <tr><td>Safari 2인</td><td>170만</td><td>(약 9.5만)</td><td>💳선결제</td><td rowspan="8" style="vertical-align:middle;text-align:center;background:#e8f5e9;font-weight:700;font-size:11px">15~50만<br>(약 8천~2.8만)</td></tr>
-          <tr><td>점심</td><td>15~90만</td><td>(약 8천~5만)</td><td>💳</td></tr>
-          <tr><td>카페</td><td>10~25만</td><td>(약 5천~1.4만)</td><td>💳</td></tr>
-          <tr><td>저녁</td><td>25~120만</td><td>(약 1.4~6.7만)</td><td>💳/💵</td></tr>
-          <tr><td>Crown Spa</td><td>72만</td><td>(약 4만)</td><td>💳</td></tr>
-          <tr><td>팁</td><td>10~14만</td><td>(약 5~8천)</td><td>💵</td></tr>
-          <tr><td>테디베어 등</td><td>10~30만</td><td>(약 5천~1.7만)</td><td>💳</td></tr>
-          <tr class="bs"><td>소계</td><td>312~521만</td><td style="color:var(--co)">(약 17.5~29.2만)</td><td></td></tr>
-          <tr class="bd d15"><td colspan="5">4/15 수 · 금은방 환전일</td></tr>
-          <tr><td>Grab 북→중</td><td>25~35만</td><td>(약 1.4~2만)</td><td>💳</td><td rowspan="8" style="vertical-align:middle;text-align:center;background:#fff8e1;font-weight:700;font-size:11px">140~260만<br>(약 7.9~14.6만)</td></tr>
-          <tr><td>브런치</td><td>15~65만</td><td>(약 8천~3.6만)</td><td>💵</td></tr>
-          <tr><td>카페</td><td>10~30만</td><td>(약 5천~1.7만)</td><td>💵</td></tr>
-          <tr><td>야시장</td><td>25~60만</td><td>(약 1.4~3.4만)</td><td>💵</td></tr>
-          <tr><td>Zen Spa</td><td>76만</td><td>(약 4.3만)</td><td>💵</td></tr>
-          <tr><td>팁</td><td>10~14만</td><td>(약 5~8천)</td><td>💵</td></tr>
-          <tr><td>과자</td><td>3.5~15만</td><td>(약 2~8천)</td><td>💵</td></tr>
-          <tr class="bs"><td>소계</td><td>165~295만</td><td style="color:var(--co)">(약 9.3~16.5만)</td><td></td></tr>
-          <tr class="bd d16"><td colspan="5">4/16 목 · 스노클링+남부</td></tr>
-          <tr><td>OnBird</td><td>~252만</td><td>(약 14.1만)</td><td>💳선결제</td><td rowspan="6" style="vertical-align:middle;text-align:center;background:#fff8e1;font-weight:700;font-size:11px">210~340만<br>(약 11.8~19만)</td></tr>
-          <tr><td>Grab 중→남</td><td>30~39만</td><td>(약 1.7~2.2만)</td><td>💳</td></tr>
-          <tr><td>점심+저녁</td><td>70~190만</td><td>(약 3.9~10.7만)</td><td>💵</td></tr>
-          <tr><td>Oasis Spa</td><td>120만</td><td>(약 6.7만)</td><td>💵</td></tr>
-          <tr><td>팁</td><td>10~16만</td><td>(약 5~9천)</td><td>💵</td></tr>
-          <tr class="bs"><td>소계</td><td>482~617만</td><td style="color:var(--co)">(약 27~34.6만)</td><td></td></tr>
-          <tr class="bd d17"><td colspan="5">4/17 금 · JW+Kiss</td></tr>
-          <tr><td>Grab Moon→JW</td><td>12~22만</td><td>(약 7천~1.2만)</td><td>💳</td><td rowspan="8" style="vertical-align:middle;text-align:center;background:#fff8e1;font-weight:700;font-size:11px">120~500만<br>(약 6.7~28만)</td></tr>
-          <tr><td>점심+저녁</td><td>80~400만</td><td>(약 4.5~22.4만)</td><td>💵</td></tr>
-          <tr><td>간식</td><td>20~60만</td><td>(약 1.1~3.4만)</td><td>💵</td></tr>
-          <tr><td>Kiss of Sea</td><td>0</td><td>JW 무료</td><td>-</td></tr>
-          <tr><td>Grab JW↔ST</td><td>15~25만</td><td>(약 8천~1.4만)</td><td>💳</td></tr>
-          <tr><td>Oasis(선택)</td><td>120만</td><td>(약 6.7만)</td><td>💵</td></tr>
-          <tr><td>팁</td><td>10~16만</td><td>(약 5~9천)</td><td>💵</td></tr>
-          <tr class="bs"><td>소계</td><td>137~663만</td><td style="color:var(--co)">(약 7.7~37만)</td><td></td></tr>
-          <tr class="bd d18"><td colspan="5">4/18 토 · 출발</td></tr>
-          <tr><td>점심+저녁</td><td>30~150만</td><td>(약 1.7~8.4만)</td><td>💵</td><td rowspan="5" style="vertical-align:middle;text-align:center;background:#fff8e1;font-weight:700;font-size:11px">50~200만<br>(약 2.8~11만)</td></tr>
-          <tr><td>Oasis(선택)</td><td>120만</td><td>(약 6.7만)</td><td>💵</td></tr>
-          <tr><td>Grab→공항</td><td>22~32만</td><td>(약 1.2~1.8만)</td><td>💳</td></tr>
-          <tr><td>라운지</td><td>~50만</td><td>(약 2.8만)</td><td>💳</td></tr>
-          <tr class="bs"><td>소계</td><td>52~352만</td><td style="color:var(--co)">(약 2.9~19.7만)</td><td></td></tr>
-          <tr class="btl"><td>6일 총합</td><td>1,191~2,523만</td><td>약 67~142만원</td><td></td><td style="background:#ff8f00;text-align:center;font-size:10px">현금 약 43~97만원</td></tr>
-        </table>
-      </div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">결제수단 <span class="ica">▾</span></div>
-      <div class="icb"><div class="ici"><b>💳 OK</b>: Grab, JW/GW, 마사지, King Kong, 편의점<br><b>💵 필수</b>: 야시장(80%), 노점, 로컬 식당, 팁</div></div></div>
-    </div>
-    <div class="bts" id="bt-tips">
+    <div class="btt"><button class="on" onclick="swBT('tips',this)" id="tipTabBtn">팁</button><button onclick="swBT('budget',this)" id="budgetTabBtn">예산</button></div>
+    <div class="bts on" id="bt-tips">
       <div style="margin:8px 12px;padding:10px 14px;background:linear-gradient(135deg,#1a6b5a,#2c8c6e);border-radius:var(--r);color:#fff;font-size:12px">
         <div style="font-weight:700;font-size:14px;margin-bottom:6px">핵심 정보</div>
         <div id="keyInfoContent"></div>
@@ -410,10 +354,65 @@ body.font-lg .ti em{font-size:19px}
       <div class="ic"><div class="ich" onclick="tic(this)">베트남어 <span class="ica">▾</span></div><div class="icb"><div class="ici"><table class="vt"><tr><td>Không rau mùi</td><td>꽁 라우 무이</td><td>고수빼</td></tr><tr><td>Bao nhiêu tiền?</td><td>바오 니에우 띠엔?</td><td>얼마?</td></tr><tr><td>Tính tiền</td><td>띤 띠엔</td><td>계산</td></tr><tr><td>Cảm ơn</td><td>깜 언</td><td>감사</td></tr><tr><td>Ngon quá!</td><td>응온 꽈!</td><td>맛있어요!</td></tr></table></div></div></div>
       <div class="ic"><div class="ich" onclick="tic(this)">긴급 <span class="ica">▾</span></div><div class="icb"><div class="ici">경찰 <a href="tel:113">113</a> · 앰뷸런스 <a href="tel:115">115</a> · 소방 <a href="tel:114">114</a><br>Vinmec <a href="tel:+842973983668">+84-297-398-3668</a><br>영사관 <a href="tel:+842838225757">+84-28-3822-5757</a></div></div></div>
     </div>
+    <div class="bts" id="bt-budget">
+      <div class="ic op"><div class="ich" onclick="tic(this)">날짜별 상세 <span class="ica">▾</span></div>
+      <div class="icb">
+        <div id="budgetSummary" style="padding:10px 14px;font-size:12px;color:var(--tx2);border-bottom:1px solid #eee"></div>
+        <div class="ici" style="padding:0;overflow-x:auto">
+        <table class="bt">
+          <tr><th>항목</th><th>VND (2인)</th><th>원화</th><th>결제</th><th>그날 현금</th></tr>
+          <tr class="bd"><td colspan="5">4/13 월</td></tr>
+          <tr><td>Grab 공항→숙소</td><td>380,000~500,000</td><td>약 21,000~28,000</td><td>카드</td><td rowspan="3" style="vertical-align:middle;text-align:center;font-weight:700;font-size:10px">현금 불필요</td></tr>
+          <tr><td>편의점·과일</td><td>50,000~250,000</td><td>약 3,000~14,000</td><td>카드/현금</td></tr>
+          <tr class="bs"><td>소계</td><td>430,000~750,000</td><td>약 24,000~42,000</td><td></td></tr>
+          <tr class="bd"><td colspan="5">4/14 화</td></tr>
+          <tr><td>Safari 2인</td><td>1,700,000</td><td>약 95,000</td><td>카드</td><td rowspan="8" style="vertical-align:middle;text-align:center;font-weight:700;font-size:10px">150,000~500,000<br>약 8,000~28,000</td></tr>
+          <tr><td>점심</td><td>150,000~900,000</td><td>약 8,000~50,000</td><td>카드</td></tr>
+          <tr><td>카페</td><td>100,000~250,000</td><td>약 5,000~14,000</td><td>카드</td></tr>
+          <tr><td>저녁</td><td>250,000~1,200,000</td><td>약 14,000~67,000</td><td>카드/현금</td></tr>
+          <tr><td>Crown Spa</td><td>720,000</td><td>약 40,000</td><td>카드</td></tr>
+          <tr><td>팁</td><td>100,000~140,000</td><td>약 5,000~8,000</td><td>현금</td></tr>
+          <tr><td>테디베어 등</td><td>100,000~300,000</td><td>약 5,000~17,000</td><td>카드</td></tr>
+          <tr class="bs"><td>소계</td><td>3,120,000~5,210,000</td><td>약 175,000~292,000</td><td></td></tr>
+          <tr class="bd"><td colspan="5">4/15 수</td></tr>
+          <tr><td>Grab 북→중</td><td>250,000~350,000</td><td>약 14,000~20,000</td><td>카드</td><td rowspan="8" style="vertical-align:middle;text-align:center;font-weight:700;font-size:10px">1,400,000~2,600,000<br>약 79,000~146,000</td></tr>
+          <tr><td>브런치</td><td>150,000~650,000</td><td>약 8,000~36,000</td><td>현금</td></tr>
+          <tr><td>카페</td><td>100,000~300,000</td><td>약 5,000~17,000</td><td>현금</td></tr>
+          <tr><td>야시장</td><td>250,000~600,000</td><td>약 14,000~34,000</td><td>현금</td></tr>
+          <tr><td>Zen Spa</td><td>760,000</td><td>약 43,000</td><td>현금</td></tr>
+          <tr><td>팁</td><td>100,000~140,000</td><td>약 5,000~8,000</td><td>현금</td></tr>
+          <tr><td>과자</td><td>35,000~150,000</td><td>약 2,000~8,000</td><td>현금</td></tr>
+          <tr class="bs"><td>소계</td><td>1,645,000~2,950,000</td><td>약 93,000~165,000</td><td></td></tr>
+          <tr class="bd"><td colspan="5">4/16 목</td></tr>
+          <tr><td>OnBird</td><td>2,520,000</td><td>약 141,000</td><td>카드</td><td rowspan="6" style="vertical-align:middle;text-align:center;font-weight:700;font-size:10px">2,100,000~3,400,000<br>약 118,000~190,000</td></tr>
+          <tr><td>Grab 중→남</td><td>300,000~390,000</td><td>약 17,000~22,000</td><td>카드</td></tr>
+          <tr><td>점심+저녁</td><td>700,000~1,900,000</td><td>약 39,000~107,000</td><td>현금</td></tr>
+          <tr><td>Oasis Spa</td><td>1,200,000</td><td>약 67,000</td><td>현금</td></tr>
+          <tr><td>팁</td><td>100,000~160,000</td><td>약 5,000~9,000</td><td>현금</td></tr>
+          <tr class="bs"><td>소계</td><td>4,820,000~6,170,000</td><td>약 270,000~346,000</td><td></td></tr>
+          <tr class="bd"><td colspan="5">4/17 금</td></tr>
+          <tr><td>Grab Moon→JW</td><td>120,000~220,000</td><td>약 7,000~12,000</td><td>카드</td><td rowspan="8" style="vertical-align:middle;text-align:center;font-weight:700;font-size:10px">1,200,000~5,000,000<br>약 67,000~280,000</td></tr>
+          <tr><td>점심+저녁</td><td>800,000~4,000,000</td><td>약 45,000~224,000</td><td>현금</td></tr>
+          <tr><td>간식</td><td>200,000~600,000</td><td>약 11,000~34,000</td><td>현금</td></tr>
+          <tr><td>Kiss of Sea</td><td>0</td><td>JW 무료</td><td>-</td></tr>
+          <tr><td>Grab JW↔ST</td><td>150,000~250,000</td><td>약 8,000~14,000</td><td>카드</td></tr>
+          <tr><td>Oasis(선택)</td><td>1,200,000</td><td>약 67,000</td><td>현금</td></tr>
+          <tr><td>팁</td><td>100,000~160,000</td><td>약 5,000~9,000</td><td>현금</td></tr>
+          <tr class="bs"><td>소계</td><td>1,370,000~6,630,000</td><td>약 77,000~370,000</td><td></td></tr>
+          <tr class="bd"><td colspan="5">4/18 토</td></tr>
+          <tr><td>점심+저녁</td><td>300,000~1,500,000</td><td>약 17,000~84,000</td><td>현금</td><td rowspan="5" style="vertical-align:middle;text-align:center;font-weight:700;font-size:10px">500,000~2,000,000<br>약 28,000~110,000</td></tr>
+          <tr><td>Oasis(선택)</td><td>1,200,000</td><td>약 67,000</td><td>현금</td></tr>
+          <tr><td>Grab→공항</td><td>220,000~320,000</td><td>약 12,000~18,000</td><td>카드</td></tr>
+          <tr><td>라운지</td><td>500,000</td><td>약 28,000</td><td>카드</td></tr>
+          <tr class="bs"><td>소계</td><td>520,000~3,520,000</td><td>약 29,000~197,000</td><td></td></tr>
+          <tr class="btl"><td>6일 총합</td><td>11,905,000~25,230,000</td><td>약 670,000~1,420,000원</td><td></td><td style="text-align:center;font-size:10px">현금 약 430,000~970,000원</td></tr>
+        </table>
+      </div></div></div>
+      <div class="ic"><div class="ich" onclick="tic(this)">결제수단 <span class="ica">▾</span></div>
+      <div class="icb"><div class="ici"><b>카드 OK</b>: Grab, JW/GW, 마사지, King Kong, 편의점<br><b>현금 필수</b>: 야시장(80%), 노점, 로컬 식당, 팁</div></div></div>
+    </div>
   </div>
 </div>
-</div>
-
 <!-- Settings Panel -->
 <div class="settings-overlay" id="settingsOverlay">
   <div class="settings-panel">
@@ -426,6 +425,8 @@ body.font-lg .ti em{font-size:19px}
     <div class="set-group"><label>탭: 지도</label><input type="text" id="set-tab-map" value="지도"></div>
     <div class="set-group"><label>탭: 다이어리</label><input type="text" id="set-tab-diary" value="다이어리"></div>
     <div class="set-group"><label>탭: 예산·팁</label><input type="text" id="set-tab-budget" value="예산·팁"></div>
+    <div class="set-group"><label>예산·팁 내 첫 번째 탭</label><input type="text" id="set-tip-label" value="팁"></div>
+    <div class="set-group"><label>예산·팁 내 두 번째 탭</label><input type="text" id="set-budget-label" value="예산"></div>
     <div class="set-group"><label>저장 완료 메시지</label><input type="text" id="set-save-msg" value="저장 완료!"></div>
     <button class="set-save" onclick="saveSettings()">저장</button>
     <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee">
@@ -493,13 +494,15 @@ var CM={food:{i:'🍜',co:'#e07a5f'},cafe:{i:'☕',co:'#c9a84c'},spa:{i:'💆',c
 function dReg(lat){return lat>10.28?'북부':lat>10.12?'중부':'남부'}
 
 // ===== SETTINGS =====
-var appSettings={title:'🌴 Phú Quốc',diaryTitle:'🌴 푸꾸옥 여행 다이어리',tab_schedule:'일정',tab_map:'지도',tab_diary:'다이어리',tab_budget:'예산·팁',saveMsg:'저장 완료!',adminLabel:'Admin',visitorLabel:'Visitor'};
+var appSettings={title:'🌴 Phú Quốc',diaryTitle:'🌴 푸꾸옥 여행 다이어리',tab_schedule:'일정',tab_map:'지도',tab_diary:'다이어리',tab_budget:'예산·팁',saveMsg:'저장 완료!',tipLabel:'팁',budgetLabel:'예산',adminLabel:'Admin',visitorLabel:'Visitor'};
 fbGet('settings',function(val){
   if(val){appSettings=val;applySettings()}
 });
 function applySettings(){
   document.getElementById('appTitle').textContent=appSettings.title||'🌴 Phú Quốc';
   document.title=appSettings.title||'🌴 Phú Quốc';
+  var tb=document.getElementById('tipTabBtn');if(tb)tb.textContent=appSettings.tipLabel||'팁';
+  var bb=document.getElementById('budgetTabBtn');if(bb)bb.textContent=appSettings.budgetLabel||'예산';
   ['schedule','map','diary','budget'].forEach(function(k){
     var el=document.querySelector('[data-key="tab_'+k+'"]');
     if(el&&appSettings['tab_'+k])el.textContent=appSettings['tab_'+k];
@@ -513,6 +516,8 @@ function openSettings(){
   document.getElementById('set-tab-diary').value=appSettings.tab_diary||'다이어리';
   document.getElementById('set-tab-budget').value=appSettings.tab_budget||'예산·팁';
   document.getElementById('set-save-msg').value=appSettings.saveMsg||'저장 완료!';
+  document.getElementById('set-tip-label').value=appSettings.tipLabel||'팁';
+  document.getElementById('set-budget-label').value=appSettings.budgetLabel||'예산';
   document.getElementById('set-admin-label').value=appSettings.adminLabel||'Admin';
   document.getElementById('set-visitor-label').value=appSettings.visitorLabel||'Visitor';
   document.getElementById('settingsOverlay').classList.add('show');
@@ -526,6 +531,8 @@ function saveSettings(){
   appSettings.tab_diary=document.getElementById('set-tab-diary').value;
   appSettings.tab_budget=document.getElementById('set-tab-budget').value;
   appSettings.saveMsg=document.getElementById('set-save-msg').value;
+  appSettings.tipLabel=document.getElementById('set-tip-label').value;
+  appSettings.budgetLabel=document.getElementById('set-budget-label').value;
   appSettings.adminLabel=document.getElementById('set-admin-label').value;
   appSettings.visitorLabel=document.getElementById('set-visitor-label').value;
   fbSet('settings',appSettings);
@@ -948,6 +955,9 @@ function renderUserPlaces(){
 
 // BUDGET/TIPS
 function swBT(s,btn){document.querySelectorAll('.btt button').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');document.querySelectorAll('.bts').forEach(function(e){e.classList.remove('on')});document.getElementById('bt-'+s).classList.add('on')}
+// Budget summary
+var budgetSummaryDefault='2인 총액 · 호텔 제외\n4/13~14 트래블월렛 → 4/15 금은방 → 이후 현금';
+fbGet('budget_summary',function(val){var el=document.getElementById('budgetSummary');if(!el)return;var txt=val||budgetSummaryDefault;if(isAdmin){el.innerHTML='<textarea onblur="fbSet(\'budget_summary\',this.value)" style="width:100%;border:1px dashed #ccc;border-radius:6px;padding:6px;font-size:12px;font-family:inherit;resize:vertical;min-height:36px;outline:none">'+txt+'</textarea>'}else{el.innerHTML='<div style="white-space:pre-wrap">'+txt.replace(/</g,'&lt;')+'</div>'}})
 function tic(el){el.parentElement.classList.toggle('op')}
 
 // CHECKLIST
