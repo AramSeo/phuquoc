@@ -561,8 +561,8 @@ fbGet('day_labels',function(val){
   renderSch();
 });
 
-function getDayTitle(day){var dl=dayLabels[day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.title)||di.title}
-function getDaySub(day){var dl=dayLabels[day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.sub)||di.sub}
+function getDayTitle(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.title)||di.title}
+function getDaySub(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.sub)||di.sub}
 
 function renderSch(){
   var openDays={};var hiddenDays={};
@@ -584,11 +584,13 @@ function renderSch(){
       subHtml='<div class="dcs">'+sub+'</div>';
     }
     // Day memo
-    var memoVal=(dayMemos&&dayMemos[d.day])||'';
+    var memoVal=(dayMemos&&dayMemos[''+d.day])||'';
     var memoHtml='<div style="padding:10px 14px;border-bottom:1px solid #f0ece4">'
-      +'<textarea id="memo_'+d.day+'" placeholder="메모 남기기..." style="width:100%;padding:8px;border:1.5px solid #eee;border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:36px;outline:none" onblur="saveDayMemo('+d.day+',this.value)">'+memoVal+'</textarea></div>';
+      +'<textarea id="memo_'+d.day+'" placeholder="메모 남기기..." style="width:100%;padding:8px;border:1.5px solid #eee;border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:36px;outline:none">'+memoVal+'</textarea>'
+      +'<button onclick="saveDayMemo('+d.day+',document.getElementById(\'memo_'+d.day+'\').value);this.textContent=\'저장됨!\';var b=this;setTimeout(function(){b.textContent=\'저장\'},1000)" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
+      +'<div style="clear:both"></div></div>';
     // Items from schedule_v2
-    var dayData=schData[d.day]||{};
+    var dayData=schData[''+d.day]||{};
     var body=memoHtml;
     var secLabels={transport:{i:'🚕',l:'이동',c:'trans'},activity:{i:'🎯',l:'활동',c:'act'},breakfast:{i:'🌅',l:'아침',c:'food'},lunch:{i:'🍜',l:'점심',c:'food'},dinner:{i:'🌙',l:'저녁',c:'food'},snack:{i:'🍉',l:'간식/야식',c:'food'},etc:{i:'💡',l:'기타',c:'info'}};
     var secOrder=['transport','activity','breakfast','lunch','dinner','snack','etc'];
@@ -619,12 +621,12 @@ function renderSch(){
 }
 function tdc(el){el.parentElement.classList.toggle('op')}
 function showD(d,btn){document.querySelectorAll('.dnav button').forEach(function(b){b.classList.remove('on')});if(btn)btn.classList.add('on');document.querySelectorAll('.dc').forEach(function(c){if(d==='all'){c.style.display='';c.classList.remove('op')}else{if(parseInt(c.dataset.day)===d){c.style.display='';c.classList.add('op')}else c.style.display='none'}})}
-function saveDayLabel(day,field,val){if(!isAdmin)return;if(!dayLabels[day])dayLabels[day]={};dayLabels[day][field]=val.trim();fbSet('day_labels/'+day+'/'+field,val.trim())}
+function saveDayLabel(day,field,val){if(!isAdmin)return;if(!dayLabels[''+day])dayLabels[''+day]={};dayLabels[''+day][field]=val.trim();fbSet('day_labels/'+day+'/'+field,val.trim())}
 var dayMemos={};
 fbGet('day_memos',function(val){dayMemos=val||{};renderSch()});
-function saveDayMemo(day,val){dayMemos[day]=val;fbSet('day_memos/'+day,val)}
+function saveDayMemo(day,val){dayMemos[''+day]=val;fbSet('day_memos/'+day,val)}
 function delSchItem(day,sec,idx){
-  if(!schData[day]||!schData[day][sec])return;
+  day=''+day;if(!schData[day]||!schData[day][sec])return;
   var removed=schData[day][sec][idx];
   schData[day][sec].splice(idx,1);
   fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec].length?schData[day][sec]:null);
@@ -644,7 +646,7 @@ function initMap(){
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'©OSM',maxZoom:18}).addTo(lmap);
   bFlt();rMk();
   fbGet('places',function(v){userPlacesCache=v?Object.values(v):[];rMk();if(aFil!=='all')rCd(aFil)});
-  fbGet('route',function(v){routeCache=new Set(v||[]);rMk();if(aFil!=='all')rCd(aFil)});
+  fbGet('route',function(v){routeCache=new Set(v||[]);rMk();if(aFil!=='all')rCd(aFil);renderSch()});
 }
 function bFlt(){
   var cs=[{k:'all',l:'전체'},{k:'myroute',l:'📌 MY루트'},{k:'food',l:'🍜 식당'},{k:'cafe',l:'☕ 카페'},{k:'spa',l:'💆 스파'},{k:'shop',l:'🛒 쇼핑'},{k:'spot',l:'📍 스팟'},{k:'hotel',l:'🏨 숙소'},{k:'addplace',l:'➕ 장소추가'}];
@@ -715,7 +717,7 @@ function tRt(n){
   if(i>=0){
     // Remove from route
     arr.splice(i,1);
-    fbSet('route',arr);
+    fbSet('route',arr.length?arr:null);
     // Also remove from schedule
     removeFromSchedule(n);
   } else {
@@ -745,7 +747,7 @@ function confirmRt(){
   // Add to schedule
   var place=gAll().find(function(p){return p.n===_rtName});
   var memo=place?((place.pr||'')+' '+(place.d||'')).trim():'';
-  if(!schData[day])schData[day]={};
+  day=''+day;if(!schData[day])schData[day]={};
   if(!schData[day][sec])schData[day][sec]=[];
   if(!schData[day][sec].some(function(it){return it.text===_rtName})){
     schData[day][sec].push({text:_rtName,memo:memo,placeKey:true});
@@ -941,8 +943,9 @@ function exportDiary(){
 
 // INIT
 renderSch();bCl();
-// Clear old schedule data
+// Clear old data
 fbOnce('schedule_picks').then(function(v){if(v)fbSet('schedule_picks',null)});
+fbOnce('schedule_v2').then(function(v){if(v){var dominated=false;Object.keys(v).forEach(function(k){if(v[k]&&typeof v[k]==='object'&&!Array.isArray(v[k])){/*ok*/}else{dominated=true}});if(dominated)fbSet('schedule_v2',null)}});
 setTimeout(function(){initMap()},100);
 // SW disabled for debugging
 </script>
