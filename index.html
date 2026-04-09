@@ -258,8 +258,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
       <input type="file" id="phIn" accept="image/*" multiple onchange="handlePhotos(event)">
     </div>
     <div id="diaryEntries"></div>
-    <button class="dbtn save" onclick="saveDiary()">💾 저장</button>
+    <div id="diarySaveArea" style="display:none;margin-top:8px">
+      <input type="password" id="diaryPw" placeholder="비밀번호 4자리 (삭제 시 필요)" maxlength="4" inputmode="numeric" pattern="[0-9]*" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:var(--rs);font-size:14px;text-align:center;font-family:inherit;outline:none;margin-bottom:6px">
+      <button class="dbtn save" onclick="saveDiary()">💾 저장</button>
+    </div>
     <button class="dbtn exp" onclick="exportDiary()">📄 내보내기</button>
+    <div id="trashSection" style="display:none;margin-top:20px">
+      <div style="font-weight:700;font-size:14px;color:var(--co);margin-bottom:8px;padding-bottom:4px;border-bottom:2px solid var(--co)">🗑️ 휴지통 (Admin 전용)</div>
+      <div id="trashEntries"></div>
+    </div>
   </div>
 </div>
 
@@ -470,6 +477,7 @@ function updMode(){
   var b=document.getElementById('modeBtn');
   if(isAdmin){b.textContent='✏️ Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
   else{b.textContent='👁️ Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
+  var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
 }
 
 // SCHEDULE
@@ -611,15 +619,18 @@ function tCl(id,el){fbSet('checklist_checked/'+id,el.checked||null)}
 function dCl(k,i){if(!isAdmin)return;fbOnce('checklist_data').then(function(d){if(!d)d=CLD;d[k].splice(i,1);fbSet('checklist_data',d)})}
 function addCl(){if(!isAdmin)return;var inp=document.getElementById('newCl'),v=inp.value.trim();if(!v)return;fbOnce('checklist_data').then(function(d){if(!d)d=CLD;d.pack.push(v);fbSet('checklist_data',d);inp.value=''})}
 
-// ===== DIARY (FIX: no duplicates) =====
+// ===== DIARY (password + trash) =====
 var DD=[]; // from firebase
+var trashDD=[]; // from firebase trash
 var pendingPhotos=[]; // local unsaved
-var diaryLoaded=false;
 
 fbGet('diary',function(val){
   DD=val?Object.keys(val).map(function(k){var e=val[k];e._key=k;return e}):[];
-  diaryLoaded=true;
   renderDiary();
+});
+fbGet('diary_trash',function(val){
+  trashDD=val?Object.keys(val).map(function(k){var e=val[k];e._key=k;return e}):[];
+  renderTrash();
 });
 
 function handlePhotos(e){
@@ -627,6 +638,7 @@ function handlePhotos(e){
     cImg(file,function(dataUrl){
       pendingPhotos.push({id:Date.now()+'_'+Math.random(),data:dataUrl,memo:'',date:gFD(file),time:gFT(file)});
       renderDiary();
+      document.getElementById('diarySaveArea').style.display='block';
     });
   });e.target.value='';
 }
@@ -649,25 +661,73 @@ function renderDiary(){
       html+='<div class="de"><button class="dd" onclick="delDE(\''+eid+'\')">✕</button><img src="'+e.data+'"><div class="dt">'+(e.time||'')+tag+'</div><textarea placeholder="메모..." oninput="updMemo(\''+eid+'\',this.value)">'+(e.memo||'')+'</textarea></div>';
     });html+='</div>';
   });el.innerHTML=html;
+  // Show/hide save area
+  document.getElementById('diarySaveArea').style.display=pendingPhotos.length?'block':'none';
+  // Show trash for admin
+  document.getElementById('trashSection').style.display=isAdmin?'block':'none';
 }
 function updMemo(id,val){
   var e=DD.find(function(x){return x._key===id})||pendingPhotos.find(function(x){return x.id===id});
   if(e)e.memo=val;
 }
 function delDE(id){
+  // Pending photo - just remove locally
+  var pending=pendingPhotos.find(function(x){return x.id===id});
+  if(pending){pendingPhotos=pendingPhotos.filter(function(x){return x.id!==id});renderDiary();return}
+  // Saved photo - need password or admin
   var found=DD.find(function(x){return x._key===id});
-  if(found){db.ref('diary/'+id).remove();return}
-  pendingPhotos=pendingPhotos.filter(function(x){return x.id!==id});
-  renderDiary();
+  if(!found)return;
+  if(isAdmin){
+    // Admin: move to trash directly
+    moveToTrash(id,found);return;
+  }
+  // Normal user: ask for password
+  var pw=prompt('삭제하려면 게시 시 입력한 비밀번호 4자리를 입력하세요');
+  if(!pw)return;
+  if(pw===found.pw){
+    moveToTrash(id,found);
+  }else{
+    alert('비밀번호가 틀렸습니다');
+  }
+}
+function moveToTrash(id,entry){
+  // Copy to trash, then delete from diary
+  var trashEntry={data:entry.data,memo:entry.memo,date:entry.date,time:entry.time,pw:entry.pw,deletedAt:new Date().toISOString()};
+  db.ref('diary_trash').push(trashEntry);
+  db.ref('diary/'+id).remove();
 }
 function saveDiary(){
   if(!pendingPhotos.length){alert('저장할 새 사진이 없습니다');return}
-  var toSave=pendingPhotos.slice(); // copy
-  pendingPhotos=[]; // clear BEFORE firebase writes back
+  var pw=document.getElementById('diaryPw').value.trim();
+  if(!pw||pw.length!==4||!/^\d{4}$/.test(pw)){alert('숫자 4자리 비밀번호를 입력해주세요');return}
+  var toSave=pendingPhotos.slice();
+  pendingPhotos=[];
   toSave.forEach(function(p){
-    db.ref('diary').push({data:p.data,memo:p.memo,date:p.date,time:p.time});
+    db.ref('diary').push({data:p.data,memo:p.memo,date:p.date,time:p.time,pw:pw});
   });
+  document.getElementById('diaryPw').value='';
+  document.getElementById('diarySaveArea').style.display='none';
   alert(appSettings.saveMsg||'저장 완료!');
+}
+function renderTrash(){
+  var el=document.getElementById('trashEntries');
+  if(!el)return;
+  if(!trashDD.length){el.innerHTML='<div style="color:#999;font-size:12px;padding:8px">휴지통이 비어있어요</div>';return}
+  el.innerHTML=trashDD.map(function(e){
+    return '<div class="de" style="opacity:0.7"><button class="dd" onclick="permDelete(\''+e._key+'\')" title="영구 삭제">🗑️</button><button style="position:absolute;top:6px;right:36px;background:var(--ac);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="restoreDE(\''+e._key+'\')" title="복원">↩</button><img src="'+e.data+'"><div class="dt">'+(e.date||'')+' '+(e.time||'')+'</div>'+(e.memo?'<div style="font-size:11px;color:var(--tx2)">'+e.memo+'</div>':'')+'</div>';
+  }).join('');
+}
+function permDelete(key){
+  if(!isAdmin)return;
+  if(!confirm('영구 삭제하시겠습니까?'))return;
+  db.ref('diary_trash/'+key).remove();
+}
+function restoreDE(key){
+  if(!isAdmin)return;
+  var entry=trashDD.find(function(x){return x._key===key});
+  if(!entry)return;
+  db.ref('diary').push({data:entry.data,memo:entry.memo,date:entry.date,time:entry.time,pw:entry.pw||''});
+  db.ref('diary_trash/'+key).remove();
 }
 function exportDiary(){
   var all=DD.concat(pendingPhotos);
