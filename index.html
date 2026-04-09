@@ -232,20 +232,31 @@ body.font-lg .cal-t{font-size:13px}
 body.font-lg .cal-item{font-size:12.5px}
 body.font-lg .cal-memo{font-size:12.5px}
 body.font-lg .cal-t .cal-cat{font-size:11px}
+body.font-lg .cal-t th{font-size:14px}
 body.font-lg .mc-nm{font-size:14px}
 body.font-lg .mc-mt{font-size:12px}
 body.font-lg .de{font-size:14px}
+body.font-lg .wxt{font-size:12px}
+body.font-lg .wxt th,body.font-lg .wxt td{padding:6px 5px}
+body.font-lg .dnav button{font-size:13px}
+body.font-lg .ddh{font-size:16px}
+body.font-lg .dt{font-size:12px}
+body.font-lg .hd h1{font-size:19px}
+body.font-lg .ti{font-size:12px}
+body.font-lg .ti em{font-size:19px}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:3px}
 /* Calendar overview */
 .cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px}
 .cal-wrap::-webkit-scrollbar{display:none}
-.cal-t{border-collapse:collapse;width:100%;min-width:520px;font-size:11px;table-layout:fixed}
-.cal-t th{padding:8px 6px;background:#4da695;color:#fff;font-weight:700;text-align:center;white-space:nowrap;font-size:12px;width:14%}
-.cal-t th:first-child{background:#e0f2ee;color:var(--ac);text-align:left;font-size:11px;width:58px}
-.cal-t td{padding:6px;border-bottom:1px solid #eee;vertical-align:top;word-break:break-word}
+.cal-t{border-collapse:collapse;width:100%;min-width:560px;font-size:11px;table-layout:fixed}
+.cal-t th{padding:8px 6px;background:#4da695;color:#fff;font-weight:700;text-align:center;white-space:nowrap;font-size:12px;width:13%}
+.cal-t th:first-child{background:#e0f2ee;color:var(--ac);text-align:left;font-size:11px;width:30px}
+.cal-t th.cal-grp{background:#e0f2ee;color:var(--ac);font-size:9px;width:28px;text-align:center;writing-mode:vertical-lr;letter-spacing:2px;padding:4px 2px}
+.cal-t td{padding:6px;border-bottom:1px solid #eee;vertical-align:middle;text-align:center;word-break:break-word;height:44px}
+.cal-t tr.cal-memo-row td{text-align:left;vertical-align:top;height:auto}
 .cal-t tr:nth-child(even) td{background:#fafaf7}
-.cal-t .cal-cat{font-weight:600;color:var(--ac);white-space:nowrap;font-size:9px;background:#e0f2ee!important;border-right:1px solid #d0e8e0;padding:4px 5px}
+.cal-t .cal-cat{font-weight:600;color:var(--ac);white-space:nowrap;font-size:9px;background:#e0f2ee!important;border-right:1px solid #d0e8e0;padding:4px 5px;text-align:center}
 .cal-item{font-size:10.5px;line-height:1.4;padding:2px 0}
 .cal-item::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ac);margin-right:4px;vertical-align:middle}
 .cal-item a{color:var(--ac);text-decoration:none;font-weight:600}
@@ -609,40 +620,53 @@ function getDayTitle(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function
 function getDaySub(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.sub)||di.sub}
 
 function renderSch(){
-  var calSecs=[{k:'memo',l:'메모'},{k:'hotel',l:'숙소'},{k:'activity',l:'활동'},{k:'breakfast',l:'아침'},{k:'lunch',l:'점심'},{k:'dinner',l:'저녁'},{k:'snack',l:'간식'}];
   var calDays=DAY_INFO.filter(function(d){return d.day!==19});
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
-  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th></th>';
+  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th colspan="2"></th>';
   calDays.forEach(function(d){ch+='<th>4/'+d.day+'<br><span style="font-weight:400;font-size:10px">'+dayNames[d.day]+'</span></th>'});
   ch+='</tr>';
-  calSecs.forEach(function(sec){
-    ch+='<tr><td class="cal-cat">'+sec.l+'</td>';
+
+  // Helper to render cells
+  function renderCells(key,isMemo){
     calDays.forEach(function(d){
       var dd=schData[''+d.day]||{};
-      if(sec.k==='memo'){
+      if(isMemo){
         var mv=(dayMemos&&dayMemos[''+d.day])||'';
         var memoId='cmemo_'+d.day;
         if(isAdmin){
-          ch+='<td><div id="'+memoId+'v" style="cursor:pointer;min-height:20px'+(mv?'':';color:#ddd')+'" onclick="calEditMemo('+d.day+')">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'✏️')+'</div>'
+          ch+='<td style="text-align:left;vertical-align:top;height:auto"><div id="'+memoId+'v" style="cursor:pointer;min-height:20px'+(mv?'':';color:#ddd')+'" onclick="calEditMemo('+d.day+')">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'✏️')+'</div>'
             +'<div id="'+memoId+'e" style="display:none"><textarea id="'+memoId+'" style="width:100%;padding:4px;border:1px solid var(--gd);border-radius:4px;font-size:10px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+mv+'</textarea>'
             +'<button onclick="calSaveMemo('+d.day+')" style="margin-top:2px;padding:2px 8px;background:var(--ac);color:#fff;border:none;border-radius:4px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit">저장</button></div></td>';
         } else {
-          ch+='<td>'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'<span style="color:#ddd">—</span>')+'</td>';
+          ch+='<td style="text-align:left;vertical-align:top;height:auto">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'<span style="color:#ddd">—</span>')+'</td>';
         }
       } else {
-        var items=dd[sec.k]||[];
+        var items=dd[key]||[];
         ch+='<td>';
         if(items.length){items.forEach(function(it,idx){
           var gl=it.placeKey?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(it.text+' Phu Quoc'):'';
           ch+='<div class="cal-item">'+(gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':it.text);
-          if(isAdmin)ch+=' <span onclick="delSchItem('+d.day+',\''+sec.k+'\','+idx+')" style="color:#ccc;cursor:pointer;font-size:10px">✕</span>';
+          if(isAdmin)ch+=' <span onclick="delSchItem('+d.day+',\''+key+'\','+idx+')" style="color:#ccc;cursor:pointer;font-size:10px">✕</span>';
           ch+='</div>';
         })}else{ch+='<span style="color:#ddd">—</span>'}
         ch+='</td>';
       }
     });
-    ch+='</tr>';
-  });
+  }
+
+  // 메모 row
+  ch+='<tr><td class="cal-cat" colspan="2">메모</td>';renderCells('memo',true);ch+='</tr>';
+  // 숙소 row
+  ch+='<tr><td class="cal-cat" colspan="2">숙소</td>';renderCells('hotel',false);ch+='</tr>';
+  // 활동 row
+  ch+='<tr><td class="cal-cat" colspan="2">활동</td>';renderCells('activity',false);ch+='</tr>';
+  // 식사 group (아침/점심/저녁)
+  ch+='<tr><td class="cal-cat" rowspan="3" style="writing-mode:vertical-lr;letter-spacing:3px;padding:4px 2px">식사</td><td class="cal-cat">아침</td>';renderCells('breakfast',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat">점심</td>';renderCells('lunch',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat">저녁</td>';renderCells('dinner',false);ch+='</tr>';
+  // 간식 row
+  ch+='<tr><td class="cal-cat" colspan="2">간식</td>';renderCells('snack',false);ch+='</tr>';
+
   ch+='</table></div>';
   document.getElementById('schOverview').innerHTML=ch;
 }
