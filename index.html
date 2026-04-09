@@ -227,13 +227,21 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .mdb button{flex:1;padding:10px;border-radius:var(--rs);font-size:14px;font-family:inherit;cursor:pointer;border:none}
 .mdb .cc{background:#eee;color:var(--tx)}.mdb .cf{background:var(--ac);color:#fff}
 .md .er{color:var(--co);font-size:12px;margin-bottom:8px;display:none}
+body.font-lg{font-size:16px}
+body.font-lg .cal-t{font-size:13px}
+body.font-lg .cal-item{font-size:12.5px}
+body.font-lg .cal-memo{font-size:12.5px}
+body.font-lg .cal-t .cal-cat{font-size:11px}
+body.font-lg .mc-nm{font-size:14px}
+body.font-lg .mc-mt{font-size:12px}
+body.font-lg .de{font-size:14px}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:3px}
 /* Calendar overview */
 .cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px}
 .cal-wrap::-webkit-scrollbar{display:none}
 .cal-t{border-collapse:collapse;width:100%;min-width:520px;font-size:11px;table-layout:fixed}
-.cal-t th{padding:8px 6px;background:#2a8c7a;color:#fff;font-weight:700;text-align:center;white-space:nowrap;font-size:12px;width:14%}
+.cal-t th{padding:8px 6px;background:#4da695;color:#fff;font-weight:700;text-align:center;white-space:nowrap;font-size:12px;width:14%}
 .cal-t th:first-child{background:#e0f2ee;color:var(--ac);text-align:left;font-size:11px;width:58px}
 .cal-t td{padding:6px;border-bottom:1px solid #eee;vertical-align:top;word-break:break-word}
 .cal-t tr:nth-child(even) td{background:#fafaf7}
@@ -248,6 +256,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 <div class="hd">
   <div style="display:flex;align-items:center"><span class="sync-dot" id="syncDot"></span><h1 id="appTitle">🌴 Phú Quốc</h1></div>
   <div class="hd-right">
+    <button class="mbtn" id="fontBtn" onclick="toggleFont()" style="font-size:10px;padding:4px 8px">가</button>
     <button class="gear-btn" onclick="openSettings()">⚙️</button>
     <button class="mbtn" id="modeBtn" onclick="toggleMode()">👁️ Visitor</button>
   </div>
@@ -401,6 +410,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
   <div class="settings-panel">
     <h2>⚙️ 설정 <button class="close-set" onclick="closeSettings()">✕</button></h2>
     <div class="set-group"><label>앱 제목</label><input type="text" id="set-title" value="🌴 Phú Quốc"></div>
+    <div class="set-group"><label>Admin 버튼 이름</label><input type="text" id="set-admin-label" value="Admin"></div>
+    <div class="set-group"><label>Visitor 버튼 이름</label><input type="text" id="set-visitor-label" value="Visitor"></div>
     <div class="set-group"><label>다이어리 내보내기 제목</label><input type="text" id="set-diary-title" value="🌴 푸꾸옥 여행 다이어리"></div>
     <div class="set-group"><label>탭: 일정</label><input type="text" id="set-tab-schedule" value="일정"></div>
     <div class="set-group"><label>탭: 지도</label><input type="text" id="set-tab-map" value="지도"></div>
@@ -450,8 +461,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
     <div id="rtExist" style="display:none">
       <div id="rtExistList" style="margin-bottom:12px"></div>
       <button onclick="showRtAdd()" style="width:100%;padding:10px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">📌 다른 날짜에도 추가</button>
-      <button onclick="removeAllRt()" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">전체 제거</button>
-      <button onclick="document.getElementById('rtMo').classList.remove('show')" style="width:100%;padding:10px;background:#eee;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit">닫기</button>
+      <button onclick="removeAllRt()" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">삭제</button>
+      <button onclick="document.getElementById('rtMo').classList.remove('show');alert(appSettings.saveMsg||'저장 완료!')" style="width:100%;padding:10px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">저장하기</button>
     </div>
   </div>
 </div>
@@ -471,7 +482,7 @@ var CM={food:{i:'🍜',co:'#e07a5f'},cafe:{i:'☕',co:'#c9a84c'},spa:{i:'💆',c
 function dReg(lat){return lat>10.28?'북부':lat>10.12?'중부':'남부'}
 
 // ===== SETTINGS =====
-var appSettings={title:'🌴 Phú Quốc',diaryTitle:'🌴 푸꾸옥 여행 다이어리',tab_schedule:'일정',tab_map:'지도',tab_diary:'다이어리',tab_budget:'예산·팁',saveMsg:'저장 완료!'};
+var appSettings={title:'🌴 Phú Quốc',diaryTitle:'🌴 푸꾸옥 여행 다이어리',tab_schedule:'일정',tab_map:'지도',tab_diary:'다이어리',tab_budget:'예산·팁',saveMsg:'저장 완료!',adminLabel:'Admin',visitorLabel:'Visitor'};
 fbGet('settings',function(val){
   if(val){appSettings=val;applySettings()}
 });
@@ -490,6 +501,8 @@ function openSettings(){
   document.getElementById('set-tab-diary').value=appSettings.tab_diary||'다이어리';
   document.getElementById('set-tab-budget').value=appSettings.tab_budget||'예산·팁';
   document.getElementById('set-save-msg').value=appSettings.saveMsg||'저장 완료!';
+  document.getElementById('set-admin-label').value=appSettings.adminLabel||'Admin';
+  document.getElementById('set-visitor-label').value=appSettings.visitorLabel||'Visitor';
   document.getElementById('settingsOverlay').classList.add('show');
 }
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('show')}
@@ -501,6 +514,8 @@ function saveSettings(){
   appSettings.tab_diary=document.getElementById('set-tab-diary').value;
   appSettings.tab_budget=document.getElementById('set-tab-budget').value;
   appSettings.saveMsg=document.getElementById('set-save-msg').value;
+  appSettings.adminLabel=document.getElementById('set-admin-label').value;
+  appSettings.visitorLabel=document.getElementById('set-visitor-label').value;
   fbSet('settings',appSettings);
   applySettings();closeSettings();
   alert(appSettings.saveMsg||'저장 완료!');
@@ -516,8 +531,8 @@ function cfPw(){if(document.getElementById('pwIn').value==='1234'){isAdmin=true;
 document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')cfPw()});
 function updMode(){
   var b=document.getElementById('modeBtn');
-  if(isAdmin){b.textContent='✏️ Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
-  else{b.textContent='👁️ Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
+  if(isAdmin){b.textContent='✏️ '+(appSettings.adminLabel||'Admin');b.classList.add('admin');document.body.classList.add('admin-mode')}
+  else{b.textContent='👁️ '+(appSettings.visitorLabel||'Visitor');b.classList.remove('admin');document.body.classList.remove('admin-mode')}
   var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
   renderSch();
 }
@@ -704,11 +719,11 @@ function rMk(){
     var mk=L.marker([p.lat,p.lng],{icon:ic}).addTo(lmap);
     var gl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc');
     var inRoute=gRt().has(p.n);
-    var rtLabel=inRoute?'MY루트에서 제거':'MY루트에 추가';
+    var rtLabel=inRoute?'MY루트 수정':'MY루트에 추가';
     var rtSt=inRoute?'background:#e91e63;color:#fff;border:none':'background:#fff;color:#e91e63;border:1.5px solid #e91e63';
     var pidx=window._mkPlaces.length;
     window._mkPlaces.push(p.n);
-    mk.bindPopup('<b>'+m0.i+' '+p.n+'</b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+'<br><a href="'+gl+'" target="_blank" style="color:#1a6b5a;font-size:11px;font-weight:700">Google Maps</a><br><button id="rb_'+pidx+'" style="margin-top:4px;padding:5px 12px;'+rtSt+';border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 '+rtLabel+'</button>');
+    mk.bindPopup('<b>'+m0.i+' <a href="'+gl+'" target="_blank" style="color:var(--ac);text-decoration:none;border-bottom:1px dashed var(--ac)">'+p.n+'</a></b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+'<br><button id="rb_'+pidx+'" style="margin-top:4px;padding:5px 12px;'+rtSt+';border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 '+rtLabel+'</button>');
     mk.on('popupopen',function(){
       var btn=document.getElementById('rb_'+pidx);
       if(btn)btn.onclick=function(){tRt(window._mkPlaces[pidx])};
