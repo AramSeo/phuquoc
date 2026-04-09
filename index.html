@@ -751,8 +751,9 @@ function rMk(){
     var pidx=window._mkPlaces.length;
     window._mkPlaces.push(p.n);
     var pNote=getPlaceNote(p.n)!==null?getPlaceNote(p.n):(p.d||'');
+    var pPrice=getPlacePrice(p.n)!==null?getPlacePrice(p.n):(p.pr||'');
     var routeBtnHtml=isAdmin?'<br><button id="rb_'+pidx+'" style="margin-top:4px;padding:5px 12px;'+rtSt+';border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 '+rtLabel+'</button>':'';
-    mk.bindPopup('<b>'+m0.i+' <a href="'+gl+'" target="_blank" style="color:var(--ac);text-decoration:none;border-bottom:1px dashed var(--ac)">'+p.n+'</a></b><br>'+dReg(p.lat)+(pNote?' · '+pNote:'')+(p.pr?'<br>💰 '+p.pr:'')+routeBtnHtml);
+    mk.bindPopup('<b>'+m0.i+' <a href="'+gl+'" target="_blank" style="color:var(--ac);text-decoration:none;border-bottom:1px dashed var(--ac)">'+p.n+'</a></b><br>'+dReg(p.lat)+(pNote?' · '+pNote:'')+(pPrice?'<br>💰 '+pPrice:'')+routeBtnHtml);
     mk.on('popupopen',function(){
       if(!isAdmin)return;
       var btn=document.getElementById('rb_'+pidx);
@@ -783,10 +784,13 @@ function rCd(cat){
       if(isAdmin)html+='<button class="mc-rt '+(inR?'in':'')+'" onclick="event.stopPropagation();tRt(window._mcPlaces['+idx+'].n)">📌</button>';
       html+='<div class="mc-ic" style="background:'+m0.co+'">'+m0.i+'</div>';
       var noteVal=getPlaceNote(p.n)!==null?getPlaceNote(p.n):(p.d||'');
-      html+='<div class="mc-info"><div class="mc-nm">'+p.n+'</div><div class="mc-mt">'+mt+(p.pr?' · '+p.pr:'')+'</div>';
+      var priceVal=getPlacePrice(p.n)!==null?getPlacePrice(p.n):(p.pr||'');
+      html+='<div class="mc-info"><div class="mc-nm">'+p.n+'</div>';
       if(isAdmin){
-        html+='<div class="mc-mt"><input type="text" value="'+(noteVal).replace(/"/g,'&quot;')+'" placeholder="메모 입력" onclick="event.stopPropagation()" onblur="savePlaceNote(window._mcPlaces['+idx+'].n,this.value)" style="border:none;border-bottom:1px dashed #ccc;background:none;font-size:10px;color:var(--tx2);font-family:inherit;outline:none;width:100%;padding:1px 0"></div>';
+        html+='<div class="mc-mt">'+mt+(priceVal?' · ':'')+' <input type="text" value="'+(priceVal).replace(/"/g,'&quot;')+'" placeholder="가격" onclick="event.stopPropagation()" onblur="savePlacePrice(window._mcPlaces['+idx+'].n,this.value)" style="border:none;border-bottom:1px dashed #ccc;background:none;font-size:10px;color:var(--co);font-family:inherit;outline:none;padding:1px 0;width:60%"></div>';
+        html+='<div class="mc-mt"><input type="text" value="'+(noteVal).replace(/"/g,'&quot;')+'" placeholder="메모" onclick="event.stopPropagation()" onblur="savePlaceNote(window._mcPlaces['+idx+'].n,this.value)" style="border:none;border-bottom:1px dashed #ccc;background:none;font-size:10px;color:var(--tx2);font-family:inherit;outline:none;width:100%;padding:1px 0"></div>';
       } else {
+        html+='<div class="mc-mt">'+mt+(priceVal?' · '+priceVal:'')+'</div>';
         html+='<div class="mc-mt">'+noteVal+'</div>';
       }
       html+='</div>';
@@ -1299,6 +1303,10 @@ var placeNotes={};
 fbGet('place_notes',function(val){placeNotes=val||{}});
 function getPlaceNote(name){return placeNotes[name]!==undefined?placeNotes[name]:null}
 function savePlaceNote(name,val){placeNotes[name]=val;fbSet('place_notes/'+name.replace(/[.#$/\[\]]/g,'_'),val)}
+var placePrices={};
+fbGet('place_prices',function(val){placePrices=val||{}});
+function getPlacePrice(name){return placePrices[name]!==undefined?placePrices[name]:null}
+function savePlacePrice(name,val){placePrices[name]=val;fbSet('place_prices/'+name.replace(/[.#$/\[\]]/g,'_'),val)}
 
 // Font size toggle
 var _fontLg=false;
