@@ -229,6 +229,18 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .md .er{color:var(--co);font-size:12px;margin-bottom:8px;display:none}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:3px}
+/* Calendar overview */
+.cal-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px}
+.cal-wrap::-webkit-scrollbar{display:none}
+.cal-t{border-collapse:collapse;width:100%;min-width:520px;font-size:11px}
+.cal-t th{padding:8px 6px;background:var(--ac);color:#fff;font-weight:700;text-align:center;position:sticky;top:0;white-space:nowrap;font-size:12px}
+.cal-t th:first-child{background:var(--sf2);color:var(--tx);text-align:left;font-size:11px;min-width:60px}
+.cal-t td{padding:5px 6px;border-bottom:1px solid #f0ece4;vertical-align:top;min-width:80px}
+.cal-t tr:nth-child(even) td{background:var(--sf2)}
+.cal-t .cal-cat{font-weight:700;color:var(--ac);white-space:nowrap;font-size:11px;background:var(--sf)!important;border-right:1px solid #eee}
+.cal-item{font-size:10.5px;line-height:1.4;padding:2px 0}
+.cal-item a{color:inherit;text-decoration:none;border-bottom:1px dashed #ccc}
+.cal-memo{font-size:10px;color:var(--tx2);font-style:italic;padding:2px 0}
 </style>
 </head>
 <body>
@@ -278,7 +290,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
   </table></div>
   <div class="wxl">📱 <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> <a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> <a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank">시간별</a></div>
   <div class="dnav" id="dayNav"></div>
-  <div id="schCards" style="padding-bottom:40px"></div>
+  <div id="schOverview"></div>
+  <div id="schCards" style="padding-bottom:40px;display:none"></div>
 </div>
 
 <!-- DIARY -->
@@ -425,7 +438,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
     <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">시간대</div>
     <select id="rtTime" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px">
       <option value="breakfast">🌅 아침</option><option value="lunch">🍜 점심</option><option value="dinner">🌙 저녁</option>
-      <option value="snack">🍉 간식/야식</option><option value="activity">🎯 활동</option>
+      <option value="snack">🍉 간식/야식</option><option value="activity">🎯 활동</option><option value="hotel">🏨 숙소</option>
     </select>
     <div class="mdb">
       <button class="cc" onclick="document.getElementById('rtMo').classList.remove('show')">취소</button>
@@ -611,8 +624,8 @@ function renderSch(){
     // Items from schedule_v2
     var dayData=schData[''+d.day]||{};
     var body=memoHtml;
-    var secLabels={transport:{i:'🚕',l:'이동',c:'trans'},activity:{i:'🎯',l:'활동',c:'act'},breakfast:{i:'🌅',l:'아침',c:'food'},lunch:{i:'🍜',l:'점심',c:'food'},dinner:{i:'🌙',l:'저녁',c:'food'},snack:{i:'🍉',l:'간식/야식',c:'food'},etc:{i:'💡',l:'기타',c:'info'}};
-    var secOrder=['transport','activity','breakfast','lunch','dinner','snack','etc'];
+    var secLabels={hotel:{i:'🏨',l:'숙소',c:'info'},transport:{i:'🚕',l:'이동',c:'trans'},activity:{i:'🎯',l:'활동',c:'act'},breakfast:{i:'🌅',l:'아침',c:'food'},lunch:{i:'🍜',l:'점심',c:'food'},dinner:{i:'🌙',l:'저녁',c:'food'},snack:{i:'🍉',l:'간식/야식',c:'food'},etc:{i:'💡',l:'기타',c:'info'}};
+    var secOrder=['hotel','transport','activity','breakfast','lunch','dinner','snack','etc'];
     secOrder.forEach(function(key){
       var items=dayData[key];
       if(!items||!items.length)return;
@@ -637,9 +650,42 @@ function renderSch(){
     if(openDays[el.dataset.day])el.classList.add('op');
     if(hiddenDays[el.dataset.day])el.style.display='none';
   });
+  // Build calendar overview
+  var calSecs=[{k:'hotel',l:'🏨 숙소'},{k:'memo',l:'📝 메모'},{k:'activity',l:'🎯 활동'},{k:'breakfast',l:'🌅 아침'},{k:'lunch',l:'🍜 점심'},{k:'dinner',l:'🌙 저녁'},{k:'snack',l:'🍉 간식'},{k:'etc',l:'💡 기타'}];
+  var calDays=DAY_INFO.filter(function(d){return d.day!==19});
+  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th></th>';
+  calDays.forEach(function(d){ch+='<th>'+getDayTitle(d.day)+'<br><span style="font-weight:400;font-size:10px">4/'+d.day+'</span></th>'});
+  ch+='</tr>';
+  calSecs.forEach(function(sec){
+    ch+='<tr><td class="cal-cat">'+sec.l+'</td>';
+    calDays.forEach(function(d){
+      var dd=schData[''+d.day]||{};
+      if(sec.k==='memo'){
+        var mv=(dayMemos&&dayMemos[''+d.day])||'';
+        ch+='<td>'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').substring(0,40)+(mv.length>40?'...':'')+'</div>':'<span style="color:#ddd">—</span>')+'</td>';
+      } else {
+        var items=dd[sec.k]||[];
+        ch+='<td>';
+        if(items.length){items.forEach(function(it){
+          var gl=it.placeKey?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(it.text+' Phu Quoc'):'';
+          ch+='<div class="cal-item">'+(gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':it.text)+'</div>';
+        })}else{ch+='<span style="color:#ddd">—</span>'}
+        ch+='</td>';
+      }
+    });
+    ch+='</tr>';
+  });
+  ch+='</table></div>';
+  document.getElementById('schOverview').innerHTML=ch;
 }
 function tdc(el){el.parentElement.classList.toggle('op')}
-function showD(d,btn){document.querySelectorAll('.dnav button').forEach(function(b){b.classList.remove('on')});if(btn)btn.classList.add('on');document.querySelectorAll('.dc').forEach(function(c){if(d==='all'){c.style.display='';c.classList.remove('op')}else{if(parseInt(c.dataset.day)===d){c.style.display='';c.classList.add('op')}else c.style.display='none'}})}
+function showD(d,btn){
+  document.querySelectorAll('.dnav button').forEach(function(b){b.classList.remove('on')});
+  if(btn)btn.classList.add('on');
+  var ov=document.getElementById('schOverview'),cd=document.getElementById('schCards');
+  if(d==='all'){ov.style.display='';cd.style.display='none'}
+  else{ov.style.display='none';cd.style.display='';document.querySelectorAll('.dc').forEach(function(c){if(parseInt(c.dataset.day)===d){c.style.display='';c.classList.add('op')}else c.style.display='none'})}
+}
 function saveDayLabel(day,field,val){if(!isAdmin)return;if(!dayLabels[''+day])dayLabels[''+day]={};dayLabels[''+day][field]=val.trim();fbSet('day_labels/'+day+'/'+field,val.trim())}
 var dayMemos={};
 fbGet('day_memos',function(val){dayMemos=val||{};renderSch()});
@@ -776,7 +822,7 @@ function tRt(n){
       var dayMap={'북부':'14','중부':'15','남부':'17'};
       document.getElementById('rtDay').value=dayMap[reg]||'14';
       // Auto-select time based on category
-      var catTime={food:'lunch',cafe:'snack',spa:'activity',spot:'activity',shop:'activity'};
+      var catTime={food:'lunch',cafe:'snack',spa:'activity',spot:'activity',shop:'activity',hotel:'hotel'};
       document.getElementById('rtTime').value=catTime[place.c]||'activity';
     }
     document.getElementById('rtMo').classList.add('show');
