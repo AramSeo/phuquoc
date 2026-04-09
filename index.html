@@ -460,8 +460,7 @@ body.font-lg .de{font-size:14px}
     <!-- Already in route mode -->
     <div id="rtExist" style="display:none">
       <div id="rtExistList" style="margin-bottom:12px"></div>
-      <button onclick="showRtAdd()" style="width:100%;padding:10px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">📌 다른 날짜에도 추가</button>
-      <button onclick="removeAllRt()" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">삭제</button>
+      <button onclick="showRtAdd()" style="width:100%;padding:10px;background:#fff;color:var(--ac);border:1.5px solid var(--ac);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px">📌 다른 날짜에도 추가</button>
       <button onclick="document.getElementById('rtMo').classList.remove('show');alert(appSettings.saveMsg||'저장 완료!')" style="width:100%;padding:10px;background:var(--ac);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">저장하기</button>
     </div>
   </div>
@@ -768,25 +767,26 @@ function tRt(n){
     document.getElementById('rtAdd').style.display='none';
     document.getElementById('rtExist').style.display='block';
     // Build list of current schedule entries
-    var dayNames={13:'4/13 월',14:'4/14 화',15:'4/15 수',16:'4/16 목',17:'4/17 금',18:'4/18 토'};
+    var dayNames={'13':'4/13 월','14':'4/14 화','15':'4/15 수','16':'4/16 목','17':'4/17 금','18':'4/18 토'};
     var secNames={hotel:'숙소',transport:'이동',activity:'활동',breakfast:'아침',lunch:'점심',dinner:'저녁',snack:'간식',etc:'기타'};
     var list='<div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:6px">현재 일정:</div>';
     var found=false;
     Object.keys(schData).forEach(function(day){
-      Object.keys(schData[day]||{}).forEach(function(sec){
+      if(!schData[day]||typeof schData[day]!=='object')return;
+      Object.keys(schData[day]).forEach(function(sec){
         var arr=schData[day][sec];
         if(!Array.isArray(arr))return;
         arr.forEach(function(it,idx){
           if(it.text===n){
             found=true;
-            list+='<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;margin:3px 0;background:var(--sf2);border-radius:6px;font-size:12px">'
-              +'<span>'+(dayNames[day]||'4/'+day)+' · '+(secNames[sec]||sec)+'</span>'
-              +'<button onclick="removeOneRt(\''+day+'\',\''+sec+'\','+idx+')" style="background:none;border:none;color:var(--co);font-size:12px;cursor:pointer;padding:2px 6px">✕</button></div>';
+            list+='<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;margin:3px 0;background:var(--sf2);border-radius:8px;font-size:13px">'
+              +'<span>'+(dayNames[''+day]||'4/'+day)+' · '+(secNames[sec]||sec)+'</span>'
+              +'<button onclick="removeOneRt(\''+day+'\',\''+sec+'\','+idx+')" style="background:none;border:none;color:var(--co);font-size:14px;cursor:pointer;padding:2px 8px">✕</button></div>';
           }
         });
       });
     });
-    if(!found)list+='<div style="color:#999;font-size:11px;padding:4px">일정에 등록된 항목 없음</div>';
+    if(!found)list+='<div style="color:#999;font-size:12px;padding:8px;text-align:center">아직 날짜를 지정하지 않았어요</div>';
     document.getElementById('rtExistList').innerHTML=list;
   } else {
     // Show add mode
