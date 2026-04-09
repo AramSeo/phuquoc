@@ -395,7 +395,7 @@ body.font-lg .ti em{font-size:19px}
     <div class="bts" id="bt-tips">
       <div style="margin:8px 12px;padding:10px 14px;background:linear-gradient(135deg,#1a6b5a,#2c8c6e);border-radius:var(--r);color:#fff;font-size:12px">
         <div style="font-weight:700;font-size:14px;margin-bottom:6px">핵심 정보</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div>· 30~33°C / 밤27°C</div><div>· 한국-2시간</div><div>· 10만VND≈5,600원</div><div>· 일몰 18:15</div><div>· 남부>북부>중부</div><div>· UV 11~15시</div></div>
+        <div id="keyInfoContent"></div>
       </div>
       <div class="ql"><a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank" style="background:#e3f2fd;color:#1565c0">AccuWeather</a><a href="https://vinbus.vn/" target="_blank" style="background:#e8f5e9;color:#2e7d32">VinBus</a><a href="https://kissofthesea.com/" target="_blank" style="background:#fce4ec;color:#c62828">Kiss of Sea</a><a href="https://onbird.vn/" target="_blank" style="background:#e0f2f1;color:#00695c">OnBird</a></div>
       <div class="ic op"><div class="ich" onclick="tic(this)">체크리스트 <span class="ica">▾</span></div>
@@ -546,7 +546,7 @@ function updMode(){
   if(isAdmin){b.textContent=appSettings.adminLabel||'Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
   else{b.textContent=appSettings.visitorLabel||'Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
   var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
-  renderSch();
+  renderSch();renderKeyInfo();rMk();if(aFil!=='all')rCd(aFil);
 }
 
 // ===== PLACES =====
@@ -748,8 +748,9 @@ function rMk(){
     var rtSt=inRoute?'background:#e91e63;color:#fff;border:none':'background:#fff;color:#e91e63;border:1.5px solid #e91e63';
     var pidx=window._mkPlaces.length;
     window._mkPlaces.push(p.n);
+    var pNote=getPlaceNote(p.n)!==null?getPlaceNote(p.n):(p.d||'');
     var routeBtnHtml=isAdmin?'<br><button id="rb_'+pidx+'" style="margin-top:4px;padding:5px 12px;'+rtSt+';border-radius:12px;font-size:11px;cursor:pointer;font-family:inherit">📌 '+rtLabel+'</button>':'';
-    mk.bindPopup('<b>'+m0.i+' <a href="'+gl+'" target="_blank" style="color:var(--ac);text-decoration:none;border-bottom:1px dashed var(--ac)">'+p.n+'</a></b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+routeBtnHtml);
+    mk.bindPopup('<b>'+m0.i+' <a href="'+gl+'" target="_blank" style="color:var(--ac);text-decoration:none;border-bottom:1px dashed var(--ac)">'+p.n+'</a></b><br>'+dReg(p.lat)+(pNote?' · '+pNote:'')+(p.pr?'<br>💰 '+p.pr:'')+routeBtnHtml);
     mk.on('popupopen',function(){
       if(!isAdmin)return;
       var btn=document.getElementById('rb_'+pidx);
@@ -779,7 +780,14 @@ function rCd(cat){
       html+='<div class="mc" onclick="lmap.flyTo(['+p.lat+','+p.lng+'],15,{duration:.5})">';
       if(isAdmin)html+='<button class="mc-rt '+(inR?'in':'')+'" onclick="event.stopPropagation();tRt(window._mcPlaces['+idx+'].n)">📌</button>';
       html+='<div class="mc-ic" style="background:'+m0.co+'">'+m0.i+'</div>';
-      html+='<div class="mc-info"><div class="mc-nm">'+p.n+'</div><div class="mc-mt">'+mt+(p.pr?' · '+p.pr:'')+'</div><div class="mc-mt">'+(p.d||'')+'</div></div>';
+      var noteVal=getPlaceNote(p.n)!==null?getPlaceNote(p.n):(p.d||'');
+      html+='<div class="mc-info"><div class="mc-nm">'+p.n+'</div><div class="mc-mt">'+mt+(p.pr?' · '+p.pr:'')+'</div>';
+      if(isAdmin){
+        html+='<div class="mc-mt"><input type="text" value="'+(noteVal).replace(/"/g,'&quot;')+'" placeholder="메모 입력" onclick="event.stopPropagation()" onblur="savePlaceNote(window._mcPlaces['+idx+'].n,this.value)" style="border:none;border-bottom:1px dashed #ccc;background:none;font-size:10px;color:var(--tx2);font-family:inherit;outline:none;width:100%;padding:1px 0"></div>';
+      } else {
+        html+='<div class="mc-mt">'+noteVal+'</div>';
+      }
+      html+='</div>';
       html+='<a class="mc-lk" href="'+gl+'" target="_blank" onclick="event.stopPropagation()">↗</a></div>';
     });
   });
@@ -1132,6 +1140,33 @@ function exportDiary(){
   Object.keys(groups).sort().forEach(function(date){h+='<h2>'+date+'</h2>';groups[date].forEach(function(e){h+='<img src="'+e.data+'">';if(e.memo)h+='<div class="m">'+e.memo+'</div>'})});
   h+='</body></html>';w.document.write(h);w.document.close();
 }
+
+// ===== KEY INFO (editable) =====
+var defaultKeyInfo=['30~33°C / 밤27°C','한국-2시간','10만VND≈5,600원','일몰 18:15','남부>북부>중부','UV 11~15시'];
+var keyInfo=null;
+fbGet('key_info',function(val){keyInfo=val||defaultKeyInfo;renderKeyInfo()});
+function renderKeyInfo(){
+  var el=document.getElementById('keyInfoContent');if(!el)return;
+  var items=keyInfo||defaultKeyInfo;
+  if(isAdmin){
+    var h=items.map(function(item,i){
+      return '<div style="display:flex;align-items:center;gap:4px;margin:3px 0"><span style="color:#fff">·</span><input type="text" value="'+item.replace(/"/g,'&quot;')+'" onblur="updKeyInfo('+i+',this.value)" style="flex:1;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:4px;padding:3px 6px;color:#fff;font-size:12px;font-family:inherit;outline:none"><button onclick="delKeyInfo('+i+')" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:12px">✕</button></div>';
+    }).join('');
+    h+='<button onclick="addKeyInfo()" style="margin-top:4px;padding:4px 10px;background:rgba(255,255,255,.2);border:none;border-radius:4px;color:#fff;font-size:11px;cursor:pointer;font-family:inherit">+ 추가</button>';
+    el.innerHTML=h;
+  } else {
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">'+items.map(function(item){return '<div>· '+item+'</div>'}).join('')+'</div>';
+  }
+}
+function updKeyInfo(i,val){keyInfo[i]=val;fbSet('key_info',keyInfo)}
+function delKeyInfo(i){keyInfo.splice(i,1);fbSet('key_info',keyInfo);renderKeyInfo()}
+function addKeyInfo(){keyInfo.push('새 항목');fbSet('key_info',keyInfo);renderKeyInfo()}
+
+// ===== PLACE NOTES (admin editable) =====
+var placeNotes={};
+fbGet('place_notes',function(val){placeNotes=val||{}});
+function getPlaceNote(name){return placeNotes[name]!==undefined?placeNotes[name]:null}
+function savePlaceNote(name,val){placeNotes[name]=val;fbSet('place_notes/'+name.replace(/[.#$/\[\]]/g,'_'),val)}
 
 // Font size toggle
 var _fontLg=false;
