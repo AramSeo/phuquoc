@@ -240,31 +240,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
   </div>
 </div>
 <div class="tb">
-  <div class="ti on" data-tab="schedule" onclick="sw('schedule')"><em>📅</em><span class="tab-label" data-key="tab_schedule">일정</span></div>
-  <div class="ti" data-tab="map" onclick="sw('map')"><em>🗺️</em><span class="tab-label" data-key="tab_map">지도</span></div>
+  <div class="ti on" data-tab="map" onclick="sw('map')"><em>🗺️</em><span class="tab-label" data-key="tab_map">지도</span></div>
+  <div class="ti" data-tab="schedule" onclick="sw('schedule')"><em>📅</em><span class="tab-label" data-key="tab_schedule">일정</span></div>
   <div class="ti" data-tab="diary" onclick="sw('diary')"><em>📓</em><span class="tab-label" data-key="tab_diary">다이어리</span></div>
   <div class="ti" data-tab="budget" onclick="sw('budget')"><em>💰</em><span class="tab-label" data-key="tab_budget">예산·팁</span></div>
 </div>
 <div class="mn">
 
-<!-- SCHEDULE -->
-<div class="tc on" id="tab-schedule">
-  <div class="wx-strip"><table class="wxt">
-    <tr><th>날짜</th><th>기온</th><th>☀️오전</th><th>🌤오후</th><th>🌙저녁</th><th>메모</th></tr>
-    <tr><td class="wd">4/13 월</td><td>32°/27°</td><td>☀️</td><td>🌤 10%</td><td>🌙 맑음</td><td class="wm">도착일 밤</td></tr>
-    <tr><td class="wd">4/14 화</td><td>31°/27°</td><td>☀️</td><td>🌦 40%</td><td>🌤 15%</td><td class="wm">Safari OK</td></tr>
-    <tr><td class="wd">4/15 수</td><td>31°/27°</td><td>🌤 15%</td><td>🌦 45%</td><td>🌤 20%</td><td class="wm">카페 추천</td></tr>
-    <tr><td class="wd">4/16 목</td><td>31°/27°</td><td>☀️</td><td>🌤 20%</td><td>🌤 10%</td><td class="wm">스노클링 적합</td></tr>
-    <tr><td class="wd">4/17 금</td><td>32°/27°</td><td>☀️</td><td>🌤 15%</td><td>🌙 맑음</td><td class="wm">Kiss 21시 OK</td></tr>
-    <tr><td class="wd">4/18 토</td><td>30°/26°</td><td>🌤 10%</td><td>🌦 30%</td><td>🌤 15%</td><td class="wm">출발일</td></tr>
-  </table></div>
-  <div class="wxl">📱 <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> <a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> <a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank">시간별</a></div>
-  <div class="dnav" id="dayNav"></div>
-  <div id="schCards" style="padding-bottom:40px"></div>
-</div>
-
 <!-- MAP -->
-<div class="tc" id="tab-map">
+<div class="tc on" id="tab-map">
   <div class="mwrap">
     <div class="mflt" id="mapFilters"></div>
     <div id="map"></div>
@@ -279,6 +263,22 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
       <div id="userPlacesList" style="margin-top:12px"></div>
     </div>
   </div>
+</div>
+
+<!-- SCHEDULE -->
+<div class="tc" id="tab-schedule">
+  <div class="wx-strip"><table class="wxt">
+    <tr><th>날짜</th><th>기온</th><th>☀️오전</th><th>🌤오후</th><th>🌙저녁</th><th>메모</th></tr>
+    <tr><td class="wd">4/13 월</td><td>32°/27°</td><td>☀️</td><td>🌤 10%</td><td>🌙 맑음</td><td class="wm">도착일 밤</td></tr>
+    <tr><td class="wd">4/14 화</td><td>31°/27°</td><td>☀️</td><td>🌦 40%</td><td>🌤 15%</td><td class="wm">Safari OK</td></tr>
+    <tr><td class="wd">4/15 수</td><td>31°/27°</td><td>🌤 15%</td><td>🌦 45%</td><td>🌤 20%</td><td class="wm">카페 추천</td></tr>
+    <tr><td class="wd">4/16 목</td><td>31°/27°</td><td>☀️</td><td>🌤 20%</td><td>🌤 10%</td><td class="wm">스노클링 적합</td></tr>
+    <tr><td class="wd">4/17 금</td><td>32°/27°</td><td>☀️</td><td>🌤 15%</td><td>🌙 맑음</td><td class="wm">Kiss 21시 OK</td></tr>
+    <tr><td class="wd">4/18 토</td><td>30°/26°</td><td>🌤 10%</td><td>🌦 30%</td><td>🌤 15%</td><td class="wm">출발일</td></tr>
+  </table></div>
+  <div class="wxl">📱 <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> <a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> <a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank">시간별</a></div>
+  <div class="dnav" id="dayNav"></div>
+  <div id="schCards" style="padding-bottom:40px"></div>
 </div>
 
 <!-- DIARY -->
@@ -405,6 +405,27 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
     <div class="picker-head"><b id="pickerTitle">장소 선택</b><button class="picker-close" onclick="closePicker()">✕</button></div>
     <div class="picker-region" id="pickerRegion"></div>
     <div class="picker-list" id="pickerList"></div>
+  </div>
+</div>
+
+<!-- Route Date/Time Picker -->
+<div class="mo" id="rtMo">
+  <div class="md" style="text-align:left;max-width:320px">
+    <h3 id="rtMoTitle" style="font-size:15px">📌 MY루트에 추가</h3>
+    <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">날짜</div>
+    <select id="rtDay" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:8px">
+      <option value="13">4/13 월</option><option value="14">4/14 화</option><option value="15">4/15 수</option>
+      <option value="16">4/16 목</option><option value="17">4/17 금</option><option value="18">4/18 토</option>
+    </select>
+    <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">시간대</div>
+    <select id="rtTime" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px">
+      <option value="breakfast">🌅 아침</option><option value="lunch">🍜 점심</option><option value="dinner">🌙 저녁</option>
+      <option value="snack">🍉 간식/야식</option><option value="activity">🎯 활동</option>
+    </select>
+    <div class="mdb">
+      <button class="cc" onclick="document.getElementById('rtMo').classList.remove('show')">취소</button>
+      <button class="cf" onclick="confirmRt()">추가</button>
+    </div>
   </div>
 </div>
 
@@ -580,17 +601,27 @@ function renderSch(){
         return '<div class="opt '+itemCls+'" style="position:relative">'+delBtn+'<div class="opt-n">'+nameHtml+'</div>'+(it.memo?'<div class="opt-d">'+it.memo+'</div>':'')+'</div>';
       }).join('');
 
-      // Admin: add button
+      // Admin: pre-rendered hidden form + buttons
       var addHtml='';
       if(isAdmin){
+        var fid=d.day+'_'+sec.key;
         var hasPicker=(sec.cls==='food'||sec.key==='activity');
+        // Pre-rendered form (hidden)
+        addHtml+='<div id="af_'+fid+'" style="display:none;margin:6px 0;padding:8px;background:#fff;border:1.5px solid #1a6b5a;border-radius:8px">'
+          +'<input type="text" id="si_'+fid+'" placeholder="내용 입력" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none;margin-bottom:4px">'
+          +'<input type="text" id="sm_'+fid+'" placeholder="메모 (가격 등, 생략 가능)" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none;margin-bottom:6px">'
+          +'<div style="display:flex;gap:4px">'
+          +'<button onclick="confirmSchAdd('+d.day+',\''+sec.key+'\')" style="flex:1;padding:7px;background:#1a6b5a;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">추가</button>'
+          +'<button onclick="document.getElementById(\'af_'+fid+'\').style.display=\'none\'" style="padding:7px 12px;background:#eee;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit">취소</button>'
+          +'</div></div>';
+        // Buttons
         if(hasPicker){
-          addHtml='<div style="display:flex;gap:4px;margin-top:4px">'
-            +'<button style="flex:1;padding:6px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit" onclick="openSchPicker('+d.day+',\''+sec.key+'\')">📍 장소에서 선택</button>'
-            +'<button style="padding:6px 10px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit" onclick="addSchText('+d.day+',\''+sec.key+'\')">✏️ 직접 입력</button>'
+          addHtml+='<div style="display:flex;gap:4px;margin-top:4px">'
+            +'<button onclick="openSchPicker('+d.day+',\''+sec.key+'\')" style="flex:1;padding:6px;border:1.5px dashed #bbb;border-radius:8px;background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit">📍 장소에서 선택</button>'
+            +'<button onclick="document.getElementById(\'af_'+fid+'\').style.display=\'block\'" style="padding:6px 10px;border:1.5px dashed #bbb;border-radius:8px;background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit">✏️ 직접 입력</button>'
             +'</div>';
         } else {
-          addHtml='<button style="width:100%;padding:6px;border:1.5px dashed #bbb;border-radius:var(--rs);background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px" onclick="addSchText('+d.day+',\''+sec.key+'\')">+ 추가</button>';
+          addHtml+='<button onclick="document.getElementById(\'af_'+fid+'\').style.display=\'block\'" style="width:100%;padding:6px;border:1.5px dashed #bbb;border-radius:8px;background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px">+ 추가</button>';
         }
       }
 
@@ -621,28 +652,7 @@ function saveDayLabel(day,field,val){
   fbSet('day_labels/'+day+'/'+field,val);
 }
 
-// Add text item - inline form approach
-function addSchText(day,sec){
-  var fid='af_'+day+'_'+sec;
-  var el=document.getElementById(fid);
-  if(!el){
-    // Fallback: create form dynamically
-    var target=document.querySelector('[data-sec="'+day+'_'+sec+'"]');
-    if(!target)return;
-    var div=document.createElement('div');
-    div.id=fid;
-    div.style.cssText='margin:6px 0;padding:8px;background:#fff;border:1.5px solid #1a6b5a;border-radius:8px';
-    div.innerHTML='<input type="text" id="si_'+day+'_'+sec+'" placeholder="내용 입력" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none;margin-bottom:4px">'
-      +'<input type="text" id="sm_'+day+'_'+sec+'" placeholder="메모 (가격 등, 생략 가능)" style="width:100%;padding:7px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none;margin-bottom:6px">'
-      +'<div style="display:flex;gap:4px"><button onclick="confirmSchAdd('+day+',\''+sec+'\')" style="flex:1;padding:7px;background:#1a6b5a;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">추가</button>'
-      +'<button onclick="this.parentElement.parentElement.remove()" style="padding:7px 12px;background:#eee;border:none;border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer">취소</button></div>';
-    target.appendChild(div);
-    setTimeout(function(){var inp=document.getElementById('si_'+day+'_'+sec);if(inp)inp.focus()},50);
-    return;
-  }
-  el.style.display='block';
-  setTimeout(function(){var inp=document.getElementById('si_'+day+'_'+sec);if(inp)inp.focus()},50);
-}
+// Add schedule item
 function confirmSchAdd(day,sec){
   var ti=document.getElementById('si_'+day+'_'+sec);
   var tm=document.getElementById('sm_'+day+'_'+sec);
@@ -786,7 +796,65 @@ function rCd(cat){
   });
   el.innerHTML=html;
 }
-function tRt(n){var arr=Array.from(routeCache);var i=arr.indexOf(n);if(i>=0)arr.splice(i,1);else arr.push(n);fbSet('route',arr)}
+var _rtName='';
+function tRt(n){
+  var arr=Array.from(routeCache);
+  var i=arr.indexOf(n);
+  if(i>=0){
+    // Remove from route
+    arr.splice(i,1);
+    fbSet('route',arr);
+    // Also remove from schedule
+    removeFromSchedule(n);
+  } else {
+    // Show date/time picker
+    _rtName=n;
+    document.getElementById('rtMoTitle').textContent='📌 '+n;
+    // Auto-select day based on region
+    var place=gAll().find(function(p){return p.n===n});
+    if(place){
+      var reg=dReg(place.lat);
+      var dayMap={'북부':'14','중부':'15','남부':'17'};
+      document.getElementById('rtDay').value=dayMap[reg]||'14';
+      // Auto-select time based on category
+      var catTime={food:'lunch',cafe:'snack',spa:'activity',spot:'activity',shop:'activity'};
+      document.getElementById('rtTime').value=catTime[place.c]||'activity';
+    }
+    document.getElementById('rtMo').classList.add('show');
+  }
+}
+function confirmRt(){
+  var day=document.getElementById('rtDay').value;
+  var sec=document.getElementById('rtTime').value;
+  // Add to route
+  var arr=Array.from(routeCache);
+  if(arr.indexOf(_rtName)<0) arr.push(_rtName);
+  fbSet('route',arr);
+  // Add to schedule
+  var place=gAll().find(function(p){return p.n===_rtName});
+  var memo=place?((place.pr||'')+' '+(place.d||'')).trim():'';
+  if(!schData[day])schData[day]={};
+  if(!schData[day][sec])schData[day][sec]=[];
+  if(!schData[day][sec].some(function(it){return it.text===_rtName})){
+    schData[day][sec].push({text:_rtName,memo:memo,placeKey:true});
+    fbSet('schedule_v2/'+day+'/'+sec,schData[day][sec]);
+  }
+  document.getElementById('rtMo').classList.remove('show');
+}
+function removeFromSchedule(name){
+  // Remove from all days/sections
+  Object.keys(schData).forEach(function(day){
+    Object.keys(schData[day]).forEach(function(sec){
+      var arr=schData[day][sec];
+      if(!Array.isArray(arr))return;
+      var filtered=arr.filter(function(it){return it.text!==name});
+      if(filtered.length!==arr.length){
+        schData[day][sec]=filtered;
+        fbSet('schedule_v2/'+day+'/'+sec,filtered);
+      }
+    });
+  });
+}
 function addUserPlace(){
   var url=document.getElementById('apUrl').value.trim(),name=document.getElementById('apName').value.trim(),cat=document.getElementById('apCat').value,note=document.getElementById('apNote').value.trim();
   var lat=NaN,lng=NaN;
@@ -961,6 +1029,7 @@ function exportDiary(){
 
 // INIT
 renderSch();bCl();
+setTimeout(function(){initMap()},100);
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(){});
 </script>
 </body>
