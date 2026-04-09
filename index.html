@@ -691,7 +691,11 @@ function initMap(){
   L.control.zoom({position:'bottomright'}).addTo(lmap);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'©OSM',maxZoom:18}).addTo(lmap);
   bFlt();rMk();
-  fbGet('places',function(v){userPlacesCache=v?Object.values(v):[];rMk();if(aFil!=='all')rCd(aFil)});
+  fbGet('places',function(v){
+    if(v){userPlacesCache=[];Object.keys(v).forEach(function(k){var p=v[k];p._fbKey=k;userPlacesCache.push(p)})}
+    else{userPlacesCache=[]}
+    rMk();if(aFil!=='all')rCd(aFil);renderUserPlaces()
+  });
   fbGet('route',function(v){routeCache=new Set(v||[]);rMk();if(aFil!=='all')rCd(aFil);renderSch()});
 }
 function bFlt(){
@@ -944,7 +948,9 @@ function renderUserPlaces(){
     html+='<div style="font-size:10px;font-weight:700;color:var(--ac);margin:6px 0 2px">'+rn+'</div>';
     regions[rn].forEach(function(p){
       var m0=CM[p.c]||{i:'⭐',co:'#e91e63'};
-      html+='<div class="uplace"><span>'+m0.i+' <b>'+p.n+'</b>'+(p.d?' · '+p.d:'')+'</span></div>';
+      html+='<div class="uplace" style="display:flex;align-items:center;justify-content:space-between"><span>'+m0.i+' <b>'+p.n+'</b>'+(p.d?' · '+p.d:'')+'</span>';
+      if(isAdmin)html+='<button onclick="deleteUserPlace(\''+p.n.replace(/'/g,"\\'")+'\',\''+(p._fbKey||'')+'\')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:12px;padding:2px 6px">✕</button>';
+      html+='</div>';
     });
   });
   el.innerHTML=html;
@@ -1315,22 +1321,37 @@ function savePlaceCoords(name,lat,lng){
 }
 function deletePlace(name){
   if(!confirm('"'+name+'" 삭제하시겠습니까?'))return;
-  // Add to hidden
   hiddenPlaces.add(name);
   fbSet('hidden_places',Array.from(hiddenPlaces));
-  // Save to trash
   var p=P.concat(userPlacesCache).find(function(x){return x.n===name});
-  if(p){placesTrash.push({n:p.n,c:p.c,lat:p.lat,lng:p.lng,r:p.r,pr:p.pr,d:p.d});fbSet('places_trash',placesTrash)}
-  // Also remove from route/schedule
+  if(p){placesTrash.push({n:p.n,c:p.c,lat:p.lat,lng:p.lng,r:p.r,pr:p.pr,d:p.d,_fbKey:p._fbKey||null});fbSet('places_trash',placesTrash)}
   removeFromSchedule(name);
   var arr=Array.from(routeCache);
   var ri=arr.indexOf(name);
   if(ri>=0){arr.splice(ri,1);fbSet('route',arr.length?arr:null)}
   rMk();if(aFil!=='all')rCd(aFil);renderPlacesTrash();
 }
+function deleteUserPlace(name,fbKey){
+  if(!confirm('"'+name+'" 삭제하시겠습니까?'))return;
+  var p=userPlacesCache.find(function(x){return x.n===name});
+  if(p){placesTrash.push({n:p.n,c:p.c,lat:p.lat,lng:p.lng,r:p.r,pr:p.pr,d:p.d,_fbKey:fbKey});fbSet('places_trash',placesTrash)}
+  if(fbKey)db.ref('places/'+fbKey).remove();
+  hiddenPlaces.add(name);
+  fbSet('hidden_places',Array.from(hiddenPlaces));
+  removeFromSchedule(name);
+  var arr=Array.from(routeCache);
+  var ri=arr.indexOf(name);
+  if(ri>=0){arr.splice(ri,1);fbSet('route',arr.length?arr:null)}
+  rMk();if(aFil!=='all')rCd(aFil);renderPlacesTrash();renderUserPlaces();
+}
 function restorePlace(i){
   var p=placesTrash.splice(i,1)[0];
-  if(p){hiddenPlaces.delete(p.n);fbSet('hidden_places',Array.from(hiddenPlaces))}
+  if(p){
+    hiddenPlaces.delete(p.n);
+    fbSet('hidden_places',Array.from(hiddenPlaces));
+    // Re-add to Firebase if it was a user-added place
+    if(p._fbKey)db.ref('places').push({n:p.n,c:p.c,lat:p.lat,lng:p.lng,r:p.r||0,pr:p.pr||'',d:p.d||''});
+  }
   fbSet('places_trash',placesTrash.length?placesTrash:null);
   rMk();if(aFil!=='all')rCd(aFil);renderPlacesTrash();
 }
