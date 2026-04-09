@@ -880,19 +880,71 @@ function renderDiary(){
   var html='';Object.keys(groups).sort().forEach(function(date){
     html+='<div class="ddg"><div class="ddh">📅 '+date+'</div>';
     groups[date].forEach(function(e){
-      var tag=pids.has(e.id)?'<span class="unsaved-tag">미저장</span>':'';
+      var isPending=pids.has(e.id);
       var eid=e._key||e.id;
-      html+='<div class="de"><button class="dd" onclick="delDE(\''+eid+'\')">✕</button><img src="'+e.data+'"><div class="dt">'+(e.time||'')+tag+'</div><textarea placeholder="메모..." oninput="updMemo(\''+eid+'\',this.value)">'+(e.memo||'')+'</textarea></div>';
+      if(isPending){
+        // Pending: editable textarea
+        html+='<div class="de"><button class="dd" onclick="delDE(\''+eid+'\')">✕</button><img src="'+e.data+'">'
+          +'<div class="dt">'+(e.time||'')+' <span class="unsaved-tag">미저장</span></div>'
+          +'<textarea placeholder="메모..." oninput="updMemo(\''+eid+'\',this.value)">'+(e.memo||'')+'</textarea></div>';
+      } else {
+        // Saved: plain text display
+        html+='<div class="de"><button class="dd" onclick="delDE(\''+eid+'\')">✕</button><img src="'+e.data+'">'
+          +'<div class="dt">'+(e.time||'')+'</div>';
+        // View mode
+        html+='<div id="dv_'+eid+'">';
+        if(e.memo)html+='<div style="font-size:12px;line-height:1.5;padding:4px 0">'+e.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+        html+='<button onclick="startEditDE(\''+eid+'\')" style="padding:3px 10px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px">수정</button></div>';
+        // Edit mode (hidden)
+        html+='<div id="de_'+eid+'" style="display:none">'
+          +'<div style="margin:6px 0"><label style="display:block;padding:8px;border:1.5px dashed #ccc;border-radius:8px;text-align:center;font-size:11px;color:#888;cursor:pointer">📷 사진 변경<input type="file" accept="image/*" style="display:none" onchange="changePhoto(\''+eid+'\',event)"></label></div>'
+          +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(e.memo||'')+'</textarea>'
+          +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
+          +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
+          +'<div style="clear:both"></div></div>';
+        html+='</div>';
+      }
     });html+='</div>';
   });el.innerHTML=html;
-  // Show/hide save area
   document.getElementById('diarySaveArea').style.display=pendingPhotos.length?'block':'none';
-  // Show trash for admin
   document.getElementById('trashSection').style.display=isAdmin?'block':'none';
 }
+var _editPhotoData={};
 function updMemo(id,val){
-  var e=DD.find(function(x){return x._key===id})||pendingPhotos.find(function(x){return x.id===id});
+  var e=pendingPhotos.find(function(x){return x.id===id});
   if(e)e.memo=val;
+}
+function startEditDE(id){
+  var found=DD.find(function(x){return x._key===id});
+  if(!found)return;
+  // Check password or admin
+  if(!isAdmin){
+    var pw=prompt('수정하려면 게시 시 입력한 비밀번호 4자리를 입력하세요');
+    if(!pw||pw!==found.pw){alert('비밀번호가 틀렸습니다');return}
+  }
+  document.getElementById('dv_'+id).style.display='none';
+  document.getElementById('de_'+id).style.display='block';
+  _editPhotoData[id]=null;
+}
+function cancelEditDE(id){
+  document.getElementById('de_'+id).style.display='none';
+  document.getElementById('dv_'+id).style.display='';
+  _editPhotoData[id]=null;
+}
+function changePhoto(id,e){
+  var file=e.target.files[0];
+  if(!file)return;
+  cImg(file,function(dataUrl){_editPhotoData[id]=dataUrl});
+}
+function saveEditDE(id){
+  var found=DD.find(function(x){return x._key===id});
+  if(!found)return;
+  var memo=document.getElementById('dm_'+id).value.trim();
+  var now=new Date();
+  var updates={memo:memo,date:now.toISOString().split('T')[0],time:now.toTimeString().slice(0,5)};
+  if(_editPhotoData[id])updates.data=_editPhotoData[id];
+  db.ref('diary/'+id).update(updates);
+  _editPhotoData[id]=null;
 }
 function delDE(id){
   // Pending photo - just remove locally
