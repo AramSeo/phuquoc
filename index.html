@@ -543,7 +543,8 @@ function rMk(){
     var m0=CM[p.c]||{i:'⭐',co:'#e91e63'};
     var ic=L.divIcon({className:'',html:'<div class="cmk" style="background:'+m0.co+'">'+m0.i+'</div>',iconSize:[28,28],iconAnchor:[14,14]});
     var mk=L.marker([p.lat,p.lng],{icon:ic}).addTo(lmap);
-    mk.bindPopup('<b>'+m0.i+' '+p.n+'</b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:''));
+    var gl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.n+' Phu Quoc');
+    mk.bindPopup('<b>'+m0.i+' '+p.n+'</b><br>'+dReg(p.lat)+(p.d?' · '+p.d:'')+(p.pr?'<br>💰 '+p.pr:'')+'<br><a href="'+gl+'" target="_blank" style="color:#1a6b5a;font-size:11px;font-weight:700">📍 Google Maps 열기</a>');
     amk.push(mk);
   });
   if(amk.length)lmap.fitBounds(L.featureGroup(amk).getBounds().pad(0.1));
