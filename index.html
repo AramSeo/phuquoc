@@ -530,10 +530,18 @@ var SEC_DEF=[
   {key:'etc',icon:'💡',label:'기타',cls:'info'}
 ];
 var schData={}; // Firebase: {day: {section: [{text,memo}]}}
+var dayLabels={}; // Firebase: {day: {title,sub}}
 fbGet('schedule_v2',function(val){
   schData=val||{};
   renderSch();
 });
+fbGet('day_labels',function(val){
+  dayLabels=val||{};
+  renderSch();
+});
+
+function getDayTitle(day){var dl=dayLabels[day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.title)||di.title}
+function getDaySub(day){var dl=dayLabels[day];var di=DAY_INFO.find(function(d){return d.day===day});return (dl&&dl.sub)||di.sub}
 
 function renderSch(){
   var nav=document.getElementById('dayNav');
@@ -543,6 +551,16 @@ function renderSch(){
   nav.innerHTML=nh;
 
   document.getElementById('schCards').innerHTML=DAY_INFO.map(function(d){
+    var title=getDayTitle(d.day);
+    var sub=getDaySub(d.day);
+    var titleHtml,subHtml;
+    if(isAdmin){
+      titleHtml='<div class="dct" contenteditable="true" style="border-bottom:1px dashed var(--gd);outline:none;min-width:60px" onclick="event.stopPropagation()" onblur="saveDayLabel('+d.day+',\'title\',this.textContent)">'+title+'</div>';
+      subHtml='<div class="dcs" contenteditable="true" style="border-bottom:1px dashed var(--gd);outline:none;min-width:60px" onclick="event.stopPropagation()" onblur="saveDayLabel('+d.day+',\'sub\',this.textContent)">'+sub+'</div>';
+    } else {
+      titleHtml='<div class="dct">'+title+'</div>';
+      subHtml='<div class="dcs">'+sub+'</div>';
+    }
     var dayData=schData[d.day]||{};
     var body=SEC_DEF.map(function(sec){
       var items=dayData[sec.key]||[];
@@ -576,12 +594,20 @@ function renderSch(){
       return '<div class="dsec"><div class="dsec-t '+sec.cls+'">'+sec.icon+' '+sec.label+'</div>'+itemsHtml+addHtml+'</div>';
     }).join('');
 
-    return '<div class="dc" data-day="'+d.day+'"><div class="dch" onclick="tdc(this)"><div class="dcl"><div class="dcb">4/'+d.day+'</div><div><div class="dct">'+d.title+'</div><div class="dcs">'+d.sub+'</div></div></div><div class="dca">▾</div></div><div class="dcbd">'+body+'</div></div>';
+    return '<div class="dc" data-day="'+d.day+'"><div class="dch" onclick="tdc(this)"><div class="dcl"><div class="dcb">4/'+d.day+'</div><div>'+titleHtml+subHtml+'</div></div><div class="dca">▾</div></div><div class="dcbd">'+body+'</div></div>';
   }).join('');
 }
 
 function tdc(el){el.parentElement.classList.toggle('op')}
 function showD(d,btn){document.querySelectorAll('.dnav button').forEach(function(b){b.classList.remove('on')});if(btn)btn.classList.add('on');document.querySelectorAll('.dc').forEach(function(c){if(d==='all'){c.style.display='';c.classList.remove('op')}else{if(parseInt(c.dataset.day)===d){c.style.display='';c.classList.add('op')}else c.style.display='none'}})}
+
+function saveDayLabel(day,field,val){
+  if(!isAdmin)return;
+  val=val.trim();
+  if(!dayLabels[day])dayLabels[day]={};
+  dayLabels[day][field]=val;
+  fbSet('day_labels/'+day+'/'+field,val);
+}
 
 // Add text item
 function addSchText(day,sec){
