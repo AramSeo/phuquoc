@@ -268,7 +268,7 @@ body.font-lg .ti em{font-size:19px}
   <div style="display:flex;align-items:center"><span class="sync-dot" id="syncDot"></span><h1 id="appTitle">🌴 Phú Quốc</h1></div>
   <div class="hd-right">
     <button class="mbtn" id="fontBtn" onclick="toggleFont()" style="font-size:10px;padding:4px 8px">가</button>
-    <button class="mbtn" id="modeBtn" onclick="toggleMode()">Visitor</button>
+    <button class="mbtn" id="modeBtn" onclick="toggleMode()">Login</button>
     <button class="gear-btn" onclick="openSettings()">⚙️</button>
   </div>
 </div>
@@ -464,7 +464,7 @@ var CM={food:{i:'🍜',co:'#e07a5f'},cafe:{i:'☕',co:'#c9a84c'},spa:{i:'💆',c
 function dReg(lat){return lat>10.28?'북부':lat>10.12?'중부':'남부'}
 
 // ===== SETTINGS =====
-var appSettings={title:'🌴 Phú Quốc',diaryTitle:'🌴 푸꾸옥 여행 다이어리',weatherTitle:'날씨',tab_schedule:'일정',tab_map:'지도',tab_diary:'다이어리',tab_budget:'예산·팁',saveMsg:'저장 완료!',pwPrompt:'비밀번호 4자리를 입력하세요',pwError:'비밀번호가 틀렸습니다',tipLabel:'팁',budgetLabel:'예산',adminLabel:'Admin',visitorLabel:'Visitor'};
+var appSettings={title:'🌴 Phú Quốc',diaryTitle:'🌴 푸꾸옥 여행 다이어리',weatherTitle:'날씨',tab_schedule:'일정',tab_map:'지도',tab_diary:'다이어리',tab_budget:'예산·팁',saveMsg:'저장 완료!',pwPrompt:'비밀번호 4자리를 입력하세요',pwError:'비밀번호가 틀렸습니다',tipLabel:'팁',budgetLabel:'예산',adminLabel:'Admin',visitorLabel:'Login'};
 fbGet('settings',function(val){
   if(val){appSettings=val;applySettings()}
 });
@@ -474,7 +474,7 @@ function applySettings(){
   var wt=document.getElementById('weatherTitle');if(wt)wt.textContent=appSettings.weatherTitle||'날씨';
   var tb=document.getElementById('tipTabBtn');if(tb)tb.textContent=appSettings.tipLabel||'팁';
   var bb=document.getElementById('budgetTabBtn');if(bb)bb.textContent=appSettings.budgetLabel||'예산';
-  var mb=document.getElementById('modeBtn');if(mb)mb.textContent=isAdmin?(appSettings.adminLabel||'Admin'):(appSettings.visitorLabel||'Visitor');
+  var mb=document.getElementById('modeBtn');if(mb)mb.textContent=isAdmin?(appSettings.adminLabel||'Admin'):(appSettings.visitorLabel||'Login');
   ['schedule','map','diary','budget'].forEach(function(k){
     var el=document.querySelector('[data-key="tab_'+k+'"]');
     if(el&&appSettings['tab_'+k])el.textContent=appSettings['tab_'+k];
@@ -494,7 +494,7 @@ function openSettings(){
   document.getElementById('set-tip-label').value=appSettings.tipLabel||'팁';
   document.getElementById('set-budget-label').value=appSettings.budgetLabel||'예산';
   document.getElementById('set-admin-label').value=appSettings.adminLabel||'Admin';
-  document.getElementById('set-visitor-label').value=appSettings.visitorLabel||'Visitor';
+  document.getElementById('set-visitor-label').value=appSettings.visitorLabel||'Login';
   document.getElementById('settingsOverlay').classList.add('show');
 }
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('show')}
@@ -509,9 +509,7 @@ function saveSettings(){
   appSettings.saveMsg=document.getElementById('set-save-msg').value;
   appSettings.pwPrompt=document.getElementById('set-pw-prompt').value;
   appSettings.pwError=document.getElementById('set-pw-error').value;
-  appSettings.tipLabel=document.getElementById('set-pw-prompt').value=appSettings.pwPrompt||'비밀번호 4자리를 입력하세요';
-  document.getElementById('set-pw-error').value=appSettings.pwError||'비밀번호가 틀렸습니다';
-  document.getElementById('set-tip-label').value;
+  appSettings.tipLabel=document.getElementById('set-tip-label').value;
   appSettings.budgetLabel=document.getElementById('set-budget-label').value;
   appSettings.adminLabel=document.getElementById('set-admin-label').value;
   appSettings.visitorLabel=document.getElementById('set-visitor-label').value;
@@ -531,7 +529,7 @@ document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key=
 function updMode(){
   var b=document.getElementById('modeBtn');
   if(isAdmin){b.textContent=appSettings.adminLabel||'Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
-  else{b.textContent=appSettings.visitorLabel||'Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
+  else{b.textContent=appSettings.visitorLabel||'Login';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
   var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
   renderSch();renderKeyInfo();renderTips();renderBudgetSummary();renderPlacesTrash();rMk();if(aFil!=='all')rCd(aFil);
 }
@@ -1397,7 +1395,7 @@ window.addEventListener('hashchange',loadHash);
     <h2>⚙️ 설정 <button class="close-set" onclick="closeSettings()">✕</button></h2>
     <div class="set-group"><label>앱 제목</label><input type="text" id="set-title" value="🌴 Phú Quốc"></div>
     <div class="set-group"><label>Admin 버튼 이름</label><input type="text" id="set-admin-label" value="Admin"></div>
-    <div class="set-group"><label>Visitor 버튼 이름</label><input type="text" id="set-visitor-label" value="Visitor"></div>
+    <div class="set-group"><label>Visitor 버튼 이름</label><input type="text" id="set-visitor-label" value="Login"></div>
     <div class="set-group"><label>다이어리 내보내기 제목</label><input type="text" id="set-diary-title" value="🌴 푸꾸옥 여행 다이어리"></div>
     <div class="set-group"><label>탭: 일정</label><input type="text" id="set-tab-schedule" value="일정"></div>
     <div class="set-group"><label>탭: 지도</label><input type="text" id="set-tab-map" value="지도"></div>
@@ -1415,6 +1413,7 @@ window.addEventListener('hashchange',loadHash);
       <button onclick="if(confirm('일정 데이터를 모두 삭제하시겠습니까?')){fbSet('schedule_v2',null);fbSet('day_memos',null);alert('일정 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:6px">일정 데이터 초기화</button>
       <button onclick="if(confirm('MY루트를 모두 삭제하시겠습니까?')){fbSet('route',null);fbSet('schedule_v2',null);alert('MY루트 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">MY루트 + 일정 초기화</button>
     </div>
+    <button onclick="closeSettings()" style="width:100%;margin-top:20px;padding:12px;background:#eee;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--tx2)">취소</button>
   </div>
 </div>
 </body>
