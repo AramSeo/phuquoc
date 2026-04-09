@@ -458,7 +458,23 @@ function saveSettings(){
   alert(appSettings.saveMsg||'저장 완료!');
 }
 
-// ===== PLACES (same data as before) =====
+// ===== TAB SWITCH =====
+function sw(t){document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});document.querySelector('[data-tab="'+t+'"]').classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100)}
+
+// ===== MODE =====
+function toggleMode(){if(isAdmin){isAdmin=false;updMode()}else{document.getElementById('pwMo').classList.add('show');document.getElementById('pwIn').value='';document.getElementById('pwEr').style.display='none';setTimeout(function(){document.getElementById('pwIn').focus()},100)}}
+function closePw(){document.getElementById('pwMo').classList.remove('show')}
+function cfPw(){if(document.getElementById('pwIn').value==='1234'){isAdmin=true;closePw();updMode()}else document.getElementById('pwEr').style.display='block'}
+document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')cfPw()});
+function updMode(){
+  var b=document.getElementById('modeBtn');
+  if(isAdmin){b.textContent='✏️ Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
+  else{b.textContent='👁️ Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
+  var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
+  renderSch();
+}
+
+// ===== PLACES =====
 
 var P=[
 {n:'Lobster Cave',c:'food',lat:10.2205,lng:103.9630,r:4.8,pr:'60~120만 VND (약 3.4~6.7만원)',d:'해산물·선셋뷰'},
