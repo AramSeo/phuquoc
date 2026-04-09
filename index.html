@@ -1168,7 +1168,13 @@ var defaultTips=[
   {id:'emergency',title:'긴급',content:'경찰 113 · 앰뷸런스 115 · 소방 114\nVinmec +84-297-398-3668\n영사관 +84-28-3822-5757'}
 ];
 var tipsData=null;
-fbGet('tips_cards',function(val){tipsData=val||defaultTips;renderTips()});
+fbGet('tips_cards',function(val){
+  tipsData=val||defaultTips;
+  // Ensure checklist card exists (migration)
+  var hasChecklist=tipsData.some(function(c){return c.type==='checklist'});
+  if(!hasChecklist)tipsData.unshift({id:'checklist',title:'체크리스트',type:'checklist'});
+  renderTips();
+});
 
 function renderTips(){
   var el=document.getElementById('tipsCards');if(!el)return;
