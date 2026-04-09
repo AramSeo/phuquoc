@@ -251,8 +251,7 @@ body.font-lg .ti em{font-size:19px}
 .cal-wrap::-webkit-scrollbar{display:none}
 .cal-t{border-collapse:collapse;width:100%;min-width:560px;font-size:11px;table-layout:fixed}
 .cal-t th{padding:8px 6px;background:#4da695;color:#fff;font-weight:700;text-align:center;white-space:nowrap;font-size:12px;width:13%}
-.cal-t th:first-child{background:#e0f2ee;color:var(--ac);text-align:left;font-size:11px;width:30px}
-.cal-t th.cal-grp{background:#e0f2ee;color:var(--ac);font-size:9px;width:28px;text-align:center;writing-mode:vertical-lr;letter-spacing:2px;padding:4px 2px}
+.cal-t th:first-child{background:#e0f2ee;color:var(--ac);text-align:center;font-size:11px;width:36px}
 .cal-t td{padding:6px;border-bottom:1px solid #eee;vertical-align:middle;text-align:center;word-break:break-word;height:44px}
 .cal-t tr.cal-memo-row td{text-align:left;vertical-align:top;height:auto}
 .cal-t tr:nth-child(even) td{background:#fafaf7}
@@ -269,7 +268,7 @@ body.font-lg .ti em{font-size:19px}
   <div class="hd-right">
     <button class="mbtn" id="fontBtn" onclick="toggleFont()" style="font-size:10px;padding:4px 8px">가</button>
     <button class="gear-btn" onclick="openSettings()">⚙️</button>
-    <button class="mbtn" id="modeBtn" onclick="toggleMode()">👁️ Visitor</button>
+    <button class="mbtn" id="modeBtn" onclick="toggleMode()">Visitor</button>
   </div>
 </div>
 <div class="tb">
@@ -287,10 +286,10 @@ body.font-lg .ti em{font-size:19px}
     <div id="map"></div>
     <div class="mcards" id="mapCards"></div>
     <div class="apanel" id="addPanel">
-      <div style="font-size:15px;font-weight:900;margin-bottom:10px">📍 장소 추가</div>
+      <div style="font-size:15px;font-weight:900;margin-bottom:10px">장소 추가</div>
       <input type="text" id="apUrl" placeholder="Google Maps 링크 붙여넣기 (이름·좌표 자동 추출)">
       <input type="text" id="apName" placeholder="장소 이름 (자동 추출 안 되면 입력)">
-      <select id="apCat"><option value="food">🍜 식당</option><option value="cafe">☕ 카페</option><option value="spa">💆 스파</option><option value="shop">🛒 쇼핑</option><option value="spot">📍 스팟</option><option value="hotel">🏨 숙소</option></select>
+      <select id="apCat"><option value="food">🍜 식당</option><option value="cafe">☕ 카페</option><option value="spa">💆 스파</option><option value="shop">🛒 쇼핑</option><option value="spot">📍 스팟</option><option value="hotel">숙소</option></select>
       <input type="text" id="apNote" placeholder="메모 (선택)">
       <button class="abtn" onclick="addUserPlace()">추가</button>
       <div id="userPlacesList" style="margin-top:12px"></div>
@@ -309,7 +308,7 @@ body.font-lg .ti em{font-size:19px}
     <tr><td class="wd">4/17 금</td><td>32°/27°</td><td>☀️</td><td>🌤 15%</td><td>🌙 맑음</td></tr>
     <tr><td class="wd">4/18 토</td><td>30°/26°</td><td>🌤 10%</td><td>🌦 30%</td><td>🌤 15%</td></tr>
   </table></div>
-  <div class="wxl">📱 <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> <a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> <a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank">시간별</a></div>
+  <div class="wxl">참고: <a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank">AccuWeather</a> <a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank">rp5.ru</a> <a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank">시간별</a></div>
   <div id="schOverview"></div>
 </div>
 
@@ -317,18 +316,17 @@ body.font-lg .ti em{font-size:19px}
 <div class="tc" id="tab-diary">
   <div class="drw">
     <div class="dup" onclick="document.getElementById('phIn').click()">
-      <div style="font-size:32px;margin-bottom:4px">📸</div>
       사진을 탭해서 업로드
       <input type="file" id="phIn" accept="image/*" multiple onchange="handlePhotos(event)">
     </div>
     <div id="diaryEntries"></div>
     <div id="diarySaveArea" style="display:none;margin-top:8px">
       <input type="password" id="diaryPw" placeholder="비밀번호 4자리 (삭제 시 필요)" maxlength="4" inputmode="numeric" pattern="[0-9]*" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:var(--rs);font-size:14px;text-align:center;font-family:inherit;outline:none;margin-bottom:6px">
-      <button class="dbtn save" onclick="saveDiary()">💾 저장</button>
+      <button class="dbtn save" onclick="saveDiary()">저장</button>
     </div>
-    <button class="dbtn exp" onclick="exportDiary()">📄 내보내기</button>
+    <button class="dbtn exp" onclick="exportDiary()">내보내기</button>
     <div id="trashSection" style="display:none;margin-top:20px">
-      <div style="font-weight:700;font-size:14px;color:var(--co);margin-bottom:8px;padding-bottom:4px;border-bottom:2px solid var(--co)">🗑️ 휴지통 (Admin 전용)</div>
+      <div style="font-weight:700;font-size:14px;color:var(--co);margin-bottom:8px;padding-bottom:4px;border-bottom:2px solid var(--co)">휴지통 (Admin 전용)</div>
       <div id="trashEntries"></div>
     </div>
   </div>
@@ -337,10 +335,10 @@ body.font-lg .ti em{font-size:19px}
 <!-- BUDGET & TIPS (same as before, abbreviated for space) -->
 <div class="tc" id="tab-budget">
   <div class="btw">
-    <div class="btt"><button class="on" onclick="swBT('budget',this)">💰 예산</button><button onclick="swBT('tips',this)">📌 팁</button></div>
+    <div class="btt"><button class="on" onclick="swBT('budget',this)">예산</button><button onclick="swBT('tips',this)">팁</button></div>
     <div class="bts on" id="bt-budget">
       <div class="ib"><b>2인 총액 · 호텔 제외</b><br>4/13~14 트래블월렛 → 4/15 금은방 → 이후 현금</div>
-      <div class="ic op"><div class="ich" onclick="tic(this)">💵 날짜별 상세 <span class="ica">▾</span></div>
+      <div class="ic op"><div class="ich" onclick="tic(this)">날짜별 상세 <span class="ica">▾</span></div>
       <div class="icb"><div class="ici" style="padding:0;overflow-x:auto">
         <table class="bt">
           <tr><th>항목</th><th>VND (2인)</th><th>원화</th><th>결제</th><th>그날 현금</th></tr>
@@ -391,26 +389,26 @@ body.font-lg .ti em{font-size:19px}
           <tr class="btl"><td>6일 총합</td><td>1,191~2,523만</td><td>약 67~142만원</td><td></td><td style="background:#ff8f00;text-align:center;font-size:10px">현금 약 43~97만원</td></tr>
         </table>
       </div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">💳 결제수단 <span class="ica">▾</span></div>
+      <div class="ic"><div class="ich" onclick="tic(this)">결제수단 <span class="ica">▾</span></div>
       <div class="icb"><div class="ici"><b>💳 OK</b>: Grab, JW/GW, 마사지, King Kong, 편의점<br><b>💵 필수</b>: 야시장(80%), 노점, 로컬 식당, 팁</div></div></div>
     </div>
     <div class="bts" id="bt-tips">
       <div style="margin:8px 12px;padding:10px 14px;background:linear-gradient(135deg,#1a6b5a,#2c8c6e);border-radius:var(--r);color:#fff;font-size:12px">
         <div style="font-weight:700;font-size:14px;margin-bottom:6px">핵심 정보</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div>🌡️ 30~33°C/밤27°C</div><div>⏰ 한국-2시간</div><div>💱 10만VND≈5,600원</div><div>🌅 일몰18:15</div><div>🏖️ 남부>북부>중부</div><div>☀️ UV 11~15시</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px"><div>· 30~33°C / 밤27°C</div><div>· 한국-2시간</div><div>· 10만VND≈5,600원</div><div>· 일몰 18:15</div><div>· 남부>북부>중부</div><div>· UV 11~15시</div></div>
       </div>
-      <div class="ql"><a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank" style="background:#e3f2fd;color:#1565c0">🌤 AccuWeather</a><a href="https://vinbus.vn/" target="_blank" style="background:#e8f5e9;color:#2e7d32">🚌 VinBus</a><a href="https://kissofthesea.com/" target="_blank" style="background:#fce4ec;color:#c62828">Kiss of Sea</a><a href="https://onbird.vn/" target="_blank" style="background:#e0f2f1;color:#00695c">🌊 OnBird</a></div>
-      <div class="ic op"><div class="ich" onclick="tic(this)">✅ 체크리스트 <span class="ica">▾</span></div>
+      <div class="ql"><a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank" style="background:#e3f2fd;color:#1565c0">AccuWeather</a><a href="https://vinbus.vn/" target="_blank" style="background:#e8f5e9;color:#2e7d32">VinBus</a><a href="https://kissofthesea.com/" target="_blank" style="background:#fce4ec;color:#c62828">Kiss of Sea</a><a href="https://onbird.vn/" target="_blank" style="background:#e0f2f1;color:#00695c">OnBird</a></div>
+      <div class="ic op"><div class="ich" onclick="tic(this)">체크리스트 <span class="ica">▾</span></div>
       <div class="icb"><div class="ici">
-        <div style="font-weight:700;margin-bottom:4px">📱 앱·예약</div><ul class="cl" id="cl-app"></ul>
-        <div style="font-weight:700;margin:8px 0 4px">💰 환전</div><ul class="cl" id="cl-money"></ul>
-        <div style="font-weight:700;margin:8px 0 4px">🎒 짐싸기</div><ul class="cl" id="cl-pack"></ul>
+        <div style="font-weight:700;margin-bottom:4px">앱 · 예약</div><ul class="cl" id="cl-app"></ul>
+        <div style="font-weight:700;margin:8px 0 4px">환전</div><ul class="cl" id="cl-money"></ul>
+        <div style="font-weight:700;margin:8px 0 4px">짐싸기</div><ul class="cl" id="cl-pack"></ul>
         <div class="acw"><input type="text" id="newCl" placeholder="항목 추가..."><button onclick="addCl()">+</button></div>
       </div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">💱 환전 가이드 <span class="ica">▾</span></div><div class="icb"><div class="ici"><b>KRW→USD</b>: 은행앱 우대→공항 수령. $100 신권<br><b>4/15</b> 금은방 본격 환전<br><div style="margin-top:6px;padding:6px;background:#fff3e0;border-radius:6px;font-size:11px">⚠️ 호객·바꿔치기·ATM복제 주의</div></div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">👕 OOTD <span class="ica">▾</span></div><div class="icb"><div class="ici" style="font-size:12px"><b>☀ 낮</b>: 린넨+반바지, 운동화/샌들, 양산<br><b>🌊 바다</b>: 래시가드, 아쿠아슈즈, 방수케이스<br><b>🌙 저녁</b>: 긴바지+반팔, 가디건, JW=스마트캐주얼</div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">🇻🇳 베트남어 <span class="ica">▾</span></div><div class="icb"><div class="ici"><table class="vt"><tr><td>Không rau mùi</td><td>꽁 라우 무이</td><td>고수빼</td></tr><tr><td>Bao nhiêu tiền?</td><td>바오 니에우 띠엔?</td><td>얼마?</td></tr><tr><td>Tính tiền</td><td>띤 띠엔</td><td>계산</td></tr><tr><td>Cảm ơn</td><td>깜 언</td><td>감사</td></tr><tr><td>Ngon quá!</td><td>응온 꽈!</td><td>맛있어요!</td></tr></table></div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">🚨 긴급 <span class="ica">▾</span></div><div class="icb"><div class="ici">경찰 <a href="tel:113">113</a> · 앰뷸런스 <a href="tel:115">115</a> · 소방 <a href="tel:114">114</a><br>Vinmec <a href="tel:+842973983668">+84-297-398-3668</a><br>영사관 <a href="tel:+842838225757">+84-28-3822-5757</a></div></div></div>
+      <div class="ic"><div class="ich" onclick="tic(this)">환전 가이드 <span class="ica">▾</span></div><div class="icb"><div class="ici"><b>KRW→USD</b>: 은행앱 우대→공항 수령. $100 신권<br><b>4/15</b> 금은방 본격 환전<br><div style="margin-top:6px;padding:6px;background:#fff3e0;border-radius:6px;font-size:11px">호객·바꿔치기·ATM복제 주의</div></div></div></div>
+      <div class="ic"><div class="ich" onclick="tic(this)">OOTD <span class="ica">▾</span></div><div class="icb"><div class="ici" style="font-size:12px"><b>낮</b>: 린넨+반바지, 운동화/샌들, 양산<br><b>바다</b>: 래시가드, 아쿠아슈즈, 방수케이스<br><b>저녁</b>: 긴바지+반팔, 가디건, JW=스마트캐주얼</div></div></div>
+      <div class="ic"><div class="ich" onclick="tic(this)">베트남어 <span class="ica">▾</span></div><div class="icb"><div class="ici"><table class="vt"><tr><td>Không rau mùi</td><td>꽁 라우 무이</td><td>고수빼</td></tr><tr><td>Bao nhiêu tiền?</td><td>바오 니에우 띠엔?</td><td>얼마?</td></tr><tr><td>Tính tiền</td><td>띤 띠엔</td><td>계산</td></tr><tr><td>Cảm ơn</td><td>깜 언</td><td>감사</td></tr><tr><td>Ngon quá!</td><td>응온 꽈!</td><td>맛있어요!</td></tr></table></div></div></div>
+      <div class="ic"><div class="ich" onclick="tic(this)">긴급 <span class="ica">▾</span></div><div class="icb"><div class="ici">경찰 <a href="tel:113">113</a> · 앰뷸런스 <a href="tel:115">115</a> · 소방 <a href="tel:114">114</a><br>Vinmec <a href="tel:+842973983668">+84-297-398-3668</a><br>영사관 <a href="tel:+842838225757">+84-28-3822-5757</a></div></div></div>
     </div>
   </div>
 </div>
@@ -431,7 +429,7 @@ body.font-lg .ti em{font-size:19px}
     <div class="set-group"><label>저장 완료 메시지</label><input type="text" id="set-save-msg" value="저장 완료!"></div>
     <button class="set-save" onclick="saveSettings()">저장</button>
     <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee">
-      <div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:8px">⚠️ 데이터 초기화</div>
+      <div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:8px">데이터 초기화</div>
       <button onclick="if(confirm('일정 데이터를 모두 삭제하시겠습니까?')){fbSet('schedule_v2',null);fbSet('day_memos',null);alert('일정 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:6px">일정 데이터 초기화</button>
       <button onclick="if(confirm('MY루트를 모두 삭제하시겠습니까?')){fbSet('route',null);fbSet('schedule_v2',null);alert('MY루트 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">MY루트 + 일정 초기화</button>
     </div>
@@ -460,8 +458,8 @@ body.font-lg .ti em{font-size:19px}
       </select>
       <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">시간대</div>
       <select id="rtTime" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px">
-        <option value="breakfast">🌅 아침</option><option value="lunch">🍜 점심</option><option value="dinner">🌙 저녁</option>
-        <option value="snack">🍉 간식/야식</option><option value="activity">🎯 활동</option><option value="hotel">🏨 숙소</option>
+        <option value="breakfast">아침</option><option value="lunch">점심</option><option value="dinner">저녁</option>
+        <option value="snack">간식/야식</option><option value="activity">활동</option><option value="hotel">숙소</option>
       </select>
       <div class="mdb">
         <button class="cc" onclick="document.getElementById('rtMo').classList.remove('show')">취소</button>
@@ -481,7 +479,7 @@ body.font-lg .ti em{font-size:19px}
 </div>
 
 <!-- PW Modal -->
-<div class="mo" id="pwMo"><div class="md"><h3>🔐 Admin</h3><p class="er" id="pwEr">비밀번호가 틀렸습니다</p><input type="password" id="pwIn" placeholder="비밀번호" maxlength="10"><div class="mdb"><button class="cc" onclick="closePw()">취소</button><button class="cf" onclick="cfPw()">확인</button></div></div></div>
+<div class="mo" id="pwMo"><div class="md"><h3>Admin</h3><p class="er" id="pwEr">비밀번호가 틀렸습니다</p><input type="password" id="pwIn" placeholder="비밀번호" maxlength="10"><div class="mdb"><button class="cc" onclick="closePw()">취소</button><button class="cf" onclick="cfPw()">확인</button></div></div></div>
 
 <script>
 // ===== FIREBASE =====
@@ -501,6 +499,7 @@ fbGet('settings',function(val){
 });
 function applySettings(){
   document.getElementById('appTitle').textContent=appSettings.title||'🌴 Phú Quốc';
+  document.title=appSettings.title||'🌴 Phú Quốc';
   ['schedule','map','diary','budget'].forEach(function(k){
     var el=document.querySelector('[data-key="tab_'+k+'"]');
     if(el&&appSettings['tab_'+k])el.textContent=appSettings['tab_'+k];
@@ -544,8 +543,8 @@ function cfPw(){if(document.getElementById('pwIn').value==='1234'){isAdmin=true;
 document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')cfPw()});
 function updMode(){
   var b=document.getElementById('modeBtn');
-  if(isAdmin){b.textContent='✏️ '+(appSettings.adminLabel||'Admin');b.classList.add('admin');document.body.classList.add('admin-mode')}
-  else{b.textContent='👁️ '+(appSettings.visitorLabel||'Visitor');b.classList.remove('admin');document.body.classList.remove('admin-mode')}
+  if(isAdmin){b.textContent=appSettings.adminLabel||'Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
+  else{b.textContent=appSettings.visitorLabel||'Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
   var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
   renderSch();
 }
@@ -622,7 +621,7 @@ function getDaySub(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function(d
 function renderSch(){
   var calDays=DAY_INFO.filter(function(d){return d.day!==19});
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
-  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th colspan="2"></th>';
+  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th></th>';
   calDays.forEach(function(d){ch+='<th>4/'+d.day+'<br><span style="font-weight:400;font-size:10px">'+dayNames[d.day]+'</span></th>'});
   ch+='</tr>';
 
@@ -634,7 +633,7 @@ function renderSch(){
         var mv=(dayMemos&&dayMemos[''+d.day])||'';
         var memoId='cmemo_'+d.day;
         if(isAdmin){
-          ch+='<td style="text-align:left;vertical-align:top;height:auto"><div id="'+memoId+'v" style="cursor:pointer;min-height:20px'+(mv?'':';color:#ddd')+'" onclick="calEditMemo('+d.day+')">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'✏️')+'</div>'
+          ch+='<td style="text-align:left;vertical-align:top;height:auto"><div id="'+memoId+'v" style="cursor:pointer;min-height:20px'+(mv?'':';color:#ddd')+'" onclick="calEditMemo('+d.day+')">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'+')+'</div>'
             +'<div id="'+memoId+'e" style="display:none"><textarea id="'+memoId+'" style="width:100%;padding:4px;border:1px solid var(--gd);border-radius:4px;font-size:10px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+mv+'</textarea>'
             +'<button onclick="calSaveMemo('+d.day+')" style="margin-top:2px;padding:2px 8px;background:var(--ac);color:#fff;border:none;border-radius:4px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit">저장</button></div></td>';
         } else {
@@ -655,17 +654,18 @@ function renderSch(){
   }
 
   // 메모 row
-  ch+='<tr><td class="cal-cat" colspan="2">메모</td>';renderCells('memo',true);ch+='</tr>';
+  ch+='<tr><td class="cal-cat">메모</td>';renderCells('memo',true);ch+='</tr>';
   // 숙소 row
-  ch+='<tr><td class="cal-cat" colspan="2">숙소</td>';renderCells('hotel',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat">숙소</td>';renderCells('hotel',false);ch+='</tr>';
   // 활동 row
-  ch+='<tr><td class="cal-cat" colspan="2">활동</td>';renderCells('activity',false);ch+='</tr>';
-  // 식사 group (아침/점심/저녁)
-  ch+='<tr><td class="cal-cat" rowspan="3" style="writing-mode:vertical-lr;letter-spacing:3px;padding:4px 2px">식사</td><td class="cal-cat">아침</td>';renderCells('breakfast',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat">활동</td>';renderCells('activity',false);ch+='</tr>';
+  // 식사 header
+  ch+='<tr><td colspan="'+(calDays.length+1)+'" style="background:#e8f5e9;font-size:9px;font-weight:700;color:var(--ac);padding:3px 6px;text-align:center">식사</td></tr>';
+  ch+='<tr><td class="cal-cat">아침</td>';renderCells('breakfast',false);ch+='</tr>';
   ch+='<tr><td class="cal-cat">점심</td>';renderCells('lunch',false);ch+='</tr>';
   ch+='<tr><td class="cal-cat">저녁</td>';renderCells('dinner',false);ch+='</tr>';
   // 간식 row
-  ch+='<tr><td class="cal-cat" colspan="2">간식</td>';renderCells('snack',false);ch+='</tr>';
+  ch+='<tr><td class="cal-cat">간식</td>';renderCells('snack',false);ch+='</tr>';
 
   ch+='</table></div>';
   document.getElementById('schOverview').innerHTML=ch;
@@ -990,7 +990,7 @@ function gFT(f){var d=new Date(f.lastModified||Date.now());return d.toTimeString
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
   var all=DD.concat(pendingPhotos);
-  if(!all.length){el.innerHTML='<div style="text-align:center;color:#999;padding:30px;font-size:13px">아직 기록이 없어요 📸</div>';return}
+  if(!all.length){el.innerHTML='<div style="text-align:center;color:#999;padding:30px;font-size:13px">아직 기록이 없어요</div>';return}
   var groups={};all.sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)});
   all.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
   var pids=new Set(pendingPhotos.map(function(p){return p.id}));
@@ -1014,7 +1014,7 @@ function renderDiary(){
         html+='<button onclick="startEditDE(\''+eid+'\')" style="padding:3px 10px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px">수정</button></div>';
         // Edit mode (hidden)
         html+='<div id="de_'+eid+'" style="display:none">'
-          +'<div style="margin:6px 0"><label style="display:block;padding:8px;border:1.5px dashed #ccc;border-radius:8px;text-align:center;font-size:11px;color:#888;cursor:pointer">📷 사진 변경<input type="file" accept="image/*" style="display:none" onchange="changePhoto(\''+eid+'\',event)"></label></div>'
+          +'<div style="margin:6px 0"><label style="display:block;padding:8px;border:1.5px dashed #ccc;border-radius:8px;text-align:center;font-size:11px;color:#888;cursor:pointer">사진 변경<input type="file" accept="image/*" style="display:none" onchange="changePhoto(\''+eid+'\',event)"></label></div>'
           +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(e.memo||'')+'</textarea>'
           +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
           +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
@@ -1106,7 +1106,7 @@ function renderTrash(){
   if(!el)return;
   if(!trashDD.length){el.innerHTML='<div style="color:#999;font-size:12px;padding:8px">휴지통이 비어있어요</div>';return}
   el.innerHTML=trashDD.map(function(e){
-    return '<div class="de" style="opacity:0.7"><button class="dd" onclick="permDelete(\''+e._key+'\')" title="영구 삭제">🗑️</button><button style="position:absolute;top:6px;right:36px;background:var(--ac);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="restoreDE(\''+e._key+'\')" title="복원">↩</button><img src="'+e.data+'"><div class="dt">'+(e.date||'')+' '+(e.time||'')+'</div>'+(e.memo?'<div style="font-size:11px;color:var(--tx2)">'+e.memo+'</div>':'')+'</div>';
+    return '<div class="de" style="opacity:0.7"><button class="dd" onclick="permDelete(\''+e._key+'\')" title="영구 삭제">×</button><button style="position:absolute;top:6px;right:36px;background:var(--ac);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center" onclick="restoreDE(\''+e._key+'\')" title="복원">↩</button><img src="'+e.data+'"><div class="dt">'+(e.date||'')+' '+(e.time||'')+'</div>'+(e.memo?'<div style="font-size:11px;color:var(--tx2)">'+e.memo+'</div>':'')+'</div>';
   }).join('');
 }
 function permDelete(key){
@@ -1128,7 +1128,7 @@ function exportDiary(){
   var w=window.open('','_blank');
   var h='<html><head><title>'+title+'</title><style>body{font-family:sans-serif;max-width:700px;margin:0 auto;padding:20px}img{max-width:100%;border-radius:8px;margin:8px 0}h2{color:#1a6b5a;border-bottom:2px solid #1a6b5a;padding-bottom:4px}.m{background:#f5f0e8;padding:8px 12px;border-radius:6px;margin:4px 0;white-space:pre-wrap}@media print{body{padding:0}}</style></head><body><h1>'+title+'</h1>';
   var groups={};all.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
-  Object.keys(groups).sort().forEach(function(date){h+='<h2>📅 '+date+'</h2>';groups[date].forEach(function(e){h+='<img src="'+e.data+'">';if(e.memo)h+='<div class="m">'+e.memo+'</div>'})});
+  Object.keys(groups).sort().forEach(function(date){h+='<h2>'+date+'</h2>';groups[date].forEach(function(e){h+='<img src="'+e.data+'">';if(e.memo)h+='<div class="m">'+e.memo+'</div>'})});
   h+='</body></html>';w.document.write(h);w.document.close();
 }
 
