@@ -39,10 +39,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .sync-dot.off{background:#f44336;animation:none}
 .hd-right{display:flex;align-items:center;gap:6px}
-.mbtn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:5px 11px;border-radius:20px;font-size:11px;font-family:inherit;cursor:pointer}
+.mbtn{background:rgba(255,255,255,.2);border:none;color:#fff;padding:6px 11px;border-radius:20px;font-size:11px;font-family:inherit;cursor:pointer;height:30px;display:flex;align-items:center}
 .mbtn.admin{background:var(--co)}
-.gear-btn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:4px;display:none}
-.admin-mode .gear-btn{display:inline}
+.gear-btn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:4px;display:none;height:30px}
+.admin-mode .gear-btn{display:flex;align-items:center}
 .tb{display:flex;background:var(--sf);border-bottom:1px solid #ddd5c8;z-index:90;position:relative}
 .ti{flex:1;text-align:center;padding:9px 0 7px;font-size:10.5px;font-weight:500;color:var(--tx2);cursor:pointer;border-bottom:2.5px solid transparent;user-select:none}
 .ti.on{color:var(--ac);border-bottom-color:var(--ac);font-weight:700}
@@ -267,8 +267,8 @@ body.font-lg .ti em{font-size:19px}
   <div style="display:flex;align-items:center"><span class="sync-dot" id="syncDot"></span><h1 id="appTitle">🌴 Phú Quốc</h1></div>
   <div class="hd-right">
     <button class="mbtn" id="fontBtn" onclick="toggleFont()" style="font-size:10px;padding:4px 8px">가</button>
-    <button class="gear-btn" onclick="openSettings()">⚙️</button>
     <button class="mbtn" id="modeBtn" onclick="toggleMode()">Visitor</button>
+    <button class="gear-btn" onclick="openSettings()">⚙️</button>
   </div>
 </div>
 <div class="tb">
@@ -349,10 +349,7 @@ body.font-lg .ti em{font-size:19px}
         <div style="font-weight:700;margin:8px 0 4px">짐싸기</div><ul class="cl" id="cl-pack"></ul>
         <div class="acw"><input type="text" id="newCl" placeholder="항목 추가..."><button onclick="addCl()">+</button></div>
       </div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">환전 가이드 <span class="ica">▾</span></div><div class="icb"><div class="ici"><b>KRW→USD</b>: 은행앱 우대→공항 수령. $100 신권<br><b>4/15</b> 금은방 본격 환전<br><div style="margin-top:6px;padding:6px;background:#fff3e0;border-radius:6px;font-size:11px">호객·바꿔치기·ATM복제 주의</div></div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">OOTD <span class="ica">▾</span></div><div class="icb"><div class="ici" style="font-size:12px"><b>낮</b>: 린넨+반바지, 운동화/샌들, 양산<br><b>바다</b>: 래시가드, 아쿠아슈즈, 방수케이스<br><b>저녁</b>: 긴바지+반팔, 가디건, JW=스마트캐주얼</div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">베트남어 <span class="ica">▾</span></div><div class="icb"><div class="ici"><table class="vt"><tr><td>Không rau mùi</td><td>꽁 라우 무이</td><td>고수빼</td></tr><tr><td>Bao nhiêu tiền?</td><td>바오 니에우 띠엔?</td><td>얼마?</td></tr><tr><td>Tính tiền</td><td>띤 띠엔</td><td>계산</td></tr><tr><td>Cảm ơn</td><td>깜 언</td><td>감사</td></tr><tr><td>Ngon quá!</td><td>응온 꽈!</td><td>맛있어요!</td></tr></table></div></div></div>
-      <div class="ic"><div class="ich" onclick="tic(this)">긴급 <span class="ica">▾</span></div><div class="icb"><div class="ici">경찰 <a href="tel:113">113</a> · 앰뷸런스 <a href="tel:115">115</a> · 소방 <a href="tel:114">114</a><br>Vinmec <a href="tel:+842973983668">+84-297-398-3668</a><br>영사관 <a href="tel:+842838225757">+84-28-3822-5757</a></div></div></div>
+      <div id="tipsCards"></div>
     </div>
     <div class="bts" id="bt-budget">
       <div class="ic op"><div class="ich" onclick="tic(this)">날짜별 상세 <span class="ica">▾</span></div>
@@ -553,7 +550,7 @@ function updMode(){
   if(isAdmin){b.textContent=appSettings.adminLabel||'Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
   else{b.textContent=appSettings.visitorLabel||'Visitor';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
   var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
-  renderSch();renderKeyInfo();rMk();if(aFil!=='all')rCd(aFil);
+  renderSch();renderKeyInfo();renderTips();rMk();if(aFil!=='all')rCd(aFil);
 }
 
 // ===== PLACES =====
@@ -1150,6 +1147,68 @@ function exportDiary(){
   Object.keys(groups).sort().forEach(function(date){h+='<h2>'+date+'</h2>';groups[date].forEach(function(e){h+='<img src="'+e.data+'">';if(e.memo)h+='<div class="m">'+e.memo+'</div>'})});
   h+='</body></html>';w.document.write(h);w.document.close();
 }
+
+// ===== TIPS CARDS (editable, reorderable) =====
+var defaultTips=[
+  {id:'exchange',title:'환전 가이드',content:'KRW→USD: 은행앱 우대→공항 수령. $100 신권\n4/15 금은방 본격 환전\n호객·바꿔치기·ATM복제 주의'},
+  {id:'ootd',title:'OOTD',content:'낮: 린넨+반바지, 운동화/샌들, 양산\n바다: 래시가드, 아쿠아슈즈, 방수케이스\n저녁: 긴바지+반팔, 가디건, JW=스마트캐주얼'},
+  {id:'viet',title:'베트남어',rows:[['Không rau mùi','꽁 라우 무이','고수빼'],['Bao nhiêu tiền?','바오 니에우 띠엔?','얼마?'],['Tính tiền','띤 띠엔','계산'],['Cảm ơn','깜 언','감사'],['Ngon quá!','응온 꽈!','맛있어요!']]},
+  {id:'emergency',title:'긴급',content:'경찰 113 · 앰뷸런스 115 · 소방 114\nVinmec +84-297-398-3668\n영사관 +84-28-3822-5757'}
+];
+var tipsData=null;
+fbGet('tips_cards',function(val){tipsData=val||defaultTips;renderTips()});
+
+function renderTips(){
+  var el=document.getElementById('tipsCards');if(!el)return;
+  var cards=tipsData||defaultTips;
+  var h='';
+  cards.forEach(function(card,i){
+    h+='<div class="ic"><div class="ich" onclick="tic(this)">';
+    if(isAdmin){
+      h+='<span style="display:flex;align-items:center;gap:4px">';
+      if(i>0)h+='<button onclick="event.stopPropagation();moveTip('+i+',-1)" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:12px;padding:2px">▲</button>';
+      if(i<cards.length-1)h+='<button onclick="event.stopPropagation();moveTip('+i+',1)" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:12px;padding:2px">▼</button>';
+      h+='<input type="text" value="'+(card.title||'').replace(/"/g,'&quot;')+'" onblur="updTipTitle('+i+',this.value)" onclick="event.stopPropagation()" style="border:none;border-bottom:1px dashed #ccc;font-size:13.5px;font-weight:700;font-family:inherit;outline:none;background:none;padding:2px 4px">';
+      h+='</span>';
+    } else {
+      h+=card.title;
+    }
+    h+=' <span class="ica">▾</span></div><div class="icb"><div class="ici">';
+    // Content
+    if(card.rows){
+      // Table type (베트남어)
+      h+='<table class="vt">';
+      card.rows.forEach(function(row,ri){
+        if(isAdmin){
+          h+='<tr>';
+          row.forEach(function(cell,ci){
+            h+='<td><input type="text" value="'+(cell||'').replace(/"/g,'&quot;')+'" onblur="updTipCell('+i+','+ri+','+ci+',this.value)" style="border:none;border-bottom:1px dashed #eee;width:100%;font-size:12px;font-family:inherit;outline:none;padding:2px;background:none"></td>';
+          });
+          h+='<td><button onclick="delTipRow('+i+','+ri+')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:11px">✕</button></td></tr>';
+        } else {
+          h+='<tr><td>'+row[0]+'</td><td>'+row[1]+'</td><td>'+row[2]+'</td></tr>';
+        }
+      });
+      h+='</table>';
+      if(isAdmin)h+='<button onclick="addTipRow('+i+')" style="margin-top:6px;padding:4px 10px;background:none;border:1px dashed #ccc;border-radius:6px;font-size:11px;color:#999;cursor:pointer;font-family:inherit">+ 추가</button>';
+    } else {
+      // Text type
+      if(isAdmin){
+        h+='<textarea onblur="updTipContent('+i+',this.value)" style="width:100%;border:1px dashed #ccc;border-radius:6px;padding:6px;font-size:12px;font-family:inherit;resize:vertical;min-height:60px;outline:none;background:none">'+(card.content||'')+'</textarea>';
+      } else {
+        h+='<div style="white-space:pre-wrap;font-size:12px;line-height:1.6">'+(card.content||'').replace(/</g,'&lt;')+'</div>';
+      }
+    }
+    h+='</div></div></div>';
+  });
+  el.innerHTML=h;
+}
+function moveTip(i,dir){var cards=tipsData||[];var j=i+dir;if(j<0||j>=cards.length)return;var tmp=cards[i];cards[i]=cards[j];cards[j]=tmp;fbSet('tips_cards',cards)}
+function updTipTitle(i,val){tipsData[i].title=val;fbSet('tips_cards',tipsData)}
+function updTipContent(i,val){tipsData[i].content=val;fbSet('tips_cards',tipsData)}
+function updTipCell(i,ri,ci,val){tipsData[i].rows[ri][ci]=val;fbSet('tips_cards',tipsData)}
+function addTipRow(i){tipsData[i].rows.push(['','','']);fbSet('tips_cards',tipsData);renderTips()}
+function delTipRow(i,ri){tipsData[i].rows.splice(ri,1);fbSet('tips_cards',tipsData);renderTips()}
 
 // ===== KEY INFO (editable) =====
 var defaultKeyInfo=['30~33°C / 밤27°C','한국-2시간','10만VND≈5,600원','일몰 18:15','남부>북부>중부','UV 11~15시'];
