@@ -590,10 +590,22 @@ function renderSch(){
     }
     // Day memo
     var memoVal=(dayMemos&&dayMemos[''+d.day])||'';
-    var memoHtml='<div style="padding:10px 14px;border-bottom:1px solid #f0ece4">'
-      +'<textarea id="memo_'+d.day+'" placeholder="메모 남기기..." style="width:100%;padding:8px;border:1.5px solid #eee;border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:36px;outline:none">'+memoVal+'</textarea>'
-      +'<button onclick="saveDayMemo('+d.day+',document.getElementById(\'memo_'+d.day+'\').value);this.textContent=\'저장됨!\';var b=this;setTimeout(function(){b.textContent=\'저장\'},1000)" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
-      +'<div style="clear:both"></div></div>';
+    var memoHtml;
+    if(memoVal){
+      memoHtml='<div style="padding:10px 14px;border-bottom:1px solid #f0ece4">'
+        +'<div id="memov_'+d.day+'" onclick="editMemo('+d.day+')" style="padding:8px 10px;background:#fff8e1;border-radius:8px;font-size:12px;line-height:1.5;white-space:pre-wrap;cursor:pointer;border-left:3px solid var(--gd)">'+memoVal.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>'
+        +'<div id="memoe_'+d.day+'" style="display:none">'
+        +'<textarea id="memo_'+d.day+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:50px;outline:none">'+memoVal+'</textarea>'
+        +'<button onclick="saveMemoAndClose('+d.day+')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
+        +'<div style="clear:both"></div></div></div>';
+    } else {
+      memoHtml='<div style="padding:10px 14px;border-bottom:1px solid #f0ece4">'
+        +'<div id="memov_'+d.day+'" onclick="editMemo('+d.day+')" style="padding:6px 10px;color:#bbb;font-size:11px;cursor:pointer;border:1.5px dashed #ddd;border-radius:8px;text-align:center">✏️ 메모 남기기</div>'
+        +'<div id="memoe_'+d.day+'" style="display:none">'
+        +'<textarea id="memo_'+d.day+'" placeholder="메모 남기기..." style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:50px;outline:none"></textarea>'
+        +'<button onclick="saveMemoAndClose('+d.day+')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
+        +'<div style="clear:both"></div></div></div>';
+    }
     // Items from schedule_v2
     var dayData=schData[''+d.day]||{};
     var body=memoHtml;
@@ -630,6 +642,29 @@ function saveDayLabel(day,field,val){if(!isAdmin)return;if(!dayLabels[''+day])da
 var dayMemos={};
 fbGet('day_memos',function(val){dayMemos=val||{};renderSch()});
 function saveDayMemo(day,val){dayMemos[''+day]=val;fbSet('day_memos/'+day,val)}
+function editMemo(day){
+  document.getElementById('memov_'+day).style.display='none';
+  document.getElementById('memoe_'+day).style.display='block';
+  var ta=document.getElementById('memo_'+day);
+  if(ta)ta.focus();
+}
+function saveMemoAndClose(day){
+  var ta=document.getElementById('memo_'+day);
+  var val=ta?ta.value.trim():'';
+  saveDayMemo(day,val);
+  // Switch back to display mode without full re-render
+  var view=document.getElementById('memov_'+day);
+  var edit=document.getElementById('memoe_'+day);
+  edit.style.display='none';
+  if(val){
+    view.style.cssText='padding:8px 10px;background:#fff8e1;border-radius:8px;font-size:12px;line-height:1.5;white-space:pre-wrap;cursor:pointer;border-left:3px solid var(--gd)';
+    view.textContent=val;
+  } else {
+    view.style.cssText='padding:6px 10px;color:#bbb;font-size:11px;cursor:pointer;border:1.5px dashed #ddd;border-radius:8px;text-align:center';
+    view.textContent='✏️ 메모 남기기';
+  }
+  view.style.display='';
+}
 function delSchItem(day,sec,idx){
   day=''+day;if(!schData[day]||!schData[day][sec])return;
   var removed=schData[day][sec][idx];
