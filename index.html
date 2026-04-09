@@ -429,8 +429,7 @@ body.font-lg .ti em{font-size:19px}
       </select>
       <div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:4px">시간대</div>
       <select id="rtTime" style="width:100%;padding:9px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px">
-        <option value="breakfast">아침</option><option value="lunch">점심</option><option value="dinner">저녁</option>
-        <option value="snack">간식/야식</option><option value="activity">활동</option><option value="hotel">숙소</option>
+        <option value="breakfast">아침</option><option value="am_act">오전활동</option><option value="lunch">점심</option><option value="pm_act">오후활동</option><option value="dinner">저녁</option><option value="eve_act">저녁활동</option><option value="snack">야식</option><option value="hotel">숙소</option>
       </select>
       <div class="mdb">
         <button class="cc" onclick="document.getElementById('rtMo').classList.remove('show')">취소</button>
@@ -606,27 +605,28 @@ function getDaySub(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function(d
 function renderSch(){
   var calDays=DAY_INFO.filter(function(d){return d.day!==19});
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
-  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th colspan="2"></th>';
+  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th></th>';
   calDays.forEach(function(d){ch+='<th>4/'+d.day+'<br><span style="font-weight:400;font-size:10px">'+dayNames[d.day]+'</span></th>'});
   ch+='</tr>';
 
   // Helper to render cells
-  function renderCells(key,isMemo){
+  function renderCells(key,isMemo,bg){
+    var bgS=bg?' style="background:'+bg+'"':'';
     calDays.forEach(function(d){
       var dd=schData[''+d.day]||{};
       if(isMemo){
         var mv=(dayMemos&&dayMemos[''+d.day])||'';
         var memoId='cmemo_'+d.day;
         if(isAdmin){
-          ch+='<td style="text-align:left;vertical-align:top;height:auto"><div id="'+memoId+'v" style="cursor:pointer;min-height:20px'+(mv?'':';color:#ddd')+'" onclick="calEditMemo('+d.day+')">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'+')+'</div>'
+          ch+='<td style="text-align:left;vertical-align:top;height:auto;background:'+(bg||'#fff')+'"><div id="'+memoId+'v" style="cursor:pointer;min-height:20px'+(mv?'':';color:#ddd')+'" onclick="calEditMemo('+d.day+')">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'+')+'</div>'
             +'<div id="'+memoId+'e" style="display:none"><textarea id="'+memoId+'" style="width:100%;padding:4px;border:1px solid var(--gd);border-radius:4px;font-size:10px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+mv+'</textarea>'
             +'<button onclick="calSaveMemo('+d.day+')" style="margin-top:2px;padding:2px 8px;background:var(--ac);color:#fff;border:none;border-radius:4px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit">저장</button></div></td>';
         } else {
-          ch+='<td style="text-align:left;vertical-align:top;height:auto">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'<span style="color:#ddd">—</span>')+'</td>';
+          ch+='<td style="text-align:left;vertical-align:top;height:auto;background:'+(bg||'#fff')+'">'+(mv?'<div class="cal-memo">'+mv.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>':'<span style="color:#ddd">—</span>')+'</td>';
         }
       } else {
         var items=dd[key]||[];
-        ch+='<td>';
+        ch+='<td'+bgS+'>';
         if(items.length){items.forEach(function(it,idx){
           var gl=it.placeKey?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(it.text+' Phu Quoc'):'';
           ch+='<div class="cal-item">'+(gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':it.text);
@@ -638,21 +638,40 @@ function renderSch(){
     });
   }
 
-  // 메모 row
-  ch+='<tr><td class="cal-cat" colspan="2">메모</td>';renderCells('memo',true);ch+='</tr>';
-  // 숙소 row
-  ch+='<tr><td class="cal-cat" colspan="2">숙소</td>';renderCells('hotel',false);ch+='</tr>';
-  // 활동 row
-  ch+='<tr><td class="cal-cat" colspan="2">활동</td>';renderCells('activity',false);ch+='</tr>';
-  // 식사 group with rowspan
-  ch+='<tr><td class="cal-cat" rowspan="3" style="writing-mode:vertical-lr;text-orientation:upright;letter-spacing:4px;padding:2px;width:18px;text-align:center;font-size:9px">식사</td><td class="cal-cat" style="width:22px">아침</td>';renderCells('breakfast',false);ch+='</tr>';
-  ch+='<tr><td class="cal-cat" style="width:22px">점심</td>';renderCells('lunch',false);ch+='</tr>';
-  ch+='<tr><td class="cal-cat" style="width:22px">저녁</td>';renderCells('dinner',false);ch+='</tr>';
-  // 간식 row
-  ch+='<tr><td class="cal-cat" colspan="2">간식</td>';renderCells('snack',false);ch+='</tr>';
+  // Section definitions with alternating colors
+  var schSections=[
+    {k:'memo',label:'메모',bg:'#d6ede7',isMemo:true,colspan:true},
+    {k:'hotel',label:'숙소',bg:'#d6ede7',colspan:true},
+    {k:'breakfast',label:'아침',bg:'#fff',colspan:true},
+    {k:'am_act',label:'오전활동',bg:'#f7f7f2',colspan:true},
+    {k:'lunch',label:'점심',bg:'#fff',colspan:true},
+    {k:'pm_act',label:'오후활동',bg:'#f7f7f2',colspan:true},
+    {k:'dinner',label:'저녁',bg:'#fff',colspan:true},
+    {k:'eve_act',label:'저녁활동',bg:'#f7f7f2',colspan:true},
+    {k:'snack',label:'야식',bg:'#fff',colspan:true}
+  ];
+  // Load custom labels from Firebase
+  var secLabels=appSettings.secLabels||{};
+
+  schSections.forEach(function(sec){
+    var label=secLabels[sec.k]||sec.label;
+    var bgStyle=' style="background:'+sec.bg+'"';
+    if(isAdmin&&sec.k!=='memo'){
+      ch+='<tr><td class="cal-cat"'+bgStyle+'><input type="text" value="'+label+'" onblur="saveSecLabel(\''+sec.k+'\',this.value)" style="border:none;background:none;font-weight:600;color:var(--ac);font-size:9px;font-family:inherit;outline:none;width:100%;text-align:center;padding:0"></td>';
+    } else {
+      ch+='<tr><td class="cal-cat"'+bgStyle+'>'+label+'</td>';
+    }
+    renderCells(sec.k,sec.isMemo||false,sec.bg);
+    ch+='</tr>';
+  });
 
   ch+='</table></div>';
   document.getElementById('schOverview').innerHTML=ch;
+}
+function saveSecLabel(k,val){
+  if(!appSettings.secLabels)appSettings.secLabels={};
+  appSettings.secLabels[k]=val;
+  fbSet('settings/secLabels/'+k,val);
 }
 function calEditMemo(day){
   document.getElementById('cmemo_'+day+'v').style.display='none';
@@ -699,7 +718,7 @@ function initMap(){
   fbGet('route',function(v){routeCache=new Set(v||[]);rMk();if(aFil!=='all')rCd(aFil);renderSch()});
 }
 function bFlt(){
-  var cs=[{k:'all',l:'전체'},{k:'myroute',l:'📌 MY루트'},{k:'food',l:'🍜 식당'},{k:'cafe',l:'☕ 카페'},{k:'spa',l:'💆 스파'},{k:'shop',l:'🛒 쇼핑'},{k:'spot',l:'📍 스팟'},{k:'hotel',l:'🏨 숙소'},{k:'addplace',l:'➕ 장소추가'}];
+  var cs=[{k:'all',l:'전체'},{k:'myroute',l:'📌 MY루트'},{k:'food',l:'🍜 식당'},{k:'cafe',l:'☕ 카페'},{k:'spa',l:'💆 마사지'},{k:'shop',l:'🛒 쇼핑'},{k:'spot',l:'📍 스팟'},{k:'hotel',l:'🏨 숙소'},{k:'addplace',l:'➕ 장소추가'}];
   document.getElementById('mapFilters').innerHTML=cs.map(function(c){
     var x=c.k==='myroute'?' rt':c.k==='addplace'?' ap':'';
     return '<button class="fc'+x+(c.k==='all'?' on':'')+'" data-cat="'+c.k+'" onclick="sFlt(\''+c.k+'\',this)">'+c.l+'</button>';
@@ -836,7 +855,7 @@ function tRt(n){
       var reg=dReg(place.lat);
       var dayMap={'북부':'14','중부':'15','남부':'17'};
       document.getElementById('rtDay').value=dayMap[reg]||'14';
-      var catTime={food:'lunch',cafe:'snack',spa:'activity',spot:'activity',shop:'activity',hotel:'hotel'};
+      var catTime={food:'lunch',cafe:'lunch',spa:'pm_act',spot:'pm_act',shop:'pm_act',hotel:'hotel'};
       document.getElementById('rtTime').value=catTime[place.c]||'activity';
     }
   }
@@ -850,7 +869,7 @@ function showRtAdd(){
     var reg=dReg(place.lat);
     var dayMap={'북부':'14','중부':'15','남부':'17'};
     document.getElementById('rtDay').value=dayMap[reg]||'14';
-    var catTime={food:'lunch',cafe:'snack',spa:'activity',spot:'activity',shop:'activity',hotel:'hotel'};
+    var catTime={food:'lunch',cafe:'lunch',spa:'pm_act',spot:'pm_act',shop:'pm_act',hotel:'hotel'};
     document.getElementById('rtTime').value=catTime[place.c]||'activity';
   }
 }
