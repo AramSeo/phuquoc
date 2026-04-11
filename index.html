@@ -261,7 +261,7 @@ body.font-lg .ti em{font-size:19px}
 .cal-t td{padding:6px;border-bottom:1px solid #eee;vertical-align:middle;text-align:center;word-break:break-word;height:44px}
 .cal-t tr.cal-memo-row td{text-align:left;vertical-align:top;height:auto}
 .cal-t tr:nth-child(even) td{background:#fafaf7}
-.cal-t .cal-cat{font-weight:600;color:var(--ac);white-space:nowrap;font-size:9px;background:#E0F7F5!important;border-right:1px solid #d0e8e0;padding:4px 5px;text-align:center}
+.cal-t .cal-cat{font-weight:600;color:var(--tx2);white-space:nowrap;font-size:9px;background:var(--sf)!important;border-right:1px solid #eee;padding:4px 5px;text-align:center}
 .cal-item{font-size:10.5px;line-height:1.4;padding:2px 0}
 .cal-item::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ac);margin-right:4px;vertical-align:middle}
 .cal-item a{color:inherit;text-decoration:none;font-weight:600}
@@ -480,7 +480,7 @@ function fbOnce(p){return db.ref(p).once('value').then(function(s){return s.val(
 db.ref('.info/connected').on('value',function(s){document.getElementById('syncDot').classList.toggle('off',!s.val())});
 
 var isAdmin=false,lmap=null,amk=[],aFil='all',addPanelOpen=false;
-var CM={food:{i:'🍜',co:'#e07a5f'},cafe:{i:'☕',co:'#D4A843'},spa:{i:'💆',co:'#9c27b0'},spot:{i:'📍',co:'#0ABAB5'},hotel:{i:'🏨',co:'#3a7bd5'},shop:{i:'🛒',co:'#ff9800'}};
+var CM={food:{i:'🍜',co:'#E07A5F'},cafe:{i:'☕',co:'#D4A843'},spa:{i:'💆',co:'#0ABAB5'},spot:{i:'📍',co:'#1A6B5A'},hotel:{i:'🏨',co:'#089B97'},shop:{i:'🛒',co:'#D4A843'}};
 function dReg(lat){return lat>10.28?'북부':lat>10.12?'중부':'남부'}
 
 // ===== SETTINGS =====
@@ -537,7 +537,7 @@ function saveSettings(){
 }
 
 // ===== TAB CONFIG (order + hide) =====
-var TAB_DEFS={map:{icon:'🗺️',labelKey:'tab_map',def:'지도'},schedule:{icon:'📅',labelKey:'tab_schedule',def:'일정'},diary:{icon:'📓',labelKey:'tab_diary',def:'다이어리'},budget:{icon:'💰',labelKey:'tab_budget',def:'예산·팁'}};
+var TAB_DEFS={map:{icon:'🗺️',labelKey:'tab_map',def:'지도'},schedule:{icon:'🗓️',labelKey:'tab_schedule',def:'일정'},diary:{icon:'📓',labelKey:'tab_diary',def:'다이어리'},budget:{icon:'💰',labelKey:'tab_budget',def:'예산·팁'}};
 var tabConfig={order:['map','schedule','diary','budget'],hidden:[]};
 var _tabInited=false;
 fbGet('tab_config',function(val){
@@ -750,17 +750,17 @@ function renderSch(){
     });
   }
 
-  // Section definitions with alternating colors
+  // Section definitions — simple alternating white / light sand
   var schSections=[
-    {k:'memo',label:'메모',bg:'#d6ede7',isMemo:true,colspan:true},
-    {k:'hotel',label:'숙소',bg:'#d6ede7',colspan:true},
-    {k:'breakfast',label:'아침',bg:'#fff',colspan:true},
-    {k:'am_act',label:'오전활동',bg:'#f7f7f2',colspan:true},
-    {k:'lunch',label:'점심',bg:'#fff',colspan:true},
-    {k:'pm_act',label:'오후활동',bg:'#f7f7f2',colspan:true},
-    {k:'dinner',label:'저녁',bg:'#fff',colspan:true},
-    {k:'eve_act',label:'저녁활동',bg:'#f7f7f2',colspan:true},
-    {k:'snack',label:'야식',bg:'#fff',colspan:true}
+    {k:'memo',label:'메모',bg:'#F5F3EE',isMemo:true,colspan:true},
+    {k:'hotel',label:'숙소',bg:'#fff',colspan:true},
+    {k:'breakfast',label:'아침',bg:'#F5F3EE',colspan:true},
+    {k:'am_act',label:'오전활동',bg:'#fff',colspan:true},
+    {k:'lunch',label:'점심',bg:'#F5F3EE',colspan:true},
+    {k:'pm_act',label:'오후활동',bg:'#fff',colspan:true},
+    {k:'dinner',label:'저녁',bg:'#F5F3EE',colspan:true},
+    {k:'eve_act',label:'저녁활동',bg:'#fff',colspan:true},
+    {k:'snack',label:'야식',bg:'#F5F3EE',colspan:true}
   ];
   // Load custom labels from Firebase
   var secLabels=appSettings.secLabels||{};
