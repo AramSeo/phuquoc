@@ -1556,15 +1556,26 @@ function exportDiary(){
   var all=DD.slice();
   if(!all.length){alert('내보낼 기록이 없습니다');return}
   var title=appSettings.diaryTitle||'푸꾸옥 다이어리';
-  var w=window.open('','_blank');
   var h='<html><head><title>'+title+'</title><style>'
     +'@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;900&display=swap");'
     +'*{margin:0;padding:0;box-sizing:border-box}'
-    +'body{font-family:"Noto Sans KR",sans-serif;max-width:900px;margin:0 auto;padding:40px 24px;background:#FAF7F2;color:#1A2B2D;line-height:1.7}'
-    +'.cover{text-align:center;padding:60px 20px;margin-bottom:40px;background:linear-gradient(135deg,#0ABAB5,#089B97,#1A6B5A);border-radius:20px;color:#fff}'
-    +'.cover h1{font-size:28px;font-weight:900;margin-bottom:8px;letter-spacing:-0.5px}'
-    +'.cover p{font-size:14px;opacity:.8}'
-    +'.day-header{margin:40px 0 16px;padding:12px 0;border-bottom:3px solid #0ABAB5;display:flex;align-items:center;gap:10px}'
+    +'body{font-family:"Noto Sans KR",sans-serif;max-width:900px;margin:0 auto;padding:0 24px 80px;background:#FAF7F2;color:#1A2B2D;line-height:1.7}'
+    +'.page{min-height:100vh;display:flex;flex-direction:column;justify-content:center}'
+    +'.cover{text-align:center;padding:80px 20px;background:linear-gradient(135deg,#0ABAB5,#089B97,#1A6B5A);border-radius:24px;color:#fff;margin:40px 0}'
+    +'.cover h1{font-size:32px;font-weight:900;margin-bottom:12px;letter-spacing:-0.5px}'
+    +'.cover p{font-size:16px;opacity:.8}'
+    +'.cover .dates{margin-top:20px;font-size:13px;opacity:.6}'
+    +'.route-page{padding:20px 0}'
+    +'.route-page h2{font-size:22px;font-weight:900;color:#0ABAB5;margin-bottom:20px;text-align:center}'
+    +'.route-day{background:#fff;border-radius:16px;padding:16px 20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(10,186,181,.06)}'
+    +'.route-day .rd-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #E0F7F5}'
+    +'.route-day .rd-date{font-size:18px;font-weight:900;color:#0ABAB5}'
+    +'.route-day .rd-title{font-size:13px;color:#7A9295}'
+    +'.route-sec{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}'
+    +'.route-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#F5F3EE;border-radius:12px;font-size:11px;font-weight:500}'
+    +'.route-chip .rc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}'
+    +'.route-sec-label{font-size:10px;color:#7A9295;font-weight:700;margin:8px 0 2px}'
+    +'.day-header{margin:40px 0 16px;padding:12px 0;border-bottom:3px solid #0ABAB5}'
     +'.day-header h2{font-size:20px;font-weight:900;color:#0ABAB5}'
     +'.day-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}'
     +'.entry{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 16px rgba(10,186,181,.07);display:flex;flex-direction:column}'
@@ -1578,9 +1589,40 @@ function exportDiary(){
     +'.reply .rn{font-weight:700;font-size:12px;margin-bottom:2px}'
     +'.reply .rt{line-height:1.6}'
     +'.reply .rm{font-size:10px;color:#7A9295;margin-top:2px}'
-    +'@media print{body{padding:10px;background:#fff}.cover{break-after:page}.entry{break-inside:avoid;box-shadow:none;border:1px solid #eee}}'
+    +'@media print{body{padding:10px;background:#fff}.page{min-height:auto;page-break-after:always}.route-page{page-break-after:always}.entry{break-inside:avoid;box-shadow:none;border:1px solid #eee}.toolbar{display:none!important}}'
     +'</style></head><body>';
-  h+='<div class="cover"><h1>'+title+'</h1><p>🌴 Our Phú Quốc Memories</p></div>';
+
+  // === PAGE 1: Cover ===
+  h+='<div class="page"><div class="cover"><h1>'+title+'</h1><p>🌴 Our Phú Quốc Memories</p>';
+  h+='<div class="dates">2026.04.13 — 04.18</div></div></div>';
+
+  // === PAGE 2: MY Route / Schedule ===
+  var secLabels={hotel:'🛏️ 숙소',breakfast:'🌅 아침',am_act:'🎯 오전',lunch:'🍜 점심',pm_act:'🎯 오후',dinner:'🌙 저녁',eve_act:'🌃 저녁활동',snack:'🍉 야식'};
+  var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
+  h+='<div class="route-page"><h2>🗺️ 여행 일정</h2>';
+  DAY_INFO.filter(function(d){return d.day!==19}).forEach(function(di){
+    var dd=schData[''+di.day]||{};
+    h+='<div class="route-day"><div class="rd-head"><span class="rd-date">4/'+di.day+' '+dayNames[di.day]+'</span><span class="rd-title">'+getDayTitle(di.day)+' — '+getDaySub(di.day)+'</span></div>';
+    var hasSomething=false;
+    ['hotel','breakfast','am_act','lunch','pm_act','dinner','eve_act','snack'].forEach(function(sec){
+      var items=dd[sec];if(!items||!items.length)return;
+      hasSomething=true;
+      h+='<div class="route-sec-label">'+secLabels[sec]+'</div><div class="route-sec">';
+      items.forEach(function(it){
+        var plc=it.placeKey?gAll().find(function(pp){return pp.n===it.text}):null;
+        var dotColor=plc&&CM[plc.c]?CM[plc.c].co:'#0ABAB5';
+        h+='<span class="route-chip"><span class="rc-dot" style="background:'+dotColor+'"></span>'+it.text+'</span>';
+      });
+      h+='</div>';
+    });
+    var memo=(dayMemos&&dayMemos[''+di.day])||'';
+    if(memo)h+='<div style="margin-top:6px;font-size:11px;color:#7A9295;line-height:1.5">'+memo.replace(/</g,'&lt;')+'</div>';
+    if(!hasSomething&&!memo)h+='<div style="color:#ccc;font-size:12px">아직 일정이 없어요</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+
+  // === PAGE 3+: Diary entries ===
   var groups={};all.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
   Object.keys(groups).sort().forEach(function(date){
     h+='<div class="day-header"><h2>🌴 '+date+'</h2></div><div class="day-grid">';
@@ -1589,7 +1631,6 @@ function exportDiary(){
       h+='<div class="entry"><img src="'+e.data+'">';
       if(e.time)h+='<div class="time">'+e.time+'</div>';
       if(e.memo)h+='<div class="memo">'+e.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
-      // Replies
       var replies=diaryReplies[eid]||[];
       if(replies.length){
         h+='<div class="replies"><h4>💬 댓글 ('+replies.length+')</h4>';
@@ -1607,8 +1648,8 @@ function exportDiary(){
     });
     h+='</div>';
   });
-  // Add toolbar for print/share
-  h+='<div style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:12px 20px;display:flex;gap:10px;justify-content:center;z-index:100">';
+  // Toolbar
+  h+='<div class="toolbar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:12px 20px;display:flex;gap:10px;justify-content:center;z-index:100">';
   h+='<button onclick="window.print()" style="flex:1;max-width:200px;padding:12px;background:#0ABAB5;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">🖨️ 인쇄 / PDF</button>';
   h+='<button onclick="window.close()||history.back()" style="flex:1;max-width:200px;padding:12px;background:#f0efec;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:#666">닫기</button>';
   h+='</div><div style="height:70px"></div>';
