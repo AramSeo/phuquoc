@@ -478,7 +478,7 @@ function fbOnce(p){return db.ref(p).once('value').then(function(s){return s.val(
 db.ref('.info/connected').on('value',function(s){document.getElementById('syncDot').classList.toggle('off',!s.val())});
 
 var isAdmin=false,lmap=null,amk=[],aFil='all',addPanelOpen=false;
-var CM={food:{i:'🍜',co:'#E07A5F'},cafe:{i:'☕',co:'#D4A843'},spa:{i:'💆',co:'#0ABAB5'},spot:{i:'📍',co:'#1A6B5A'},hotel:{i:'🏨',co:'#089B97'},shop:{i:'🛒',co:'#D4A843'}};
+var CM={food:{i:'🍜',co:'#E07A5F',lb:'식당'},cafe:{i:'☕',co:'#D4A843',lb:'카페'},spa:{i:'💆',co:'#9c27b0',lb:'마사지'},spot:{i:'📍',co:'#0ABAB5',lb:'관광'},hotel:{i:'🏨',co:'#3a7bd5',lb:'숙소'},shop:{i:'🛒',co:'#ff9800',lb:'쇼핑'}};
 function dReg(lat){return lat>10.28?'북부':lat>10.12?'중부':'남부'}
 
 // ===== SETTINGS =====
@@ -712,7 +712,11 @@ function getDaySub(day){var dl=dayLabels[''+day];var di=DAY_INFO.find(function(d
 function renderSch(){
   var calDays=DAY_INFO.filter(function(d){return d.day!==19});
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
-  var ch='<div class="cal-wrap"><table class="cal-t"><tr><th></th>';
+  // Legend
+  var ch='<div style="display:flex;flex-wrap:wrap;gap:6px 12px;padding:8px 12px;font-size:10px;color:var(--tx2)">';
+  Object.keys(CM).forEach(function(k){var c=CM[k];ch+='<span style="display:inline-flex;align-items:center;gap:3px"><span style="width:7px;height:7px;border-radius:50%;background:'+c.co+';display:inline-block"></span>'+c.lb+'</span>'});
+  ch+='</div>';
+  ch+='<div class="cal-wrap"><table class="cal-t"><tr><th></th>';
   calDays.forEach(function(d){ch+='<th>4/'+d.day+'<br><span style="font-weight:400;font-size:10px">'+dayNames[d.day]+'</span></th>'});
   ch+='</tr>';
 
