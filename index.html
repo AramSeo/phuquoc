@@ -537,7 +537,7 @@ function openSettings(){
   document.getElementById('set-admin-label').value=appSettings.adminLabel||'Admin';
   document.getElementById('set-visitor-label').value=appSettings.visitorLabel||'Login';
   document.getElementById('settingsOverlay').classList.add('show');
-  renderTabSettings();renderFilterSettings();
+  renderTabSettings();renderFilterSettings();renderNickSettings();
 }
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('show')}
 function saveSettings(){
@@ -1361,14 +1361,44 @@ function cImg(f,cb){var r=new FileReader();r.onload=function(e){var img=new Imag
 function gFD(f){var d=new Date(f.lastModified||Date.now());return d.toISOString().split('T')[0]}
 function gFT(f){var d=new Date(f.lastModified||Date.now());return d.toTimeString().slice(0,5)}
 
-// Nick color: 7 distinct key colors, assigned by first-appearance order
-var NICK_PALETTE=['#0ABAB5','#E07A5F','#D4A843','#9c27b0','#3a7bd5','#1A6B5A','#e91e63'];
-var _nickMap={},_nickIdx=0;
+// Nick color: soft pastel palette, Firebase-synced
+var NICK_PALETTE=['#5BBFBA','#E8A090','#C4B07B','#A8D5BA','#8BB5D9','#C9A8D2','#E8B4B8','#89C4C8','#D4B896','#A3C9A8'];
+var nickColorMap={};
+var NICK_DEFAULTS={'아람':'#5BBFBA','준규':'#E8A090','엄마':'#C4B07B','아빠':'#A8D5BA'};
+fbGet('nick_colors',function(val){
+  nickColorMap=val||{};
+  // Ensure defaults exist
+  var changed=false;
+  Object.keys(NICK_DEFAULTS).forEach(function(n){if(!nickColorMap[n]){nickColorMap[n]=NICK_DEFAULTS[n];changed=true}});
+  if(changed)fbSet('nick_colors',nickColorMap);
+  renderDiary();
+});
+function _nextPaletteColor(){
+  var used={};Object.keys(nickColorMap).forEach(function(k){used[nickColorMap[k]]=true});
+  for(var i=0;i<NICK_PALETTE.length;i++){if(!used[NICK_PALETTE[i]])return NICK_PALETTE[i]}
+  return NICK_PALETTE[Object.keys(nickColorMap).length%NICK_PALETTE.length];
+}
 function nickColor(name){
   if(!name)return NICK_PALETTE[0];
-  if(!_nickMap[name]){_nickMap[name]=NICK_PALETTE[_nickIdx%NICK_PALETTE.length];_nickIdx++}
-  return _nickMap[name];
+  if(!nickColorMap[name]){nickColorMap[name]=_nextPaletteColor();fbSet('nick_colors',nickColorMap)}
+  return nickColorMap[name];
 }
+function renderNickSettings(){
+  var el=document.getElementById('nickSettingsArea');if(!el)return;
+  var h='';
+  Object.keys(nickColorMap).forEach(function(name){
+    var co=nickColorMap[name];
+    h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0">';
+    h+='<span style="width:24px;height:24px;border-radius:50%;background:'+co+';flex-shrink:0"></span>';
+    h+='<span style="flex:1;font-size:13px;font-weight:600">'+name+'</span>';
+    h+='<input type="color" value="'+co+'" onchange="updateNickColor(\''+name.replace(/'/g,"\\'")+'\',this.value)" style="width:32px;height:28px;border:none;padding:0;cursor:pointer;border-radius:4px">';
+    h+='<button onclick="deleteNickColor(\''+name.replace(/'/g,"\\'")+'\',this)" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:2px 6px">✕</button>';
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+function updateNickColor(name,color){nickColorMap[name]=color;fbSet('nick_colors',nickColorMap);renderDiary();renderNickSettings()}
+function deleteNickColor(name){delete nickColorMap[name];fbSet('nick_colors',nickColorMap);renderDiary();renderNickSettings()}
 
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
@@ -1834,6 +1864,11 @@ window.addEventListener('hashchange',loadHash);
       <div style="font-size:14px;font-weight:900;color:var(--ac);margin-bottom:10px">지도 필터 순서</div>
       <div style="font-size:11px;color:var(--tx2);margin-bottom:8px">지도 필터 버튼 순서를 변경합니다</div>
       <div id="filterSettingsArea"></div>
+    </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--ac)">
+      <div style="font-size:14px;font-weight:900;color:var(--ac);margin-bottom:10px">댓글 닉네임 색상</div>
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:8px">이름별 색상을 변경하거나 삭제합니다</div>
+      <div id="nickSettingsArea"></div>
     </div>
     <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee">
       <div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:8px">데이터 초기화</div>
