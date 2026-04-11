@@ -344,12 +344,8 @@ body.font-lg .ti em{font-size:19px}
 <div class="tc" id="tab-diary">
   <div class="drw">
     <div class="dup" onclick="document.getElementById('phIn').click()">
-      사진을 탭해서 업로드
+      📷 사진을 탭해서 업로드
       <input type="file" id="phIn" accept="image/*" multiple onchange="handlePhotos(event)">
-    </div>
-    <div id="diarySaveArea" style="display:none;margin-bottom:12px">
-      <input type="password" id="diaryPw" placeholder="비밀번호 4자리 (삭제 시 필요)" maxlength="4" inputmode="numeric" pattern="[0-9]*" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:var(--rs);font-size:14px;text-align:center;font-family:inherit;outline:none;margin-bottom:6px">
-      <button class="dbtn save" onclick="saveDiary()">저장</button>
     </div>
     <div id="diaryEntries"></div>
     <button class="dbtn exp" onclick="exportDiary()">내보내기</button>
@@ -1219,6 +1215,12 @@ function cImg(f,cb){var r=new FileReader();r.onload=function(e){var img=new Imag
 function gFD(f){var d=new Date(f.lastModified||Date.now());return d.toISOString().split('T')[0]}
 function gFT(f){var d=new Date(f.lastModified||Date.now());return d.toTimeString().slice(0,5)}
 
+var NICK_COLORS=['#0ABAB5','#E07A5F','#D4A843','#9c27b0','#3a7bd5','#1A6B5A','#e91e63','#ff9800','#00897b','#5c6bc0','#8d6e63','#ef5350'];
+function nickColor(name){
+  var h=0;for(var i=0;i<name.length;i++){h=((h<<5)-h)+name.charCodeAt(i);h|=0}
+  return NICK_COLORS[Math.abs(h)%NICK_COLORS.length];
+}
+
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
   var all=DD.concat(pendingPhotos);
@@ -1255,7 +1257,12 @@ function renderDiary(){
         var replies=diaryReplies[eid]||[];
         html+='<div class="reply-section"><div class="reply-header">💬 댓글 ('+replies.length+')</div>';
         replies.forEach(function(r){
-          html+='<div class="reply-item"><div class="reply-nick">'+r.nick.replace(/</g,'&lt;')+'</div>';
+          var nc=nickColor(r.nick||'');
+          var initial=(r.nick||'?').charAt(0).toUpperCase();
+          html+='<div class="reply-item" style="border-left-color:'+nc+'">';
+          html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">';
+          html+='<span style="width:22px;height:22px;border-radius:50%;background:'+nc+';color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+initial+'</span>';
+          html+='<span class="reply-nick" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</span></div>';
           html+='<div class="reply-text">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
           var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
           html+='<div class="reply-meta"><span>'+ts+'</span>';
@@ -1269,8 +1276,16 @@ function renderDiary(){
         html+='</div>';
       }
     });html+='</div>';
-  });el.innerHTML=html;
-  document.getElementById('diarySaveArea').style.display=pendingPhotos.length?'block':'none';
+  });
+  // Save area: shown only when there are pending (unsaved) photos, placed after entries
+  if(pendingPhotos.length){
+    html+='<div style="margin:16px 0;padding:16px;background:var(--gdl);border:1.5px solid var(--gd);border-radius:var(--r)">';
+    html+='<div style="font-size:13px;font-weight:700;color:var(--gd);margin-bottom:8px">💾 저장하기</div>';
+    html+='<input type="password" id="diaryPw" placeholder="비밀번호 4자리 (삭제 시 필요)" maxlength="4" inputmode="numeric" pattern="[0-9]*" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:var(--rs);font-size:14px;text-align:center;font-family:inherit;outline:none;margin-bottom:8px;background:#fff">';
+    html+='<button class="dbtn save" onclick="saveDiary()">저장</button>';
+    html+='</div>';
+  }
+  el.innerHTML=html;
   document.getElementById('trashSection').style.display=isAdmin?'block':'none';
 }
 var _editPhotoData={};
@@ -1337,15 +1352,14 @@ function moveToTrash(id,entry){
 }
 function saveDiary(){
   if(!pendingPhotos.length){alert('저장할 새 사진이 없습니다');return}
-  var pw=document.getElementById('diaryPw').value.trim();
+  var pwEl=document.getElementById('diaryPw');
+  var pw=pwEl?pwEl.value.trim():'';
   if(!pw||pw.length!==4||!/^\d{4}$/.test(pw)){alert('숫자 4자리 비밀번호를 입력해주세요');return}
   var toSave=pendingPhotos.slice();
   pendingPhotos=[];
   toSave.forEach(function(p){
     db.ref('diary').push({data:p.data,memo:p.memo,date:p.date,time:p.time,pw:pw});
   });
-  document.getElementById('diaryPw').value='';
-  document.getElementById('diarySaveArea').style.display='none';
   alert(appSettings.saveMsg||'저장 완료!');
 }
 function renderTrash(){
