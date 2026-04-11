@@ -1230,10 +1230,11 @@ function cImg(f,cb){var r=new FileReader();r.onload=function(e){var img=new Imag
 function gFD(f){var d=new Date(f.lastModified||Date.now());return d.toISOString().split('T')[0]}
 function gFT(f){var d=new Date(f.lastModified||Date.now());return d.toTimeString().slice(0,5)}
 
-var NICK_COLORS=['#0ABAB5','#E07A5F','#D4A843','#9c27b0','#3a7bd5','#1A6B5A','#e91e63','#ff9800','#00897b','#5c6bc0','#8d6e63','#ef5350'];
+var NICK_OPACITIES=[1.0,0.45,0.75,0.2,0.6,0.35,0.85,0.5,0.28,0.7,0.15,0.9];
 function nickColor(name){
   var h=0;for(var i=0;i<name.length;i++){h=((h<<5)-h)+name.charCodeAt(i);h|=0}
-  return NICK_COLORS[Math.abs(h)%NICK_COLORS.length];
+  var op=NICK_OPACITIES[Math.abs(h)%NICK_OPACITIES.length];
+  return 'rgba(10,186,181,'+op+')';
 }
 
 function renderDiary(){
@@ -1716,11 +1717,21 @@ function loadWeather(){
     var cached=JSON.parse(localStorage.getItem(WX_CACHE_KEY));
     if(cached&&cached.html&&cached.ts){
       showWx(cached.html,cached.ts);
-      if(Date.now()-cached.ts<WX_CACHE_TTL)return; // fresh enough
+      if(Date.now()-cached.ts<WX_CACHE_TTL)return;
     }
   }catch(e){}
-  // 2) Fetch from API
-  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&hourly=precipitation_probability,weathercode&timezone=Asia/Ho_Chi_Minh&start_date=2025-04-13&end_date=2025-04-18';
+  // 2) Use today + 6 days if trip dates are in the past
+  var tripStart=new Date('2025-04-13'),tripEnd=new Date('2025-04-18'),now=new Date();
+  var start,end;
+  if(now>tripEnd){
+    // Trip is past — show forecast from today
+    start=now.toISOString().split('T')[0];
+    var e2=new Date(now);e2.setDate(e2.getDate()+5);
+    end=e2.toISOString().split('T')[0];
+  } else {
+    start='2025-04-13';end='2025-04-18';
+  }
+  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&hourly=precipitation_probability,weathercode&timezone=Asia/Ho_Chi_Minh&start_date='+start+'&end_date='+end;
   fetch(url).then(function(r){return r.json()}).then(function(data){
     if(!data.daily)return;
     var html=renderWxHtml(data),ts=Date.now();
