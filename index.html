@@ -1316,27 +1316,31 @@ function cImg(f,cb){var r=new FileReader();r.onload=function(e){var img=new Imag
 function gFD(f){var d=new Date(f.lastModified||Date.now());return d.toISOString().split('T')[0]}
 function gFT(f){var d=new Date(f.lastModified||Date.now());return d.toTimeString().slice(0,5)}
 
-// Consonant-to-hue: 19 Korean initials + fallback
-var _CH=[174,45,30,120,90,200,330,160,15,280,60,210,350,300,140,240,75,190,260];
+// Name → color: each Korean initial consonant gets a unique hue (19 consonants, evenly spaced)
 function _getHue(ch){
   var code=ch.charCodeAt(0);
-  if(code>=0xAC00&&code<=0xD7A3){return _CH[Math.floor((code-0xAC00)/588)%19]}
-  return(code*137)%360;
+  if(code>=0xAC00&&code<=0xD7A3){
+    var idx=Math.floor((code-0xAC00)/588)%19;
+    // ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ → maximally spread hues
+    return[0,20,40,60,80,110,140,170,190,210,230,260,290,310,325,340,355,160,200][idx];
+  }
+  // a-z/A-Z: spread across hue wheel
+  if((code>=65&&code<=90)||(code>=97&&code<=122)){return((code%26)*360/26)|0}
+  return(code*47)%360;
 }
 function nickColor(name){
-  if(!name)return'hsl(174,50%,48%)';
+  if(!name)return'hsl(174,55%,45%)';
   var hues=[];for(var i=0;i<name.length;i++){var c=name.charAt(i);if(c!==' ')hues.push(_getHue(c))}
-  if(!hues.length)return'hsl(174,50%,48%)';
-  // Circular mean of hues
+  if(!hues.length)return'hsl(174,55%,45%)';
   var sx=0,sy=0;hues.forEach(function(h){sx+=Math.cos(h*Math.PI/180);sy+=Math.sin(h*Math.PI/180)});
   var avg=Math.atan2(sy/hues.length,sx/hues.length)*180/Math.PI;
   if(avg<0)avg+=360;
-  return'hsl('+Math.round(avg)+',55%,48%)';
+  return'hsl('+Math.round(avg)+',55%,45%)';
 }
 function nickBg(name){
-  if(!name)return'hsl(174,40%,94%)';
+  if(!name)return'hsl(174,35%,94%)';
   var col=nickColor(name);
-  return col.replace('55%,48%','35%,94%');
+  return col.replace('55%,45%','35%,94%');
 }
 
 function renderDiary(){
@@ -1389,7 +1393,7 @@ function renderDiary(){
           html+='</div></div>';
         });
         var savedNick='';try{savedNick=localStorage.getItem('reply_nick')||''}catch(ex){}
-        html+='<div class="reply-form"><div class="rf-row"><input type="text" id="rn_'+eid+'" placeholder="이름 (닉네임)" value="'+savedNick.replace(/"/g,'&quot;')+'"><input type="password" id="rp_'+eid+'" placeholder="비밀번호 숫자4자리" maxlength="4" inputmode="numeric" pattern="[0-9]*"></div>';
+        html+='<div class="reply-form"><div class="rf-row"><input type="text" id="rn_'+eid+'" placeholder="이름 (닉네임)" value="'+savedNick.replace(/"/g,'&quot;')+'"><input type="tel" id="rp_'+eid+'" placeholder="비밀번호 (숫자 4자리)" maxlength="4" pattern="[0-9]{4}" style="-webkit-text-security:disc"></div>';
         html+='<textarea id="rt_'+eid+'" placeholder="댓글 남기기..."></textarea>';
         html+='<button class="reply-submit" onclick="addReply(\''+eid+'\')">등록</button></div></div>';
         html+='</div>';
