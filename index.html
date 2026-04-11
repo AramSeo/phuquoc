@@ -57,9 +57,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 /* Schedule */
 .wx-strip{background:var(--sf);overflow-x:auto;border-bottom:1px solid #eee;-webkit-overflow-scrolling:touch}
 .wx-strip::-webkit-scrollbar{display:none}
-.wxt{width:100%;min-width:520px;font-size:10px;border-collapse:collapse}
-.wxt th{padding:6px 4px;font-weight:700;background:var(--acl);color:var(--ac);border-bottom:1px solid #b8e8e4;white-space:nowrap}
-.wxt td{padding:4px 3px;text-align:center;border-bottom:1px solid #f0ece4;white-space:nowrap}
+.wxt{width:100%;font-size:10px;border-collapse:collapse;table-layout:fixed}
+.wxt th{padding:5px 3px;font-weight:700;background:var(--acl);color:var(--ac);border-bottom:1px solid #b8e8e4;white-space:nowrap;font-size:9px}
+.wxt td{padding:4px 3px;text-align:center;border-bottom:1px solid #f0ece4;font-size:9.5px}
+.wxt th:first-child,.wxt td:first-child{width:52px;text-align:left}
+.wxt th:nth-child(2),.wxt td:nth-child(2){width:52px}
 .wxt .wd{font-weight:700;text-align:left;padding-left:8px}
 .wxt .wm{text-align:left;color:var(--tx2);font-size:9.5px}
 .wxl{padding:5px 12px;font-size:10px;background:#E0F7F5;display:flex;gap:8px;flex-wrap:wrap}
