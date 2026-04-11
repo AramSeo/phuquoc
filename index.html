@@ -536,7 +536,7 @@ function openSettings(){
   document.getElementById('set-admin-label').value=appSettings.adminLabel||'Admin';
   document.getElementById('set-visitor-label').value=appSettings.visitorLabel||'Login';
   document.getElementById('settingsOverlay').classList.add('show');
-  renderTabSettings();
+  renderTabSettings();renderFilterSettings();
 }
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('show')}
 function saveSettings(){
@@ -888,12 +888,34 @@ function initMap(){
   });
   fbGet('route',function(v){routeCache=new Set(v||[]);rMk();if(aFil!=='all')rCd(aFil);renderSch()});
 }
+var MAP_FILTERS_DEF={all:'전체',myloc:'📍 내 위치',myroute:'📌 MY루트',food:'🍜 식당',cafe:'☕ 카페',spa:'💆 마사지',shop:'🛒 쇼핑',spot:'📍 스팟',hotel:'🏨 숙소',addplace:'➕ 장소추가'};
+var mapFilterOrder=['all','myloc','myroute','food','cafe','spa','shop','spot','hotel','addplace'];
+fbGet('map_filter_order',function(v){if(v&&Array.isArray(v)){mapFilterOrder=v}bFlt()});
 function bFlt(){
-  var cs=[{k:'all',l:'전체'},{k:'myloc',l:'📍 내 위치'},{k:'myroute',l:'📌 MY루트'},{k:'food',l:'🍜 식당'},{k:'cafe',l:'☕ 카페'},{k:'spa',l:'💆 마사지'},{k:'shop',l:'🛒 쇼핑'},{k:'spot',l:'📍 스팟'},{k:'hotel',l:'🏨 숙소'},{k:'addplace',l:'➕ 장소추가'}];
-  document.getElementById('mapFilters').innerHTML=cs.map(function(c){
-    var x=c.k==='myroute'?' rt':c.k==='addplace'?' ap':'';
-    return '<button class="fc'+x+(c.k==='all'?' on':'')+'" data-cat="'+c.k+'" onclick="sFlt(\''+c.k+'\',this)">'+c.l+'</button>';
+  var el=document.getElementById('mapFilters');if(!el)return;
+  el.innerHTML=mapFilterOrder.map(function(k){
+    var l=MAP_FILTERS_DEF[k]||k;
+    var x=k==='myroute'?' rt':k==='addplace'?' ap':'';
+    return '<button class="fc'+x+(k==='all'?' on':'')+'" data-cat="'+k+'" onclick="sFlt(\''+k+'\',this)">'+l+'</button>';
   }).join('');
+}
+function moveFilter(k,dir){
+  var i=mapFilterOrder.indexOf(k);if(i<0)return;
+  var j=i+dir;if(j<0||j>=mapFilterOrder.length)return;
+  var tmp=mapFilterOrder[i];mapFilterOrder[i]=mapFilterOrder[j];mapFilterOrder[j]=tmp;
+  fbSet('map_filter_order',mapFilterOrder);bFlt();renderFilterSettings();
+}
+function renderFilterSettings(){
+  var el=document.getElementById('filterSettingsArea');if(!el)return;
+  var h='';
+  mapFilterOrder.forEach(function(k,i){
+    var l=MAP_FILTERS_DEF[k]||k;
+    h+='<div class="tab-manage-item"><span class="tmi-icon" style="font-size:12px">'+l+'</span>';
+    if(i>0)h+='<button onclick="moveFilter(\''+k+'\',-1)">▲</button>';
+    if(i<mapFilterOrder.length-1)h+='<button onclick="moveFilter(\''+k+'\',1)">▼</button>';
+    h+='</div>';
+  });
+  el.innerHTML=h;
 }
 var _myLocMarker=null;
 function locateMe(){
@@ -1802,6 +1824,11 @@ window.addEventListener('hashchange',loadHash);
       <div style="font-size:14px;font-weight:900;color:var(--ac);margin-bottom:10px">탭 관리</div>
       <div style="font-size:11px;color:var(--tx2);margin-bottom:8px">순서 변경, 숨기기/복원이 가능합니다</div>
       <div id="tabSettingsArea"></div>
+    </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--ac)">
+      <div style="font-size:14px;font-weight:900;color:var(--ac);margin-bottom:10px">지도 필터 순서</div>
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:8px">지도 필터 버튼 순서를 변경합니다</div>
+      <div id="filterSettingsArea"></div>
     </div>
     <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee">
       <div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:8px">데이터 초기화</div>
