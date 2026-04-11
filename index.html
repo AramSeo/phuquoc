@@ -1650,128 +1650,222 @@ function exportDiary(){
 }
 function buildExport(all,mapImg){
   var title=appSettings.diaryTitle||'푸꾸옥 다이어리';
-  var h='<html><head><title>'+title+'</title><style>'
+  var sorted=all.slice().sort(function(a,b){return (a.date+(a.time||''))<(b.date+(b.time||''))?-1:1});
+
+  function renderEntry(e){
+    var eid=e._key||e.id;
+    var o='<div class="ep">';
+    o+='<img src="'+e.data+'">';
+    if(e.time)o+='<div class="ep-time">'+e.time+'</div>';
+    if(e.memo)o+='<div class="ep-memo">'+e.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+    var replies=diaryReplies[eid]||[];
+    if(replies.length){
+      o+='<div class="ep-rpl"><h4>💬 댓글 ('+replies.length+')</h4>';
+      replies.forEach(function(r){
+        var nc=nickColor(r.nick||'');
+        var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+        o+='<div class="rp"><div class="rp-n" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</div>';
+        o+='<div class="rp-t">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
+        if(ts)o+='<div class="rp-m">'+ts+'</div>';
+        o+='</div>';
+      });
+      o+='</div>';
+    }
+    o+='</div>';
+    return o;
+  }
+
+  var h='<html><head><meta charset="UTF-8"><title>'+title+'</title><style>'
     +'@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;900&display=swap");'
     +'*{margin:0;padding:0;box-sizing:border-box}'
-    +'body{font-family:"Noto Sans KR",sans-serif;max-width:900px;margin:0 auto;padding:0 24px 80px;background:#FAF7F2;color:#1A2B2D;line-height:1.7}'
-    +'.page{min-height:100vh;display:flex;flex-direction:column;justify-content:center}'
-    +'.cover{text-align:center;padding:80px 20px;background:linear-gradient(135deg,#0ABAB5,#089B97,#1A6B5A);border-radius:24px;color:#fff;margin:40px 0}'
-    +'.cover h1{font-size:32px;font-weight:900;margin-bottom:12px;letter-spacing:-0.5px}'
-    +'.cover p{font-size:16px;opacity:.8}'
-    +'.cover .dates{margin-top:20px;font-size:13px;opacity:.6}'
-    +'.route-page{padding:20px 0}'
-    +'.route-page h2{font-size:22px;font-weight:900;color:#0ABAB5;margin-bottom:20px;text-align:center}'
-    +'.route-day{background:#fff;border-radius:16px;padding:16px 20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(10,186,181,.06)}'
-    +'.route-day .rd-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #E0F7F5}'
-    +'.route-day .rd-date{font-size:18px;font-weight:900;color:#0ABAB5}'
-    +'.route-day .rd-title{font-size:13px;color:#7A9295}'
-    +'.route-sec{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}'
-    +'.route-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#F5F3EE;border-radius:12px;font-size:11px;font-weight:500}'
-    +'.route-chip .rc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}'
-    +'.route-sec-label{font-size:10px;color:#7A9295;font-weight:700;margin:8px 0 2px}'
-    +'.day-header{margin:40px 0 16px;padding:12px 0;border-bottom:3px solid #0ABAB5}'
-    +'.day-header h2{font-size:20px;font-weight:900;color:#0ABAB5}'
-    +'.day-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}'
-    +'.entry{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 16px rgba(10,186,181,.07);display:flex;flex-direction:column}'
-    +'.entry img{width:100%;border-radius:12px;margin-bottom:10px;aspect-ratio:9/16;object-fit:contain;background:#F5F3EE}'
-    +'.entry .time{font-size:11px;color:#7A9295;margin-bottom:4px}'
-    +'.entry .memo{font-size:13px;line-height:1.7;white-space:pre-wrap;padding:4px 0;flex:1}'
-    +'@media(max-width:600px){.day-grid{grid-template-columns:1fr}}'
-    +'.replies{margin-top:16px;padding-top:12px;border-top:1px solid #eee}'
-    +'.replies h4{font-size:12px;color:#7A9295;margin-bottom:8px}'
-    +'.reply{padding:8px 12px;margin:4px 0;background:#F5F3EE;border-radius:8px;font-size:13px}'
-    +'.reply .rn{font-weight:700;font-size:12px;margin-bottom:2px}'
-    +'.reply .rt{line-height:1.6}'
-    +'.reply .rm{font-size:10px;color:#7A9295;margin-top:2px}'
-    +'@media print{body{padding:10px;background:#fff}.page{min-height:auto;page-break-after:always}.route-page{page-break-after:always}.entry{break-inside:avoid;box-shadow:none;border:1px solid #eee}.toolbar{display:none!important}}'
+    +'@page{size:A4 landscape;margin:0}'
+    +'body{font-family:"Noto Sans KR",sans-serif;color:#1A2B2D;line-height:1.6;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    /* Spread = one landscape A4 page, split into left/right like an open book */
+    +'.spread{width:297mm;height:210mm;display:flex;position:relative;overflow:hidden;background:#fff;page-break-after:always}'
+    +'.spread:last-of-type{page-break-after:auto}'
+    +'.half{width:50%;height:100%;padding:14mm 16mm;display:flex;flex-direction:column;position:relative;overflow:hidden}'
+    +'.half.left{border-right:none}'
+    +'.gutter{position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent 3%,#e0ddd6 10%,#e0ddd6 90%,transparent 97%);z-index:2}'
+    +'.pg-num{position:absolute;bottom:8mm;font-size:8pt;color:#ccc;font-weight:300}'
+    +'.half.left .pg-num{right:16mm}'
+    +'.half.right .pg-num{left:16mm}'
+    /* Cover */
+    +'.cover-spread{background:linear-gradient(135deg,#0ABAB5 0%,#089B97 40%,#1A6B5A 100%)}'
+    +'.cover-spread .gutter{background:linear-gradient(to bottom,transparent 3%,rgba(255,255,255,.15) 10%,rgba(255,255,255,.15) 90%,transparent 97%)}'
+    +'.cv-left{display:flex;align-items:center;justify-content:center}'
+    +'.cv-deco{font-size:56px;letter-spacing:14px;opacity:.5}'
+    +'.cv-right{display:flex;align-items:center;justify-content:center}'
+    +'.cv-info{text-align:center;color:#fff}'
+    +'.cv-info h1{font-size:26pt;font-weight:900;letter-spacing:-0.5px;margin-bottom:10px}'
+    +'.cv-info p{font-size:12pt;opacity:.75;margin-bottom:4px}'
+    +'.cv-info .dates{margin-top:16px;font-size:10pt;opacity:.5}'
+    /* Route */
+    +'.rt-title{font-size:13pt;font-weight:900;color:#0ABAB5;margin-bottom:10px;text-align:center}'
+    +'.rt-day{background:#f9f7f3;border-radius:8px;padding:7px 10px;margin-bottom:5px}'
+    +'.rt-dh{display:flex;align-items:center;gap:6px;margin-bottom:3px;padding-bottom:3px;border-bottom:1.5px solid #E0F7F5}'
+    +'.rt-dd{font-size:10pt;font-weight:900;color:#0ABAB5}'
+    +'.rt-dt{font-size:8pt;color:#7A9295}'
+    +'.rt-sec{display:flex;flex-wrap:wrap;gap:3px;margin:2px 0}'
+    +'.rt-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:#fff;border-radius:6px;font-size:7.5pt;font-weight:500}'
+    +'.rt-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}'
+    +'.rt-sl{font-size:7pt;color:#7A9295;font-weight:700;margin:3px 0 1px}'
+    +'.rt-memo{font-size:7.5pt;color:#7A9295;line-height:1.4;margin-top:2px}'
+    +'.map-img{width:100%;border-radius:10px;margin-bottom:10px;max-height:80mm;object-fit:contain}'
+    /* Entry */
+    +'.ep{flex:1;display:flex;flex-direction:column;overflow:hidden}'
+    +'.ep-date{font-size:8pt;font-weight:700;color:#0ABAB5;margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid #E0F7F5}'
+    +'.ep img{width:100%;max-height:110mm;object-fit:contain;border-radius:8px;background:#F5F3EE;aspect-ratio:3/4}'
+    +'.ep-time{font-size:8pt;color:#7A9295;margin-top:6px}'
+    +'.ep-memo{font-size:9pt;line-height:1.6;white-space:pre-wrap;margin-top:4px;flex:1;overflow:hidden}'
+    +'.ep-rpl{margin-top:auto;padding-top:6px;border-top:1px solid #eee;max-height:35mm;overflow:hidden}'
+    +'.ep-rpl h4{font-size:7.5pt;color:#7A9295;margin-bottom:3px}'
+    +'.rp{padding:3px 6px;margin:2px 0;background:#F5F3EE;border-radius:4px;font-size:7.5pt}'
+    +'.rp-n{font-weight:700;font-size:7pt;margin-bottom:1px}'
+    +'.rp-t{line-height:1.4}'
+    +'.rp-m{font-size:6pt;color:#7A9295;margin-top:1px}'
+    +'.empty-half{flex:1;display:flex;align-items:center;justify-content:center;color:#e8e5df;font-size:20pt}'
+    /* Print */
+    +'@media print{body{background:#fff}.spread{box-shadow:none;margin:0}.toolbar{display:none!important}}'
+    /* Screen preview */
+    +'@media screen{body{background:#555;padding:16px 0 80px}'
+    +'.spread{margin:0 auto 20px;box-shadow:0 6px 30px rgba(0,0,0,.35);border-radius:3px}'
+    +'}'
     +'</style></head><body>';
 
-  // === PAGE 1: Cover ===
-  h+='<div class="page"><div class="cover"><h1>'+title+'</h1><p>🌴 Our Phú Quốc Memories</p>';
-  h+='<div class="dates">2026.04.13 — 04.18</div></div></div>';
+  var pgNum=1;
 
-  // === PAGE 2: MY Route / Schedule ===
+  // === SPREAD 1: Cover ===
+  h+='<div class="spread cover-spread">';
+  h+='<div class="half left cv-left"><div class="cv-deco">🌴🌊🌅</div></div>';
+  h+='<div class="half right cv-right"><div class="cv-info"><h1>'+title+'</h1><p>🌴 Our Phú Quốc Memories</p><div class="dates">2026.04.13 — 04.18</div></div></div>';
+  h+='<div class="gutter"></div></div>';
+
+  // === SPREAD 2: Route / Schedule ===
   var secLabels={hotel:'🛏️ 숙소',breakfast:'🌅 아침',am_act:'🎯 오전',lunch:'🍜 점심',pm_act:'🎯 오후',dinner:'🌙 저녁',eve_act:'🌃 저녁활동',snack:'🍉 야식'};
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
-  h+='<div class="route-page">';
-  if(mapImg){h+='<div style="margin-bottom:20px;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.08)"><img src="'+mapImg+'" style="width:100%;display:block"></div>'}
-  h+='<h2>🗺️ 여행 일정</h2>';
-  DAY_INFO.filter(function(d){return d.day!==19}).forEach(function(di){
-    var dd=schData[''+di.day]||{};
-    h+='<div class="route-day"><div class="rd-head"><span class="rd-date">4/'+di.day+' '+dayNames[di.day]+'</span><span class="rd-title">'+getDayTitle(di.day)+' — '+getDaySub(di.day)+'</span></div>';
+  var dayList=DAY_INFO.filter(function(d){return d.day!==19});
+  var mid=Math.ceil(dayList.length/2);
+
+  function buildRouteDay(dd,day){
     var hasSomething=false;
     ['hotel','breakfast','am_act','lunch','pm_act','dinner','eve_act','snack'].forEach(function(sec){
       var items=dd[sec];if(!items||!items.length)return;
       hasSomething=true;
-      h+='<div class="route-sec-label">'+secLabels[sec]+'</div><div class="route-sec">';
+      h+='<div class="rt-sl">'+secLabels[sec]+'</div><div class="rt-sec">';
       items.forEach(function(it){
         var plc=it.placeKey?gAll().find(function(pp){return pp.n===it.text}):null;
         var dotColor=plc&&CM[plc.c]?CM[plc.c].co:'#0ABAB5';
-        h+='<span class="route-chip"><span class="rc-dot" style="background:'+dotColor+'"></span>'+it.text+'</span>';
+        h+='<span class="rt-chip"><span class="rt-dot" style="background:'+dotColor+'"></span>'+it.text+'</span>';
       });
       h+='</div>';
     });
-    var memo=(dayMemos&&dayMemos[''+di.day])||'';
-    if(memo)h+='<div style="margin-top:6px;font-size:11px;color:#7A9295;line-height:1.5">'+memo.replace(/</g,'&lt;')+'</div>';
-    if(!hasSomething&&!memo)h+='<div style="color:#ccc;font-size:12px">아직 일정이 없어요</div>';
-    h+='</div>';
-  });
-  h+='</div>';
+    var memo=(dayMemos&&dayMemos[''+day])||'';
+    if(memo)h+='<div class="rt-memo">'+memo.replace(/</g,'&lt;')+'</div>';
+    if(!hasSomething&&!memo)h+='<div style="color:#ddd;font-size:8pt">아직 일정이 없어요</div>';
+  }
 
-  // === PAGE 3+: Diary entries ===
-  var groups={};all.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
-  Object.keys(groups).sort().forEach(function(date){
-    h+='<div class="day-header"><h2>🌴 '+date+'</h2></div><div class="day-grid">';
-    groups[date].forEach(function(e){
-      var eid=e._key||e.id;
-      h+='<div class="entry"><img src="'+e.data+'">';
-      if(e.time)h+='<div class="time">'+e.time+'</div>';
-      if(e.memo)h+='<div class="memo">'+e.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
-      var replies=diaryReplies[eid]||[];
-      if(replies.length){
-        h+='<div class="replies"><h4>💬 댓글 ('+replies.length+')</h4>';
-        replies.forEach(function(r){
-          var nc=nickColor(r.nick||'');
-          var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-          h+='<div class="reply"><div class="rn" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</div>';
-          h+='<div class="rt">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
-          if(ts)h+='<div class="rm">'+ts+'</div>';
-          h+='</div>';
-        });
-        h+='</div>';
-      }
-      h+='</div>';
-    });
+  h+='<div class="spread">';
+  // Left page: map + first half days
+  h+='<div class="half left">';
+  if(mapImg)h+='<img class="map-img" src="'+mapImg+'">';
+  h+='<div class="rt-title">🗺️ 여행 일정</div>';
+  dayList.slice(0,mid).forEach(function(di){
+    var dd=schData[''+di.day]||{};
+    h+='<div class="rt-day"><div class="rt-dh"><span class="rt-dd">4/'+di.day+' '+dayNames[di.day]+'</span><span class="rt-dt">'+getDayTitle(di.day)+'</span></div>';
+    buildRouteDay(dd,di.day);
     h+='</div>';
   });
-  // Toolbar
+  h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
+  // Right page: remaining days
+  h+='<div class="half right">';
+  dayList.slice(mid).forEach(function(di){
+    var dd=schData[''+di.day]||{};
+    h+='<div class="rt-day"><div class="rt-dh"><span class="rt-dd">4/'+di.day+' '+dayNames[di.day]+'</span><span class="rt-dt">'+getDayTitle(di.day)+'</span></div>';
+    buildRouteDay(dd,di.day);
+    h+='</div>';
+  });
+  h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
+  h+='<div class="gutter"></div></div>';
+
+  // === SPREAD 3+: Diary entries (2 per spread, like a photo book) ===
+  var flatEntries=[];
+  var groups={};sorted.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
+  Object.keys(groups).sort().forEach(function(date){
+    groups[date].forEach(function(e,i){
+      flatEntries.push({entry:e,date:date,showDate:i===0});
+    });
+  });
+
+  for(var i=0;i<flatEntries.length;i+=2){
+    h+='<div class="spread">';
+    // Left page
+    h+='<div class="half left">';
+    if(flatEntries[i].showDate)h+='<div class="ep-date">🌴 '+flatEntries[i].date+'</div>';
+    h+=renderEntry(flatEntries[i].entry);
+    h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
+    // Right page
+    h+='<div class="half right">';
+    if(flatEntries[i+1]){
+      if(flatEntries[i+1].showDate)h+='<div class="ep-date">🌴 '+flatEntries[i+1].date+'</div>';
+      h+=renderEntry(flatEntries[i+1].entry);
+    }else{
+      h+='<div class="empty-half">🌴</div>';
+    }
+    h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
+    h+='<div class="gutter"></div></div>';
+  }
+
+  if(!flatEntries.length){
+    h+='<div class="spread">';
+    h+='<div class="half left"><div class="empty-half">📷</div></div>';
+    h+='<div class="half right"><div class="empty-half" style="font-size:10pt;color:#ccc">사진을 추가해주세요</div></div>';
+    h+='<div class="gutter"></div></div>';
+  }
+
+  // Toolbar (screen only)
   h+='<div class="toolbar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 16px;display:flex;gap:8px;justify-content:center;z-index:100;padding-bottom:calc(10px + env(safe-area-inset-bottom,0))">';
-  h+='<button class="tb-print" style="flex:1;padding:12px;background:#0ABAB5;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🖨️ 인쇄</button>';
+  h+='<button class="tb-pdf" style="flex:1;padding:12px;background:#0ABAB5;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">📄 PDF 저장</button>';
   h+='<button class="tb-share" style="flex:1;padding:12px;background:#1A6B5A;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">📤 공유하기</button>';
   h+='<button class="tb-close" style="flex:1;padding:12px;background:#f0efec;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#666">닫기</button>';
-  h+='</div><div style="height:80px"></div>';
+  h+='</div>';
   h+='</body></html>';
-  // Always use in-page overlay (works in PWA + Safari + all browsers)
+
+  // Render as in-page overlay
   var ov=document.createElement('div');
   ov.id='exportOverlay';
-  ov.style.cssText='position:fixed;inset:0;z-index:99999;background:#FAF7F2;overflow-y:auto;-webkit-overflow-scrolling:touch';
-  ov.innerHTML='<div style="max-width:900px;margin:0 auto;padding:20px 16px 100px;padding-top:calc(20px + env(safe-area-inset-top,0))">'
-    +h.replace(/<html>.*<body>/s,'').replace('</body></html>','')
-    +'</div>';
-  // Fix close button
+  ov.style.cssText='position:fixed;inset:0;z-index:99999;background:#555;overflow-y:auto;-webkit-overflow-scrolling:touch';
   var style=document.createElement('style');
   style.textContent=h.match(/<style>([\s\S]*?)<\/style>/)[1];
-  ov.prepend(style);
+  ov.appendChild(style);
+  var wrapper=document.createElement('div');
+  wrapper.style.cssText='padding:16px 0 80px;padding-top:calc(16px + env(safe-area-inset-top,0))';
+  wrapper.innerHTML=h.replace(/<html>.*<body>/s,'').replace('</body></html>','');
+  ov.appendChild(wrapper);
   document.body.appendChild(ov);
+
+  // Scale spreads to fit mobile viewport
+  function scaleBooks(){
+    var vw=ov.clientWidth;
+    var spreads=ov.querySelectorAll('.spread');
+    spreads.forEach(function(s){
+      var natW=s.scrollWidth||s.offsetWidth;
+      if(natW>vw){
+        var sc=vw/natW;
+        s.style.transform='scale('+sc+')';
+        s.style.transformOrigin='top center';
+        s.style.marginBottom=(-s.offsetHeight*(1-sc)+20)+'px';
+      }
+    });
+  }
+  setTimeout(scaleBooks,50);
+
   // Wire up buttons
-  ov.querySelector('.tb-print').onclick=function(){window.print()};
+  ov.querySelector('.tb-pdf').onclick=function(){window.print()};
   ov.querySelector('.tb-close').onclick=function(){ov.remove()};
   ov.querySelector('.tb-share').onclick=function(){
     if(navigator.share){
-      // Web Share API (iOS Safari, Android)
       navigator.share({title:title,text:'🌴 '+title,url:location.href}).catch(function(){});
     } else {
-      // Fallback: copy link
       var ta=document.createElement('textarea');ta.value=location.href;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
       alert('링크가 복사되었습니다!\n카톡 등에 붙여넣기 하세요.');
     }
