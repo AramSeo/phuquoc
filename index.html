@@ -237,22 +237,36 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .mdb .cc{background:#f0efec;color:var(--tx)}.mdb .cf{background:var(--ac);color:#fff;box-shadow:0 2px 8px rgba(10,186,181,.25)}
 .md .er{color:var(--co);font-size:12px;margin-bottom:8px;display:none}
 body.font-lg{font-size:16px}
-body.font-lg .cal-t{font-size:13px}
-body.font-lg .cal-item{font-size:12.5px}
-body.font-lg .cal-memo{font-size:12.5px}
-body.font-lg .cal-t .cal-cat{font-size:11px}
-body.font-lg .cal-t th{font-size:14px}
+body.font-lg .hd h1{font-size:20px}
+body.font-lg .ti{font-size:12px}
+body.font-lg .ti em{font-size:20px}
+body.font-lg .fc{font-size:13px}
 body.font-lg .mc-nm{font-size:14px}
 body.font-lg .mc-mt{font-size:12px}
-body.font-lg .de{font-size:14px}
+body.font-lg .opt-n{font-size:14px}
+body.font-lg .opt-d,.font-lg .opt-p{font-size:13px}
+body.font-lg .ich{font-size:15px}
+body.font-lg .ici{font-size:14px}
+body.font-lg .cal-t{font-size:13px}
+body.font-lg .cal-t th{font-size:13px}
+body.font-lg .cal-item{font-size:12.5px}
+body.font-lg .cal-dot{width:7px;height:7px}
+body.font-lg .cal-memo{font-size:12.5px}
+body.font-lg .cal-t .cal-cat{font-size:11px}
 body.font-lg .wxt{font-size:12px}
-body.font-lg .wxt th,body.font-lg .wxt td{padding:6px 5px}
-body.font-lg .dnav button{font-size:13px}
-body.font-lg .ddh{font-size:16px}
+body.font-lg .wxt th{font-size:11px}
+body.font-lg .de{font-size:15px}
+body.font-lg .ddh{font-size:17px}
 body.font-lg .dt{font-size:12px}
-body.font-lg .hd h1{font-size:19px}
-body.font-lg .ti{font-size:12px}
-body.font-lg .ti em{font-size:19px}
+body.font-lg .reply-item{font-size:14px}
+body.font-lg .reply-nick{font-size:13px}
+body.font-lg .reply-form input,body.font-lg .reply-form textarea{font-size:14px}
+body.font-lg .dbtn{font-size:15px}
+body.font-lg .bt{font-size:12px}
+body.font-lg .cl li{font-size:14px}
+body.font-lg .ib{font-size:14px}
+body.font-lg .mbtn{font-size:12px}
+body.font-lg .ql a{font-size:12px}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.12);border-radius:3px}
 /* Calendar overview */
@@ -643,10 +657,10 @@ function updMode(){
 // ===== PLACES =====
 
 var P=[
-{n:'Lobster Cave',c:'food',lat:10.2205,lng:103.9630,r:4.8,pr:'60~120만 VND (약 3.4~6.7만원)',d:'해산물·선셋뷰'},
+{n:'Lobster Cave',c:'food',lat:10.1935,lng:103.9632,r:4.8,pr:'60~120만 VND (약 3.4~6.7만원)',d:'해산물·선셋뷰'},
 {n:'Madam Thảo',c:'food',lat:10.3282,lng:103.8612,r:4.8,pr:'20~50만 VND (약 1.1~2.8만원)',d:'베트남 가정식'},
 {n:'Mai Hương GW',c:'food',lat:10.3286,lng:103.8618,r:4.8,pr:'60~100만 VND (약 3.4~5.6만원)',d:'해산물BBQ 15:00~'},
-{n:'Camia',c:'food',lat:10.2520,lng:103.9430,r:4.8,pr:'60~150만 VND (약 3.4~8.4만원)',d:'파인다이닝'},
+{n:'Camia',c:'food',lat:10.2380,lng:103.9540,r:4.8,pr:'60~150만 VND (약 3.4~8.4만원)',d:'파인다이닝'},
 {n:'Bếp An',c:'food',lat:10.2130,lng:103.9585,r:4.7,pr:'20~50만 VND (약 1.1~2.8만원)',d:'가성비'},
 {n:'GW Food Court',c:'food',lat:10.3295,lng:103.8620,r:4.9,pr:'20~40만 VND (약 1.1~2.2만원)',d:'비치프론트'},
 {n:'Cái Mâm',c:'food',lat:10.0165,lng:103.9738,r:4.8,pr:'30~60만 VND (약 1.7~3.4만원)',d:'Sunset Town'},
@@ -655,24 +669,24 @@ var P=[
 {n:'GW 야시장',c:'food',lat:10.3300,lng:103.8622,r:0,pr:'15~40만 VND (약 8천~2.2만원)',d:'Grand World'},
 {n:'Café Green',c:'cafe',lat:10.2090,lng:103.9625,r:4.9,pr:'',d:'망고빙수'},
 {n:'ANBA Coffee',c:'cafe',lat:10.2150,lng:103.9640,r:4.6,pr:'',d:'정원카페'},
-{n:'Chuồn Chuồn Bistro',c:'cafe',lat:10.2485,lng:103.9475,r:0,pr:'',d:'선셋뷰 1위'},
-{n:'Son Tra Hill',c:'cafe',lat:10.2380,lng:103.9510,r:0,pr:'',d:'수영장 카페'},
+{n:'Chuồn Chuồn Bistro',c:'cafe',lat:10.2370,lng:103.9505,r:0,pr:'',d:'선셋뷰 1위'},
+{n:'Son Tra Hill',c:'cafe',lat:10.2290,lng:103.9520,r:0,pr:'',d:'수영장 카페'},
 {n:'YUJU SPA',c:'spa',lat:10.2122,lng:103.9578,r:4.9,pr:'40~50만 VND (약 2.2~2.8만원)',d:'한인多'},
 {n:'ZEN Spa',c:'spa',lat:10.2115,lng:103.9575,r:4.8,pr:'2인 76만 VND (약 4.3만원)',d:'60분'},
 {n:'Green Paradise',c:'spa',lat:10.2160,lng:103.9570,r:5.0,pr:'40~50만 VND (약 2.2~2.8만원)',d:'망고서비스'},
 {n:'Oasis Spa',c:'spa',lat:10.0172,lng:103.9748,r:4.8,pr:'2인 120만 VND (약 6.7만원)',d:'남부'},
 {n:'King Kong Mart',c:'shop',lat:10.2130,lng:103.9582,r:4.4,pr:'',d:'환전·가장 큼'},
-{n:'Vinpearl Safari',c:'spot',lat:10.3890,lng:103.8700,r:0,pr:'1인 85만 VND (약 4.8만원)',d:'08:30~16:00'},
+{n:'Vinpearl Safari',c:'spot',lat:10.3750,lng:103.8650,r:0,pr:'1인 85만 VND (약 4.8만원)',d:'08:30~16:00'},
 {n:'Grand World',c:'spot',lat:10.3290,lng:103.8616,r:0,pr:'무료',d:'베니스운하'},
 {n:'Sunset Town',c:'spot',lat:10.0160,lng:103.9740,r:0,pr:'무료',d:'Kiss Bridge'},
 {n:'Kiss of the Sea',c:'spot',lat:10.0155,lng:103.9735,r:0,pr:'100만 VND (약 5.6만원)',d:'21:00 수상쇼'},
-{n:'Khem Beach',c:'spot',lat:10.0195,lng:104.0310,r:0,pr:'무료',d:'세계50대 해변'},
-{n:'Sao Beach',c:'spot',lat:10.0463,lng:104.0332,r:0,pr:'무료',d:'백사장'},
-{n:'Ho Quoc Pagoda',c:'spot',lat:10.0570,lng:104.0538,r:0,pr:'무료',d:'바다 위 절'},
+{n:'Khem Beach',c:'spot',lat:10.0120,lng:104.0150,r:0,pr:'무료',d:'세계50대 해변'},
+{n:'Sao Beach',c:'spot',lat:10.0480,lng:104.0150,r:0,pr:'무료',d:'백사장'},
+{n:'Ho Quoc Pagoda',c:'spot',lat:10.0680,lng:104.0340,r:0,pr:'무료',d:'바다 위 절'},
 {n:'VinHolidays',c:'hotel',lat:10.3242,lng:103.8584,r:0,pr:'',d:'4/13~14'},
-{n:'Lahana Resort',c:'hotel',lat:10.2450,lng:103.9440,r:0,pr:'',d:'4/15'},
+{n:'Lahana Resort',c:'hotel',lat:10.2360,lng:103.9510,r:0,pr:'',d:'4/15'},
 {n:'Moonlight Resort',c:'hotel',lat:10.0250,lng:103.9700,r:0,pr:'',d:'4/16'},
-{n:'JW Marriott',c:'hotel',lat:10.0190,lng:104.0290,r:0,pr:'',d:'4/17~18'}
+{n:'JW Marriott',c:'hotel',lat:10.0130,lng:104.0120,r:0,pr:'',d:'4/17~18'}
 ];
 
 // ===== SCHEDULE (Firebase-driven, fully editable) =====
