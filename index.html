@@ -28,7 +28,7 @@ var db=firebase.database();
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
-@supports(padding:env(safe-area-inset-top)){body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}}
+@supports(padding:env(safe-area-inset-top)){body{padding-top:env(safe-area-inset-top)}}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{--bg:#f5f0e8;--sf:#fff;--sf2:#faf8f5;--tx:#1e2d2f;--tx2:#5a6e70;--ac:#1a6b5a;--acl:#e8f4f0;--co:#e07a5f;--gd:#c9a84c;--gdl:#faf6eb;--pu:#9c27b0;--bl:#3a7bd5;--or:#ff9800;--pk:#e91e63;--r:13px;--rs:8px;--sh:0 2px 8px rgba(30,45,47,.06);--hh:52px;--th:52px}
 html,body{height:100%;overflow:hidden}
@@ -43,11 +43,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .mbtn.admin{background:var(--co)}
 .gear-btn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:4px;display:none;height:30px}
 .admin-mode .gear-btn{display:flex;align-items:center}
-.tb{display:flex;background:var(--sf);border-bottom:1px solid #ddd5c8;z-index:90;position:relative}
+.tb{display:flex;background:var(--sf);border-top:1px solid #ddd5c8;z-index:100;position:fixed;bottom:0;left:0;right:0}
+@supports(padding:env(safe-area-inset-bottom)){.tb{padding-bottom:env(safe-area-inset-bottom)}}
 .ti{flex:1;text-align:center;padding:9px 0 7px;font-size:10.5px;font-weight:500;color:var(--tx2);cursor:pointer;border-bottom:2.5px solid transparent;user-select:none}
 .ti.on{color:var(--ac);border-bottom-color:var(--ac);font-weight:700}
 .ti em{font-size:17px;display:block;margin-bottom:1px;font-style:normal}
-.mn{height:calc(100vh - var(--hh) - var(--th));overflow-y:auto;-webkit-overflow-scrolling:touch}
+.mn{height:calc(100vh - var(--hh));overflow-y:auto;-webkit-overflow-scrolling:touch}
 .tc{display:none;min-height:100%}.tc.on{display:block}
 
 /* Schedule */
@@ -261,6 +262,31 @@ body.font-lg .ti em{font-size:19px}
 .cal-item::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ac);margin-right:4px;vertical-align:middle}
 .cal-item a{color:inherit;text-decoration:none;font-weight:600}
 .cal-memo{font-size:10.5px;color:var(--tx2);padding:2px 0;line-height:1.4}
+#tab-schedule{padding-bottom:60px}
+/* Reply / guestbook */
+.reply-section{margin-top:10px;border-top:1px solid #eee;padding-top:8px}
+.reply-header{font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.reply-item{padding:8px;margin:4px 0;background:var(--sf2);border-radius:var(--rs);font-size:12px;position:relative}
+.reply-nick{font-weight:700;color:var(--ac);font-size:11px;margin-bottom:2px}
+.reply-text{line-height:1.5;word-break:break-word}
+.reply-meta{font-size:10px;color:var(--tx2);margin-top:3px;display:flex;align-items:center;gap:6px}
+.reply-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:10px;padding:0;font-family:inherit}
+.reply-del:hover{color:var(--co)}
+.reply-form{margin-top:8px;padding:10px;background:#f9f7f3;border-radius:var(--rs);border:1px solid #eee}
+.reply-form input,.reply-form textarea{width:100%;padding:7px 9px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;font-family:inherit;outline:none;margin-bottom:5px;box-sizing:border-box;background:#fff}
+.reply-form input:focus,.reply-form textarea:focus{border-color:var(--ac)}
+.reply-form textarea{resize:vertical;min-height:36px}
+.reply-form .rf-row{display:flex;gap:4px;margin-bottom:5px}
+.reply-form .rf-row input{flex:1;margin-bottom:0}
+.reply-submit{padding:6px 16px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+/* Tab management in settings */
+.tab-manage-item{display:flex;align-items:center;gap:6px;padding:8px 10px;margin:4px 0;background:var(--sf2);border-radius:var(--rs)}
+.tab-manage-item.is-hidden{opacity:.45}
+.tab-manage-item .tmi-icon{font-size:16px}
+.tab-manage-item .tmi-label{flex:1;font-size:13px;font-weight:600}
+.tab-manage-item button{background:none;border:1px solid #ddd;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:12px;font-family:inherit;display:flex;align-items:center;justify-content:center}
+.tab-manage-item .tmi-hide{width:auto;padding:2px 8px;font-size:10px;color:var(--co);border-color:var(--co)}
+.tab-manage-item .tmi-show{width:auto;padding:2px 8px;font-size:10px;color:var(--ac);border-color:var(--ac)}
 </style>
 </head>
 <body>
@@ -272,12 +298,7 @@ body.font-lg .ti em{font-size:19px}
     <button class="gear-btn" onclick="openSettings()">⚙️</button>
   </div>
 </div>
-<div class="tb">
-  <div class="ti on" data-tab="map" onclick="sw('map')"><em>🗺️</em><span class="tab-label" data-key="tab_map">지도</span></div>
-  <div class="ti" data-tab="schedule" onclick="sw('schedule')"><em>📅</em><span class="tab-label" data-key="tab_schedule">일정</span></div>
-  <div class="ti" data-tab="diary" onclick="sw('diary')"><em>📓</em><span class="tab-label" data-key="tab_diary">다이어리</span></div>
-  <div class="ti" data-tab="budget" onclick="sw('budget')"><em>💰</em><span class="tab-label" data-key="tab_budget">예산·팁</span></div>
-</div>
+<div class="tb" id="tabBar"></div>
 <div class="mn">
 
 <!-- MAP -->
@@ -474,10 +495,7 @@ function applySettings(){
   var tb=document.getElementById('tipTabBtn');if(tb)tb.textContent=appSettings.tipLabel||'팁';
   var bb=document.getElementById('budgetTabBtn');if(bb)bb.textContent=appSettings.budgetLabel||'예산';
   var mb=document.getElementById('modeBtn');if(mb)mb.textContent=isAdmin?(appSettings.adminLabel||'Admin'):(appSettings.visitorLabel||'Login');
-  ['schedule','map','diary','budget'].forEach(function(k){
-    var el=document.querySelector('[data-key="tab_'+k+'"]');
-    if(el&&appSettings['tab_'+k])el.textContent=appSettings['tab_'+k];
-  });
+  renderTabs();
 }
 function openSettings(){
   document.getElementById('set-title').value=appSettings.title||'';
@@ -495,6 +513,7 @@ function openSettings(){
   document.getElementById('set-admin-label').value=appSettings.adminLabel||'Admin';
   document.getElementById('set-visitor-label').value=appSettings.visitorLabel||'Login';
   document.getElementById('settingsOverlay').classList.add('show');
+  renderTabSettings();
 }
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('show')}
 function saveSettings(){
@@ -517,8 +536,98 @@ function saveSettings(){
   alert(appSettings.saveMsg||'저장 완료!');
 }
 
+// ===== TAB CONFIG (order + hide) =====
+var TAB_DEFS={map:{icon:'🗺️',labelKey:'tab_map',def:'지도'},schedule:{icon:'📅',labelKey:'tab_schedule',def:'일정'},diary:{icon:'📓',labelKey:'tab_diary',def:'다이어리'},budget:{icon:'💰',labelKey:'tab_budget',def:'예산·팁'}};
+var tabConfig={order:['map','schedule','diary','budget'],hidden:[]};
+var _tabInited=false;
+fbGet('tab_config',function(val){
+  if(val){tabConfig=val;if(!tabConfig.order)tabConfig.order=['map','schedule','diary','budget'];if(!tabConfig.hidden)tabConfig.hidden=[]}
+  renderTabs();
+  if(!_tabInited){_tabInited=true;var first=tabConfig.order.find(function(k){return tabConfig.hidden.indexOf(k)<0});if(first)sw(first)}
+});
+function renderTabs(){
+  var el=document.getElementById('tabBar');if(!el)return;
+  var curActive='';document.querySelectorAll('.tc.on').forEach(function(e){curActive=e.id.replace('tab-','')});
+  var h='';
+  tabConfig.order.forEach(function(key){
+    if(tabConfig.hidden.indexOf(key)>=0)return;
+    var def=TAB_DEFS[key];if(!def)return;
+    var label=appSettings[def.labelKey]||def.def;
+    h+='<div class="ti'+(key===curActive?' on':'')+'" data-tab="'+key+'" onclick="sw(\''+key+'\')"><em>'+def.icon+'</em><span class="tab-label" data-key="'+def.labelKey+'">'+label+'</span></div>';
+  });
+  el.innerHTML=h;
+}
+function moveTab(key,dir){
+  var idx=tabConfig.order.indexOf(key);if(idx<0)return;
+  var j=idx+dir;if(j<0||j>=tabConfig.order.length)return;
+  var tmp=tabConfig.order[idx];tabConfig.order[idx]=tabConfig.order[j];tabConfig.order[j]=tmp;
+  fbSet('tab_config',tabConfig);renderTabs();renderTabSettings();
+}
+function hideTab(key){
+  if(!tabConfig.hidden)tabConfig.hidden=[];
+  if(tabConfig.hidden.indexOf(key)<0)tabConfig.hidden.push(key);
+  fbSet('tab_config',tabConfig);renderTabs();renderTabSettings();
+  var cur='';document.querySelectorAll('.tc.on').forEach(function(e){cur=e.id.replace('tab-','')});
+  if(cur===key){var first=tabConfig.order.find(function(k){return tabConfig.hidden.indexOf(k)<0});if(first)sw(first)}
+}
+function showTab(key){
+  tabConfig.hidden=(tabConfig.hidden||[]).filter(function(k){return k!==key});
+  fbSet('tab_config',tabConfig);renderTabs();renderTabSettings();
+}
+function renderTabSettings(){
+  var el=document.getElementById('tabSettingsArea');if(!el)return;
+  var h='';
+  tabConfig.order.forEach(function(key,i){
+    var def=TAB_DEFS[key];if(!def)return;
+    var isHidden=tabConfig.hidden.indexOf(key)>=0;
+    var label=appSettings[def.labelKey]||def.def;
+    h+='<div class="tab-manage-item'+(isHidden?' is-hidden':'')+'">';
+    h+='<span class="tmi-icon">'+def.icon+'</span><span class="tmi-label">'+label+'</span>';
+    if(!isHidden){
+      if(i>0)h+='<button onclick="moveTab(\''+key+'\',-1)">▲</button>';
+      if(i<tabConfig.order.length-1)h+='<button onclick="moveTab(\''+key+'\',1)">▼</button>';
+      h+='<button class="tmi-hide" onclick="hideTab(\''+key+'\')">숨기기</button>';
+    } else {
+      h+='<button class="tmi-show" onclick="showTab(\''+key+'\')">복원</button>';
+    }
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+
 // ===== TAB SWITCH =====
-function sw(t){location.hash=t;document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});document.querySelector('[data-tab="'+t+'"]').classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100)}
+function sw(t){
+  if(tabConfig.hidden.indexOf(t)>=0)return;
+  location.hash=t;document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});var te=document.querySelector('[data-tab="'+t+'"]');if(te)te.classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100)
+}
+
+// ===== DIARY REPLIES (guestbook) =====
+var diaryReplies={};
+fbGet('diary_replies',function(val){
+  diaryReplies={};
+  if(val){Object.keys(val).forEach(function(dk){diaryReplies[dk]=[];if(val[dk]){Object.keys(val[dk]).forEach(function(rk){var r=val[dk][rk];r._key=rk;diaryReplies[dk].push(r)});diaryReplies[dk].sort(function(a,b){return(a.ts||'').localeCompare(b.ts||'')})}})}
+  renderDiary();
+});
+function addReply(dk){
+  var nk=document.getElementById('rn_'+dk),tx=document.getElementById('rt_'+dk),pw=document.getElementById('rp_'+dk);
+  if(!nk||!tx||!pw)return;
+  var nick=nk.value.trim(),text=tx.value.trim(),pass=pw.value.trim();
+  if(!nick){alert('이름을 입력해주세요');return}
+  if(!text){alert('댓글을 입력해주세요');return}
+  if(!pass||pass.length<2){alert('비밀번호를 2자리 이상 입력해주세요');return}
+  db.ref('diary_replies/'+dk).push({nick:nick,text:text,pw:pass,ts:new Date().toISOString()});
+  nk.value='';tx.value='';pw.value='';
+  // save nick for convenience
+  try{localStorage.setItem('reply_nick',nick)}catch(e){}
+}
+function deleteReply(dk,rk){
+  if(isAdmin){if(confirm('댓글을 삭제하시겠습니까?'))db.ref('diary_replies/'+dk+'/'+rk).remove();return}
+  var reply=(diaryReplies[dk]||[]).find(function(r){return r._key===rk});
+  if(!reply)return;
+  var pw=prompt('비밀번호를 입력하세요');
+  if(!pw)return;
+  if(pw===reply.pw){db.ref('diary_replies/'+dk+'/'+rk).remove()}else{alert('비밀번호가 틀렸습니다')}
+}
 
 // ===== MODE =====
 function toggleMode(){if(isAdmin){isAdmin=false;updMode()}else{document.getElementById('pwMo').classList.add('show');document.getElementById('pwIn').value='';document.getElementById('pwEr').style.display='none';setTimeout(function(){document.getElementById('pwIn').focus()},100)}}
@@ -530,7 +639,7 @@ function updMode(){
   if(isAdmin){b.textContent=appSettings.adminLabel||'Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
   else{b.textContent=appSettings.visitorLabel||'Login';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
   var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
-  renderSch();renderKeyInfo();renderTips();renderBudgetSummary();renderPlacesTrash();rMk();if(aFil!=='all')rCd(aFil);
+  renderTabs();renderSch();renderKeyInfo();renderTips();renderBudgetSummary();renderPlacesTrash();rMk();if(aFil!=='all')rCd(aFil);
 }
 
 // ===== PLACES =====
@@ -1083,6 +1192,21 @@ function renderDiary(){
           +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
           +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
           +'<div style="clear:both"></div></div>';
+        // Replies (guestbook)
+        var replies=diaryReplies[eid]||[];
+        html+='<div class="reply-section"><div class="reply-header">💬 댓글 ('+replies.length+')</div>';
+        replies.forEach(function(r){
+          html+='<div class="reply-item"><div class="reply-nick">'+r.nick.replace(/</g,'&lt;')+'</div>';
+          html+='<div class="reply-text">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
+          var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+          html+='<div class="reply-meta"><span>'+ts+'</span>';
+          html+='<button class="reply-del" onclick="deleteReply(\''+eid+'\',\''+r._key+'\')">삭제</button>';
+          html+='</div></div>';
+        });
+        var savedNick='';try{savedNick=localStorage.getItem('reply_nick')||''}catch(ex){}
+        html+='<div class="reply-form"><div class="rf-row"><input type="text" id="rn_'+eid+'" placeholder="이름 (닉네임)" value="'+savedNick.replace(/"/g,'&quot;')+'"><input type="password" id="rp_'+eid+'" placeholder="비밀번호" inputmode="numeric"></div>';
+        html+='<textarea id="rt_'+eid+'" placeholder="댓글 남기기..."></textarea>';
+        html+='<button class="reply-submit" onclick="addReply(\''+eid+'\')">등록</button></div></div>';
         html+='</div>';
       }
     });html+='</div>';
@@ -1430,14 +1554,13 @@ function toggleFont(){
 }
 
 // INIT
-renderSch();bCl();
+renderTabs();renderSch();bCl();
 // Clear old data
 fbOnce('schedule_picks').then(function(v){if(v)fbSet('schedule_picks',null)});
 fbOnce('schedule_v2').then(function(v){if(v){var dominated=false;Object.keys(v).forEach(function(k){if(v[k]&&typeof v[k]==='object'&&!Array.isArray(v[k])){/*ok*/}else{dominated=true}});if(dominated)fbSet('schedule_v2',null)}});
 setTimeout(function(){initMap()},100);
 // Hash navigation
-var validTabs=['map','schedule','diary','budget'];
-function loadHash(){var h=location.hash.replace('#','');if(validTabs.indexOf(h)>=0)sw(h)}
+function loadHash(){var h=location.hash.replace('#','');if(h&&tabConfig.hidden.indexOf(h)<0&&TAB_DEFS[h])sw(h)}
 if(location.hash)setTimeout(loadHash,200);
 window.addEventListener('hashchange',loadHash);
 // SW disabled for debugging
@@ -1461,6 +1584,11 @@ window.addEventListener('hashchange',loadHash);
     <div class="set-group"><label>비밀번호 입력 메시지</label><input type="text" id="set-pw-prompt" value="비밀번호 4자리를 입력하세요"></div>
     <div class="set-group"><label>비밀번호 오류 메시지</label><input type="text" id="set-pw-error" value="비밀번호가 틀렸습니다"></div>
     <button class="set-save" onclick="saveSettings()">저장</button>
+    <div style="margin-top:20px;padding-top:16px;border-top:2px solid var(--ac)">
+      <div style="font-size:14px;font-weight:900;color:var(--ac);margin-bottom:10px">탭 관리</div>
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:8px">순서 변경, 숨기기/복원이 가능합니다</div>
+      <div id="tabSettingsArea"></div>
+    </div>
     <div style="margin-top:20px;padding-top:16px;border-top:2px solid #eee">
       <div style="font-size:12px;font-weight:700;color:var(--co);margin-bottom:8px">데이터 초기화</div>
       <button onclick="if(confirm('일정 데이터를 모두 삭제하시겠습니까?')){fbSet('schedule_v2',null);fbSet('day_memos',null);alert('일정 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:6px">일정 데이터 초기화</button>
