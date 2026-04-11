@@ -1217,24 +1217,45 @@ function renderBudgetSummary(){
 }
 function tic(el){el.parentElement.classList.toggle('op')}
 
-// CHECKLIST
+// CHECKLIST (dynamic categories)
+var _clData=null,_clChecked={};
+var CL_DEFAULTS=[{key:'app',title:'앱 · 예약',items:[]},{key:'money',title:'환전',items:[]},{key:'pack',title:'짐싸기',items:[]}];
+fbGet('checklist_v2',function(val){
+  if(val){_clData=val;bCl();return}
+  // Migrate from old format
+  fbOnce('checklist_data').then(function(old){
+    if(old){
+      _clData=[
+        {key:'app',title:'앱 · 예약',items:old.app||[]},
+        {key:'money',title:'환전',items:old.money||[]},
+        {key:'pack',title:'짐싸기',items:old.pack||[]}
+      ];
+      fbSet('checklist_v2',_clData);
+    }
+    bCl();
+  });
+});
+fbGet('checklist_checked',function(val){_clChecked=val||{};bCl()});
+function _getCl(){
+  if(_clData)return _clData;
+  return CL_DEFAULTS;
+}
 function bCl(){
-  fbOnce('checklist_data').then(function(sv){
-    if(!sv){sv=CLD;fbSet('checklist_data',sv)}
-    fbOnce('checklist_checked').then(function(ck){
-      ck=ck||{};
-      ['app','money','pack'].forEach(function(k){
-        var ul=document.getElementById('cl-'+k);if(!ul||!sv[k])return;
-        ul.innerHTML=sv[k].map(function(it,i){var id=k+'_'+i,ch=ck[id]?'checked':'';return '<li class="'+(ch?'ck':'')+'"><input type="checkbox" '+ch+' onchange="tCl(\''+id+'\',this)"><span>'+it+'</span><button class="dx" onclick="dCl(\''+k+'\','+i+')">✕</button></li>'}).join('');
-      });
-    });
+  var cats=_getCl();
+  cats.forEach(function(cat,ci){
+    var ul=document.getElementById('cl-'+ci);if(!ul)return;
+    ul.innerHTML=(cat.items||[]).map(function(it,i){
+      var id=ci+'_'+i,ch=_clChecked[id]?'checked':'';
+      return '<li class="'+(ch?'ck':'')+'"><input type="checkbox" '+ch+' onchange="tCl(\''+id+'\',this)"><span>'+it+'</span><button class="dx" onclick="dCl('+ci+','+i+')">✕</button></li>';
+    }).join('');
   });
 }
-fbGet('checklist_checked',function(){bCl()});
-fbGet('checklist_data',function(){bCl()});
-function tCl(id,el){fbSet('checklist_checked/'+id,el.checked||null)}
-function dCl(k,i){if(!isAdmin)return;fbOnce('checklist_data').then(function(d){if(!d)d=CLD;d[k].splice(i,1);fbSet('checklist_data',d)})}
-function addCl(){if(!isAdmin)return;var inp=document.getElementById('newCl'),v=inp.value.trim();if(!v)return;fbOnce('checklist_data').then(function(d){if(!d)d=CLD;d.pack.push(v);fbSet('checklist_data',d);inp.value=''})}
+function tCl(id,el){_clChecked[id]=el.checked||null;fbSet('checklist_checked/'+id,el.checked||null)}
+function dCl(ci,i){if(!isAdmin)return;var cats=_getCl();cats[ci].items.splice(i,1);fbSet('checklist_v2',cats);renderTips()}
+function addClItem(ci){if(!isAdmin)return;var inp=document.getElementById('newCl-'+ci);if(!inp)return;var v=inp.value.trim();if(!v)return;var cats=_getCl();cats[ci].items.push(v);fbSet('checklist_v2',cats);inp.value='';renderTips()}
+function renameClCat(ci,val){var cats=_getCl();cats[ci].title=val;fbSet('checklist_v2',cats)}
+function addClCat(){if(!isAdmin)return;var cats=_getCl();cats.push({key:'cat_'+Date.now(),title:'새 카테고리',items:[]});_clData=cats;fbSet('checklist_v2',cats);renderTips()}
+function delClCat(ci){if(!isAdmin)return;if(!confirm('카테고리를 삭제하시겠습니까?'))return;var cats=_getCl();cats.splice(ci,1);_clData=cats;fbSet('checklist_v2',cats);renderTips()}
 
 // ===== DIARY (password + trash) =====
 var DD=[]; // from firebase
@@ -1762,11 +1783,24 @@ function renderTips(){
     h+=' <span class="ica">▾</span></div><div class="icb"><div class="ici">';
 
     if(card.type==='checklist'){
-      // Checklist card
-      h+='<div style="font-weight:700;margin-bottom:4px">앱 · 예약</div><ul class="cl" id="cl-app"></ul>';
-      h+='<div style="font-weight:700;margin:8px 0 4px">환전</div><ul class="cl" id="cl-money"></ul>';
-      h+='<div style="font-weight:700;margin:8px 0 4px">짐싸기</div><ul class="cl" id="cl-pack"></ul>';
-      h+='<div class="acw"><input type="text" id="newCl" placeholder="항목 추가..."><button onclick="addCl()">+</button></div>';
+      // Dynamic checklist categories
+      var cats=_getCl();
+      cats.forEach(function(cat,ci){
+        if(isAdmin){
+          h+='<div style="display:flex;align-items:center;gap:4px;margin:'+(ci>0?'10px':'0')+' 0 4px">';
+          h+='<input type="text" value="'+(cat.title||'').replace(/"/g,'&quot;')+'" onblur="renameClCat('+ci+',this.value)" style="flex:1;border:none;border-bottom:1px dashed #ccc;font-weight:700;font-size:13px;font-family:inherit;outline:none;background:none;padding:2px 0">';
+          h+='<button onclick="delClCat('+ci+')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:13px;padding:2px 4px">✕</button></div>';
+        } else {
+          h+='<div style="font-weight:700;margin:'+(ci>0?'10px':'0')+' 0 4px">'+cat.title+'</div>';
+        }
+        h+='<ul class="cl" id="cl-'+ci+'"></ul>';
+        if(isAdmin){
+          h+='<div class="acw" style="display:flex;gap:4px;margin-top:4px"><input type="text" id="newCl-'+ci+'" placeholder="항목 추가..." style="flex:1;padding:6px 8px;border:1px solid #ddd;border-radius:6px;font-size:12px;font-family:inherit;outline:none"><button onclick="addClItem('+ci+')" style="padding:6px 12px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+</button></div>';
+        }
+      });
+      if(isAdmin){
+        h+='<button onclick="addClCat()" style="margin-top:10px;padding:6px 12px;border:1.5px dashed #bbb;border-radius:8px;background:none;font-size:11px;color:#999;cursor:pointer;font-family:inherit;width:100%">+ 새 카테고리 추가</button>';
+      }
     } else if(card.rows){
       // Table type (베트남어)
       h+='<table class="vt">';
