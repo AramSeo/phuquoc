@@ -1364,13 +1364,13 @@ function gFT(f){var d=new Date(f.lastModified||Date.now());return d.toTimeString
 
 // Nick color: soft pastel palette, Firebase-synced
 // Nick colors: soft pastels, Firebase-synced, admin-editable
-var NICK_PALETTE=['#5BBFBA','#E8A090','#C4B07B','#A8D5BA','#8BB5D9','#C9A8D2','#E8B4B8','#89C4C8','#D4B896','#A3C9A8'];
-var nickColorMap={'아람':'#5BBFBA','준규':'#E8A090','엄마':'#C4B07B','아빠':'#A8D5BA'};
+var NICK_PALETTE=['#7ECBC7','#D9A99A','#B8AD8A','#92C4A8','#9AB8CD','#B5A0BF','#CFA3A8','#86B5B8','#C2AA8E','#99B8A0'];
+var nickColorMap={'아람':'#7ECBC7','준규':'#D9A99A','엄마':'#B8AD8A','아빠':'#92C4A8'};
 var _nickLoaded=false,_nickDirty=false;
 fbGet('nick_colors',function(val){
   if(val){nickColorMap=val}
   // Ensure defaults
-  var defs={'아람':'#5BBFBA','준규':'#E8A090','엄마':'#C4B07B','아빠':'#A8D5BA'};
+  var defs={'아람':'#7ECBC7','준규':'#D9A99A','엄마':'#B8AD8A','아빠':'#92C4A8'};
   Object.keys(defs).forEach(function(n){if(!nickColorMap[n])nickColorMap[n]=defs[n]});
   _nickLoaded=true;
   _saveNickColors();
