@@ -12,6 +12,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
@@ -880,7 +881,7 @@ function closePicker(){document.getElementById('pickerOverlay').classList.remove
 function initMap(){
   lmap=L.map('map',{zoomControl:false}).setView([10.22,103.93],11);
   L.control.zoom({position:'bottomright'}).addTo(lmap);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'©OSM',maxZoom:18}).addTo(lmap);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'©OSM',maxZoom:18,crossOrigin:'anonymous'}).addTo(lmap);
   bFlt();rMk();
   fbGet('places',function(v){
     if(v){userPlacesCache=[];Object.keys(v).forEach(function(k){var p=v[k];p._fbKey=k;userPlacesCache.push(p)})}
@@ -1552,9 +1553,50 @@ function restoreDE(key){
   db.ref('diary').push({data:entry.data,memo:entry.memo,date:entry.date,time:entry.time,pw:entry.pw||''});
   db.ref('diary_trash/'+key).remove();
 }
+function captureMap(cb){
+  if(!lmap){cb(null);return}
+  // Save state
+  var prevTab=document.querySelector('.tc.on');var prevId=prevTab?prevTab.id:'';
+  var prevFil=aFil;
+  // Switch to map + myroute
+  sw('map');sFlt('myroute',document.querySelector('[data-cat="myroute"]'));
+  setTimeout(function(){
+    if(lmap)lmap.invalidateSize();
+    setTimeout(function(){
+      var mapEl=document.getElementById('map');
+      if(!mapEl||typeof html2canvas==='undefined'){
+        // Restore and skip
+        if(prevId)sw(prevId.replace('tab-',''));sFlt(prevFil||'all',document.querySelector('[data-cat="'+(prevFil||'all')+'"]'));
+        cb(null);return;
+      }
+      html2canvas(mapEl,{useCORS:true,scale:2,logging:false}).then(function(canvas){
+        var img=canvas.toDataURL('image/jpeg',0.85);
+        // Restore
+        if(prevId)sw(prevId.replace('tab-',''));
+        sFlt(prevFil||'all',document.querySelector('[data-cat="'+(prevFil||'all')+'"]'));
+        cb(img);
+      }).catch(function(){
+        if(prevId)sw(prevId.replace('tab-',''));
+        sFlt(prevFil||'all',document.querySelector('[data-cat="'+(prevFil||'all')+'"]'));
+        cb(null);
+      });
+    },800);
+  },300);
+}
 function exportDiary(){
   var all=DD.slice();
   if(!all.length){alert('내보낼 기록이 없습니다');return}
+  // Show loading
+  var loadOv=document.createElement('div');
+  loadOv.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ac);font-weight:700';
+  loadOv.textContent='지도 캡처 중...';
+  document.body.appendChild(loadOv);
+  captureMap(function(mapImg){
+    loadOv.remove();
+    buildExport(all,mapImg);
+  });
+}
+function buildExport(all,mapImg){
   var title=appSettings.diaryTitle||'푸꾸옥 다이어리';
   var h='<html><head><title>'+title+'</title><style>'
     +'@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;900&display=swap");'
@@ -1599,7 +1641,9 @@ function exportDiary(){
   // === PAGE 2: MY Route / Schedule ===
   var secLabels={hotel:'🛏️ 숙소',breakfast:'🌅 아침',am_act:'🎯 오전',lunch:'🍜 점심',pm_act:'🎯 오후',dinner:'🌙 저녁',eve_act:'🌃 저녁활동',snack:'🍉 야식'};
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
-  h+='<div class="route-page"><h2>🗺️ 여행 일정</h2>';
+  h+='<div class="route-page">';
+  if(mapImg){h+='<div style="margin-bottom:20px;border-radius:16px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.08)"><img src="'+mapImg+'" style="width:100%;display:block"></div>'}
+  h+='<h2>🗺️ 여행 일정</h2>';
   DAY_INFO.filter(function(d){return d.day!==19}).forEach(function(di){
     var dd=schData[''+di.day]||{};
     h+='<div class="route-day"><div class="rd-head"><span class="rd-date">4/'+di.day+' '+dayNames[di.day]+'</span><span class="rd-title">'+getDayTitle(di.day)+' — '+getDaySub(di.day)+'</span></div>';
@@ -1649,10 +1693,11 @@ function exportDiary(){
     h+='</div>';
   });
   // Toolbar
-  h+='<div class="toolbar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:12px 20px;display:flex;gap:10px;justify-content:center;z-index:100">';
-  h+='<button onclick="window.print()" style="flex:1;max-width:200px;padding:12px;background:#0ABAB5;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">🖨️ 인쇄 / PDF</button>';
-  h+='<button onclick="window.close()||history.back()" style="flex:1;max-width:200px;padding:12px;background:#f0efec;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:#666">닫기</button>';
-  h+='</div><div style="height:70px"></div>';
+  h+='<div class="toolbar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 16px;display:flex;gap:8px;justify-content:center;z-index:100;padding-bottom:calc(10px + env(safe-area-inset-bottom,0))">';
+  h+='<button class="tb-print" style="flex:1;padding:12px;background:#0ABAB5;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🖨️ 인쇄</button>';
+  h+='<button class="tb-share" style="flex:1;padding:12px;background:#1A6B5A;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">📤 공유하기</button>';
+  h+='<button class="tb-close" style="flex:1;padding:12px;background:#f0efec;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#666">닫기</button>';
+  h+='</div><div style="height:80px"></div>';
   h+='</body></html>';
   // Always use in-page overlay (works in PWA + Safari + all browsers)
   var ov=document.createElement('div');
@@ -1667,10 +1712,18 @@ function exportDiary(){
   ov.prepend(style);
   document.body.appendChild(ov);
   // Wire up buttons
-  ov.querySelectorAll('.toolbar button').forEach(function(btn){
-    if(btn.textContent.indexOf('인쇄')>=0){btn.onclick=function(){window.print()}}
-    if(btn.textContent.indexOf('닫기')>=0){btn.onclick=function(){ov.remove()}}
-  });
+  ov.querySelector('.tb-print').onclick=function(){window.print()};
+  ov.querySelector('.tb-close').onclick=function(){ov.remove()};
+  ov.querySelector('.tb-share').onclick=function(){
+    if(navigator.share){
+      // Web Share API (iOS Safari, Android)
+      navigator.share({title:title,text:'🌴 '+title,url:location.href}).catch(function(){});
+    } else {
+      // Fallback: copy link
+      var ta=document.createElement('textarea');ta.value=location.href;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+      alert('링크가 복사되었습니다!\n카톡 등에 붙여넣기 하세요.');
+    }
+  };
 }
 
 // ===== TIPS CARDS (editable, reorderable) =====
