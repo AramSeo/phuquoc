@@ -1667,7 +1667,10 @@ window.addEventListener('hashchange',loadHash);
       <button onclick="if(confirm('일정 데이터를 모두 삭제하시겠습니까?')){fbSet('schedule_v2',null);fbSet('day_memos',null);alert('일정 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:6px">일정 데이터 초기화</button>
       <button onclick="if(confirm('MY루트를 모두 삭제하시겠습니까?')){fbSet('route',null);fbSet('schedule_v2',null);alert('MY루트 초기화 완료')}" style="width:100%;padding:10px;background:#fff;border:1.5px solid var(--co);color:var(--co);border-radius:var(--rs);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">MY루트 + 일정 초기화</button>
     </div>
-    <button onclick="closeSettings()" style="width:100%;margin-top:20px;padding:12px;background:#eee;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--tx2)">취소</button>
+    <div style="margin-top:24px;display:flex;gap:10px;position:sticky;bottom:0;background:var(--sf);padding:16px 0 20px;border-top:1px solid #eee">
+      <button onclick="closeSettings()" style="flex:1;padding:14px;background:#f0efec;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--tx2)">취소</button>
+      <button onclick="saveSettings()" style="flex:1;padding:14px;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(10,186,181,.25)">저장</button>
+    </div>
   </div>
 </div>
 </body>
