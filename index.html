@@ -347,9 +347,18 @@ body.font-lg .ql a{font-size:12px}
 <!-- SCHEDULE -->
 <div class="tc" id="tab-schedule">
   <div id="schOverview"></div>
-  <div class="ic" style="margin:8px 12px"><div class="ich" onclick="tic(this)"><span id="weatherTitle">날씨</span> <span id="wxUpdated" style="font-size:9px;font-weight:400;color:var(--tx2);margin-left:6px"></span> <span class="ica">▾</span></div>
+  <div class="ic" style="margin:8px 12px"><div class="ich" onclick="tic(this)"><span id="weatherTitle">날씨</span> <span class="ica">▾</span></div>
   <div class="icb">
-    <div class="wx-strip" id="wxTable"><div style="padding:16px;text-align:center;color:var(--tx2);font-size:12px">날씨 불러오는 중...</div></div>
+    <div class="wx-strip"><table class="wxt">
+      <tr><th>날짜</th><th>기온</th><th>오전</th><th>오후</th><th>저녁</th><th>비고</th></tr>
+      <tr><td class="wd">4/13 월</td><td>31°/27°</td><td>☀️ 5%</td><td>☀️ 맑음</td><td>☀️ 맑음</td><td style="font-size:8px;color:var(--ac)">종일 맑음</td></tr>
+      <tr><td class="wd">4/14 화</td><td>32°/27°</td><td>🌤 10%</td><td>☀️ 5%</td><td>🌤 5%</td><td style="font-size:8px;color:var(--ac)">대체로 맑음</td></tr>
+      <tr style="background:#fff3e0"><td class="wd">4/15 수</td><td>31°/28°</td><td>🌧️ 65%</td><td>🌦 50%</td><td>🌤 5%</td><td style="font-size:8px;color:var(--co)">오전~오후 비→저녁 맑음</td></tr>
+      <tr style="background:#fff3e0"><td class="wd">4/16 목</td><td>32°/28°</td><td>🌦 50%</td><td>🌦 50%</td><td>☀️ 맑음</td><td style="font-size:8px;color:var(--co)">낮 소나기→저녁 개임</td></tr>
+      <tr style="background:#ffebee"><td class="wd">4/17 금</td><td>30°/25°</td><td>🌧️ 55%</td><td>🌧️ 70%</td><td>🌤 10%</td><td style="font-size:8px;color:#d32f2f">비 많음! 실내추천</td></tr>
+      <tr style="background:#fff3e0"><td class="wd">4/18 토</td><td>30°/26°</td><td>🌦 50%</td><td>🌦 50%</td><td>☁️ 15%</td><td style="font-size:8px;color:var(--co)">간헐적 소나기</td></tr>
+      <tr style="background:#ffebee"><td class="wd">4/19 일</td><td>30°/27°</td><td>🌦 55%</td><td>⛈️ 75%</td><td>☁️ 20%</td><td style="font-size:8px;color:#d32f2f">오후 강한비</td></tr>
+    </table></div>
   </div></div>
   <div class="ql" style="padding:6px 12px"><span style="font-size:11px;color:var(--tx2);margin-right:4px">참고:</span><a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">AccuWeather</a><a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">rp5.ru</a><a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">시간별</a><a href="https://vinbus.vn/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">VinBus</a><a href="https://kissofthesea.com/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">Kiss of Sea</a><a href="https://onbird.vn/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">OnBird</a></div>
 </div>
@@ -1263,11 +1272,11 @@ function cImg(f,cb){var r=new FileReader();r.onload=function(e){var img=new Imag
 function gFD(f){var d=new Date(f.lastModified||Date.now());return d.toISOString().split('T')[0]}
 function gFT(f){var d=new Date(f.lastModified||Date.now());return d.toTimeString().slice(0,5)}
 
-var NICK_OPACITIES=[1.0,0.45,0.75,0.2,0.6,0.35,0.85,0.5,0.28,0.7,0.15,0.9];
 function nickColor(name){
   var h=0;for(var i=0;i<name.length;i++){h=((h<<5)-h)+name.charCodeAt(i);h|=0}
-  var op=NICK_OPACITIES[Math.abs(h)%NICK_OPACITIES.length];
-  return 'rgba(10,186,181,'+op+')';
+  // opacity 35%~75% range, centered around 55%, derived from name hash
+  var op=0.35+((Math.abs(h)%41)/100);
+  return 'rgba(10,186,181,'+op.toFixed(2)+')';
 }
 
 function renderDiary(){
@@ -1719,60 +1728,8 @@ function toggleFont(){
   document.getElementById('fontBtn').style.fontWeight=_fontLg?'900':'400';
 }
 
-// ===== WEATHER (Open-Meteo API, cached 6h) =====
-var WX_CACHE_KEY='pq_wx2',WX_CACHE_TTL=6*60*60*1000;
-function renderWxHtml(data){
-  var dayNames={'0':'일','1':'월','2':'화','3':'수','4':'목','5':'금','6':'토'};
-  function wxIcon(p){return p>=50?'🌧️':p>=30?'🌦':p>=15?'🌤':'☀️'}
-  function probStr(p){return p>=5?p+'%':'맑음'}
-  var h='<table class="wxt"><tr><th>날짜</th><th>기온</th><th>오전</th><th>오후</th><th>저녁</th></tr>';
-  data.daily.time.forEach(function(date,i){
-    var d=new Date(date+'T00:00:00'),dn=dayNames[''+d.getDay()];
-    var hi=Math.round(data.daily.temperature_2m_max[i]),lo=Math.round(data.daily.temperature_2m_min[i]);
-    var base=i*24,am=0,pm=0,ev=0;
-    for(var a=6;a<12;a++){var v=data.hourly.precipitation_probability[base+a]||0;if(v>am)am=v}
-    for(var b=12;b<18;b++){var v2=data.hourly.precipitation_probability[base+b]||0;if(v2>pm)pm=v2}
-    for(var c=18;c<24;c++){var v3=data.hourly.precipitation_probability[base+c]||0;if(v3>ev)ev=v3}
-    var m=date.split('-');
-    h+='<tr><td class="wd">'+parseInt(m[1])+'/'+parseInt(m[2])+' '+dn+'</td><td>'+hi+'°/'+lo+'°</td>';
-    h+='<td>'+wxIcon(am)+' '+probStr(am)+'</td><td>'+wxIcon(pm)+' '+probStr(pm)+'</td><td>'+wxIcon(ev)+' '+probStr(ev)+'</td></tr>';
-  });
-  return h+'</table>';
-}
-function showWx(html,ts){
-  document.getElementById('wxTable').innerHTML=html;
-  var d=new Date(ts);
-  document.getElementById('wxUpdated').textContent='('+(d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0')+')';
-}
-function loadWeather(){
-  // 1) Try cache first for instant display
-  try{
-    var cached=JSON.parse(localStorage.getItem(WX_CACHE_KEY));
-    if(cached&&cached.html&&cached.ts){
-      showWx(cached.html,cached.ts);
-      if(Date.now()-cached.ts<WX_CACHE_TTL)return;
-    }
-  }catch(e){}
-  // 2) Fetch — always get next 7 days (no date params = fast)
-  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=precipitation_probability&timezone=Asia/Ho_Chi_Minh&forecast_days=7';
-  var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
-  var tm=setTimeout(function(){if(ctrl)ctrl.abort()},8000);
-  fetch(url,ctrl?{signal:ctrl.signal}:{}).then(function(r){clearTimeout(tm);return r.json()}).then(function(data){
-    if(!data.daily)return;
-    var html=renderWxHtml(data),ts=Date.now();
-    showWx(html,ts);
-    try{localStorage.setItem(WX_CACHE_KEY,JSON.stringify({html:html,ts:ts}))}catch(e){}
-  }).catch(function(){
-    clearTimeout(tm);
-    var el=document.getElementById('wxTable');
-    if(!el.querySelector('table')){
-      el.innerHTML='<div style="padding:12px;text-align:center;font-size:11px;color:var(--tx2)">날씨를 불러올 수 없습니다<br><button onclick="localStorage.removeItem(\'pq_wx2\');loadWeather()" style="margin-top:6px;padding:4px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;font-size:10px;cursor:pointer;font-family:inherit">다시 시도</button></div>';
-    }
-  });
-}
-
 // INIT
-renderTabs();renderSch();bCl();loadWeather();
+renderTabs();renderSch();bCl();
 // Clear old data
 fbOnce('schedule_picks').then(function(v){if(v)fbSet('schedule_picks',null)});
 fbOnce('schedule_v2').then(function(v){if(v){var dominated=false;Object.keys(v).forEach(function(k){if(v[k]&&typeof v[k]==='object'&&!Array.isArray(v[k])){/*ok*/}else{dominated=true}});if(dominated)fbSet('schedule_v2',null)}});
