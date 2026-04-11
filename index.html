@@ -1781,16 +1781,34 @@ function buildExport(all,mapImg){
   var title=appSettings.diaryTitle||'푸꾸옥 다이어리';
   var sorted=all.slice().sort(function(a,b){return (a.date+(a.time||''))<(b.date+(b.time||''))?-1:1});
 
-  function renderEntry(e){
-    var eid=e._key||e.id;
-    var o='<div class="ep">';
-    o+='<img src="'+e.data+'">';
-    if(e.time)o+='<div class="ep-time">'+e.time+'</div>';
-    if(e.memo)o+='<div class="ep-memo">'+e.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
-    var replies=diaryReplies[eid]||[];
-    if(replies.length){
-      o+='<div class="ep-rpl"><h4>💬 댓글 ('+replies.length+')</h4>';
-      replies.forEach(function(r){
+  function buildPhotoLeft(photos){
+    if(photos.length===1){
+      return '<img src="'+photos[0].data+'">';
+    }
+    var n=photos.length;var rows=Math.ceil(n/2);
+    var o='<div class="pg-grid" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat('+rows+',1fr);gap:2mm;width:100%;height:100%">';
+    photos.forEach(function(e,i){
+      var span=(n%2!==0&&i===n-1)?'grid-column:1/3;':'';
+      o+='<img src="'+e.data+'" style="width:100%;height:100%;object-fit:cover;border-radius:4px;'+span+'">';
+    });
+    o+='</div>';
+    return o;
+  }
+  function buildTextRight(primary,group,showDate,date){
+    var o='';
+    if(showDate)o+='<div class="ep-date">🌴 '+date+'</div>';
+    if(primary.time)o+='<div class="ep-time">'+primary.time+'</div>';
+    if(primary.memo)o+='<div class="ep-memo">'+primary.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+    var allReplies=[];
+    group.forEach(function(e){
+      var eid=e._key||e.id;
+      var r=diaryReplies[eid]||[];
+      r.forEach(function(rr){allReplies.push(rr)});
+    });
+    allReplies.sort(function(a,b){return(a.ts||'').localeCompare(b.ts||'')});
+    if(allReplies.length){
+      o+='<div class="ep-rpl"><h4>💬 댓글 ('+allReplies.length+')</h4>';
+      allReplies.forEach(function(r){
         var nc=nickColor(r.nick||'');
         var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
         o+='<div class="rp"><div class="rp-n" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</div>';
@@ -1800,7 +1818,9 @@ function buildExport(all,mapImg){
       });
       o+='</div>';
     }
-    o+='</div>';
+    if(!primary.memo&&!allReplies.length&&!showDate){
+      o+='<div style="flex:1;display:flex;align-items:center;justify-content:center;color:#e8e5df;font-size:14pt">🌴</div>';
+    }
     return o;
   }
 
@@ -1840,18 +1860,21 @@ function buildExport(all,mapImg){
     +'.rt-sl{font-size:7pt;color:#7A9295;font-weight:700;margin:3px 0 1px}'
     +'.rt-memo{font-size:7.5pt;color:#7A9295;line-height:1.4;margin-top:2px}'
     +'.map-img{width:100%;border-radius:10px;margin-bottom:10px;max-height:80mm;object-fit:contain}'
-    /* Entry */
-    +'.ep{flex:1;display:flex;flex-direction:column;overflow:hidden}'
-    +'.ep-date{font-size:8pt;font-weight:700;color:#0ABAB5;margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid #E0F7F5}'
-    +'.ep img{width:100%;max-height:110mm;object-fit:contain;border-radius:8px;background:#F5F3EE;aspect-ratio:3/4}'
-    +'.ep-time{font-size:8pt;color:#7A9295;margin-top:6px}'
-    +'.ep-memo{font-size:9pt;line-height:1.6;white-space:pre-wrap;margin-top:4px;flex:1;overflow:hidden}'
-    +'.ep-rpl{margin-top:auto;padding-top:6px;border-top:1px solid #eee;max-height:35mm;overflow:hidden}'
-    +'.ep-rpl h4{font-size:7.5pt;color:#7A9295;margin-bottom:3px}'
-    +'.rp{padding:3px 6px;margin:2px 0;background:#F5F3EE;border-radius:4px;font-size:7.5pt}'
-    +'.rp-n{font-weight:700;font-size:7pt;margin-bottom:1px}'
-    +'.rp-t{line-height:1.4}'
-    +'.rp-m{font-size:6pt;color:#7A9295;margin-top:1px}'
+    /* Photo page (left) */
+    +'.photo-half{padding:10mm;display:flex;align-items:center;justify-content:center;background:#F5F3EE}'
+    +'.photo-half img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 2px 20px rgba(0,0,0,.08)}'
+    +'.photo-half .pg-grid img{object-fit:cover;box-shadow:none}'
+    /* Text page (right) */
+    +'.text-half{padding:16mm 18mm;justify-content:center}'
+    +'.ep-date{font-size:11pt;font-weight:900;color:#0ABAB5;margin-bottom:12px;padding-bottom:8px;border-bottom:2.5px solid #E0F7F5}'
+    +'.ep-time{font-size:9pt;color:#7A9295;margin-bottom:16px;font-style:italic}'
+    +'.ep-memo{font-size:10.5pt;line-height:1.9;white-space:pre-wrap;margin-bottom:auto}'
+    +'.ep-rpl{margin-top:16px;padding-top:10px;border-top:1px solid #eee;overflow:hidden}'
+    +'.ep-rpl h4{font-size:8pt;color:#7A9295;margin-bottom:6px}'
+    +'.rp{padding:5px 8px;margin:3px 0;background:#F5F3EE;border-radius:6px;font-size:8pt}'
+    +'.rp-n{font-weight:700;font-size:7.5pt;margin-bottom:1px}'
+    +'.rp-t{line-height:1.5}'
+    +'.rp-m{font-size:6.5pt;color:#7A9295;margin-top:2px}'
     +'.empty-half{flex:1;display:flex;align-items:center;justify-content:center;color:#e8e5df;font-size:20pt}'
     /* Print */
     +'@media print{body{background:#fff}.spread{box-shadow:none;margin:0}.toolbar{display:none!important}}'
@@ -1916,38 +1939,31 @@ function buildExport(all,mapImg){
   h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
   h+='<div class="gutter"></div></div>';
 
-  // === SPREAD 3+: Diary entries (2 per spread, like a photo book) ===
-  var flatEntries=[];
-  var groups={};sorted.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
-  Object.keys(groups).sort().forEach(function(date){
-    groups[date].forEach(function(e,i){
-      flatEntries.push({entry:e,date:date,showDate:i===0});
-    });
-  });
-
-  for(var i=0;i<flatEntries.length;i+=2){
-    h+='<div class="spread">';
-    // Left page
-    h+='<div class="half left">';
-    if(flatEntries[i].showDate)h+='<div class="ep-date">🌴 '+flatEntries[i].date+'</div>';
-    h+=renderEntry(flatEntries[i].entry);
-    h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
-    // Right page
-    h+='<div class="half right">';
-    if(flatEntries[i+1]){
-      if(flatEntries[i+1].showDate)h+='<div class="ep-date">🌴 '+flatEntries[i+1].date+'</div>';
-      h+=renderEntry(flatEntries[i+1].entry);
+  // === SPREAD 3+: Diary entries (left=photo, right=text) ===
+  var diaryCards=[];var gMap={};
+  sorted.forEach(function(e){
+    if(e.groupId){
+      if(!gMap[e.groupId]){gMap[e.groupId]=[];diaryCards.push(gMap[e.groupId])}
+      gMap[e.groupId].push(e);
     }else{
-      h+='<div class="empty-half">🌴</div>';
+      diaryCards.push([e]);
     }
-    h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
-    h+='<div class="gutter"></div></div>';
-  }
-
-  if(!flatEntries.length){
+  });
+  var prevDate='';
+  diaryCards.forEach(function(group){
+    var primary=group[0];
+    var date=primary.date||'';
+    var showDate=(date!==prevDate);
+    prevDate=date;
     h+='<div class="spread">';
-    h+='<div class="half left"><div class="empty-half">📷</div></div>';
-    h+='<div class="half right"><div class="empty-half" style="font-size:10pt;color:#ccc">사진을 추가해주세요</div></div>';
+    h+='<div class="half left photo-half">'+buildPhotoLeft(group)+'<span class="pg-num">'+(pgNum++)+'</span></div>';
+    h+='<div class="half right text-half">'+buildTextRight(primary,group,showDate,date)+'<span class="pg-num">'+(pgNum++)+'</span></div>';
+    h+='<div class="gutter"></div></div>';
+  });
+  if(!diaryCards.length){
+    h+='<div class="spread">';
+    h+='<div class="half left photo-half"><div class="empty-half">📷</div></div>';
+    h+='<div class="half right text-half"><div class="empty-half" style="font-size:10pt;color:#ccc">사진을 추가해주세요</div></div>';
     h+='<div class="gutter"></div></div>';
   }
 
