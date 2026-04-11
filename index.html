@@ -1687,7 +1687,7 @@ function toggleFont(){
 }
 
 // ===== WEATHER (Open-Meteo API, cached 6h) =====
-var WX_CACHE_KEY='pq_wx',WX_CACHE_TTL=6*60*60*1000;
+var WX_CACHE_KEY='pq_wx2',WX_CACHE_TTL=6*60*60*1000;
 function renderWxHtml(data){
   var dayNames={'0':'일','1':'월','2':'화','3':'수','4':'목','5':'금','6':'토'};
   function wxIcon(p){return p>=50?'🌧️':p>=30?'🌦':p>=15?'🌤':'☀️'}
@@ -1720,26 +1720,20 @@ function loadWeather(){
       if(Date.now()-cached.ts<WX_CACHE_TTL)return;
     }
   }catch(e){}
-  // 2) Use today + 6 days if trip dates are in the past
-  var tripStart=new Date('2025-04-13'),tripEnd=new Date('2025-04-18'),now=new Date();
-  var start,end;
-  if(now>tripEnd){
-    // Trip is past — show forecast from today
-    start=now.toISOString().split('T')[0];
-    var e2=new Date(now);e2.setDate(e2.getDate()+5);
-    end=e2.toISOString().split('T')[0];
-  } else {
-    start='2025-04-13';end='2025-04-18';
-  }
-  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&hourly=precipitation_probability,weathercode&timezone=Asia/Ho_Chi_Minh&start_date='+start+'&end_date='+end;
-  fetch(url).then(function(r){return r.json()}).then(function(data){
+  // 2) Fetch — always get next 7 days (no date params = fast)
+  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=precipitation_probability&timezone=Asia/Ho_Chi_Minh&forecast_days=7';
+  var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
+  var tm=setTimeout(function(){if(ctrl)ctrl.abort()},8000);
+  fetch(url,ctrl?{signal:ctrl.signal}:{}).then(function(r){clearTimeout(tm);return r.json()}).then(function(data){
     if(!data.daily)return;
     var html=renderWxHtml(data),ts=Date.now();
     showWx(html,ts);
     try{localStorage.setItem(WX_CACHE_KEY,JSON.stringify({html:html,ts:ts}))}catch(e){}
   }).catch(function(){
-    if(!document.getElementById('wxTable').querySelector('table')){
-      document.getElementById('wxTable').innerHTML='<div style="padding:12px;text-align:center;color:var(--tx2);font-size:11px">오프라인 — 날씨를 불러올 수 없습니다</div>';
+    clearTimeout(tm);
+    var el=document.getElementById('wxTable');
+    if(!el.querySelector('table')){
+      el.innerHTML='<div style="padding:12px;text-align:center;font-size:11px;color:var(--tx2)">날씨를 불러올 수 없습니다<br><button onclick="localStorage.removeItem(\'pq_wx2\');loadWeather()" style="margin-top:6px;padding:4px 12px;border:1px solid #ddd;border-radius:6px;background:#fff;font-size:10px;cursor:pointer;font-family:inherit">다시 시도</button></div>';
     }
   });
 }
