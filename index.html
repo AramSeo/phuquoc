@@ -319,7 +319,8 @@ body.font-lg .ql a{font-size:12px}
 .guide-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99998;display:none;align-items:center;justify-content:center;padding:24px}
 .guide-overlay.show{display:flex}
 .guide-box{background:#fff;border-radius:20px;max-width:340px;width:100%;max-height:80vh;overflow-y:auto;padding:28px 24px 20px;box-shadow:0 8px 40px rgba(0,0,0,.15)}
-.guide-box h3{font-size:18px;font-weight:900;margin-bottom:16px;text-align:center;color:var(--ac)}
+.guide-box h3{font-size:18px;font-weight:900;margin-bottom:16px;text-align:center;color:var(--ac);position:relative}
+.guide-close{position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;font-size:18px;color:#ccc;cursor:pointer;padding:4px 2px;line-height:1}
 .guide-item{padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:13px;line-height:1.6}
 .guide-item:last-child{border-bottom:none}
 .guide-item .gi-icon{font-size:16px;margin-right:6px}
@@ -526,7 +527,7 @@ body.font-lg .ql a{font-size:12px}
 <!-- Guide -->
 <div class="guide-overlay" id="guideOv" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="guide-box">
-    <h3>🌴 이용 가이드</h3>
+    <h3>🌴 이용 가이드<button class="guide-close" onclick="toggleGuide()">✕</button></h3>
 
     <div class="guide-sec">📲 앱 설치 방법</div>
     <div class="guide-item"><span class="gi-icon">🍎</span><span class="gi-label">iPhone (Safari)</span>
@@ -586,7 +587,8 @@ function applySettings(){
   var mb=document.getElementById('modeBtn');if(mb)mb.textContent=isAdmin?(appSettings.adminLabel||'Admin'):(appSettings.visitorLabel||'Login');
   renderTabs();
 }
-function showGuide(){document.getElementById('guideOv').classList.add('show')}
+function showGuide(){toggleGuide()}
+function toggleGuide(){document.getElementById('guideOv').classList.toggle('show')}
 function toggleSettings(){var ov=document.getElementById('settingsOverlay');if(ov.classList.contains('show')){closeSettings();return}openSettings()}
 function openSettings(){
   document.getElementById('set-title').value=appSettings.title||'';
