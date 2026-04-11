@@ -398,7 +398,7 @@ body.font-lg .ql a{font-size:12px}
   <div class="drw">
     <div id="diaryCompose" style="display:none"></div>
     <div class="dup" id="diaryUpBtn" onclick="document.getElementById('phIn').click()">
-      📷 사진을 탭해서 업로드 (최대 5장)
+      📷 사진을 탭해서 업로드 (최대 4장)
       <input type="file" id="phIn" accept="image/*" multiple onchange="handlePhotos(event)">
     </div>
     <div id="diaryEntries"></div>
@@ -1342,7 +1342,7 @@ fbGet('diary_trash',function(val){
 function handlePhotos(e){
   var files=Array.from(e.target.files);
   if(!files.length)return;
-  if(files.length>5){alert('한 번에 최대 5장까지 업로드할 수 있어요');files=files.slice(0,5)}
+  if(files.length>4){alert('한 번에 최대 4장까지 업로드할 수 있어요');files=files.slice(0,4)}
   var remaining=files.length;
   files.forEach(function(file){
     getExifDate(file,function(exifDate,exifTime){
@@ -1816,10 +1816,11 @@ function buildExport(all,mapImg){
     if(photos.length===1){
       return '<img src="'+photos[0].data+'">';
     }
-    var n=photos.length;var rows=Math.ceil(n/2);
+    var n=photos.length;
+    var cols=n<=2?2:2;var rows=n<=2?1:2;
     var o='<div class="pg-grid" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat('+rows+',1fr);gap:2mm;width:100%;height:100%">';
     photos.forEach(function(e,i){
-      var span=(n%2!==0&&i===n-1)?'grid-column:1/3;':'';
+      var span=(n===3&&i===2)?'grid-column:1/3;':'';
       o+='<img src="'+e.data+'" style="width:100%;height:100%;object-fit:cover;border-radius:4px;'+span+'">';
     });
     o+='</div>';
@@ -2000,8 +2001,7 @@ function buildExport(all,mapImg){
 
   // Toolbar (screen only)
   h+='<div class="toolbar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 16px;display:flex;gap:8px;justify-content:center;z-index:100;padding-bottom:calc(10px + env(safe-area-inset-bottom,0))">';
-  h+='<button class="tb-pdf" style="flex:1;padding:12px;background:#0ABAB5;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">📄 PDF 저장</button>';
-  h+='<button class="tb-share" style="flex:1;padding:12px;background:#1A6B5A;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">📤 공유하기</button>';
+  h+='<button class="tb-share" style="flex:1;padding:12px;background:#0ABAB5;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">📤 공유하기</button>';
   h+='<button class="tb-close" style="flex:1;padding:12px;background:#f0efec;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#666">닫기</button>';
   h+='</div>';
   h+='</body></html>';
@@ -2036,14 +2036,13 @@ function buildExport(all,mapImg){
   setTimeout(scaleBooks,50);
 
   // Wire up buttons
-  ov.querySelector('.tb-pdf').onclick=function(){window.print()};
   ov.querySelector('.tb-close').onclick=function(){ov.remove()};
   ov.querySelector('.tb-share').onclick=function(){
     var btn=this;var orig=btn.innerHTML;
     btn.innerHTML='⏳ PDF 생성 중...';btn.style.opacity='0.6';btn.disabled=true;
     generateSharePDF(ov,title,function(blob){
       btn.innerHTML=orig;btn.style.opacity='1';btn.disabled=false;
-      if(!blob){alert('PDF 생성에 실패했습니다.\nPDF 저장 버튼을 이용해주세요.');return}
+      if(!blob){alert('PDF 생성에 실패했습니다.');return}
       var fileName=(title||'다이어리').replace(/[^a-zA-Z0-9가-힣\s]/g,'')+'.pdf';
       var file=new File([blob],fileName,{type:'application/pdf'});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
