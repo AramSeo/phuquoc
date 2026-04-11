@@ -504,7 +504,7 @@ function fbOnce(p){return db.ref(p).once('value').then(function(s){return s.val(
 db.ref('.info/connected').on('value',function(s){document.getElementById('syncDot').classList.toggle('off',!s.val())});
 
 var isAdmin=false,lmap=null,amk=[],aFil='all',addPanelOpen=false;
-var CM={food:{i:'🍜',co:'#E07A5F',lb:'식당'},cafe:{i:'☕',co:'#D4A843',lb:'카페'},spa:{i:'💆',co:'#9c27b0',lb:'마사지'},spot:{i:'📍',co:'#0ABAB5',lb:'관광'},hotel:{i:'🏨',co:'#3a7bd5',lb:'숙소'},shop:{i:'🛒',co:'#ff9800',lb:'쇼핑'}};
+var CM={food:{i:'🍜',co:'#E07A5F',lb:'식당'},cafe:{i:'☕',co:'#D4A843',lb:'카페'},spa:{i:'💆',co:'#9c27b0',lb:'마사지'},spot:{i:'📍',co:'#0ABAB5',lb:'관광'},hotel:{i:'🛏️',co:'#5c6bc0',lb:'숙소'},shop:{i:'🛒',co:'#ff9800',lb:'쇼핑'}};
 function dReg(lat){return lat>10.28?'북부':lat>10.12?'중부':'남부'}
 
 // ===== SETTINGS =====
@@ -889,7 +889,7 @@ function initMap(){
   });
   fbGet('route',function(v){routeCache=new Set(v||[]);rMk();if(aFil!=='all')rCd(aFil);renderSch()});
 }
-var MAP_FILTERS_DEF={all:'전체',myloc:'📍 내 위치',myroute:'📌 MY루트',food:'🍜 식당',cafe:'☕ 카페',spa:'💆 마사지',shop:'🛒 쇼핑',spot:'📍 스팟',hotel:'🏨 숙소',addplace:'➕ 장소추가'};
+var MAP_FILTERS_DEF={all:'전체',myloc:'🔵 내 위치',myroute:'📌 MY루트',food:'🍜 식당',cafe:'☕ 카페',spa:'💆 마사지',shop:'🛒 쇼핑',spot:'📍 스팟',hotel:'🛏️ 숙소',addplace:'➕ 장소추가'};
 var mapFilterOrder=['all','myloc','myroute','food','cafe','spa','shop','spot','hotel','addplace'];
 fbGet('map_filter_order',function(v){if(v&&Array.isArray(v)){mapFilterOrder=v}bFlt()});
 function bFlt(){
