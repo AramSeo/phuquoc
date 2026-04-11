@@ -167,6 +167,14 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .ddg{margin-bottom:16px}.ddh{font-weight:700;font-size:14px;color:var(--ac);margin-bottom:6px;padding-bottom:4px;border-bottom:2px solid var(--ac)}
 .de{background:var(--sf);border-radius:var(--r);padding:12px;margin-bottom:12px;box-shadow:var(--sh);position:relative;transition:box-shadow .25s var(--ease)}
 .de img{width:100%;border-radius:var(--rs);margin-bottom:8px;aspect-ratio:auto}
+.de-carousel{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;border-radius:var(--rs);margin-bottom:4px;scrollbar-width:none}
+.de-carousel::-webkit-scrollbar{display:none}
+.de-carousel img{width:100%;flex-shrink:0;scroll-snap-align:center;aspect-ratio:3/4;object-fit:cover;border-radius:var(--rs);margin-bottom:0}
+.de-indicators{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px}
+.de-dots{display:flex;gap:5px}
+.de-dot{width:6px;height:6px;border-radius:50%;background:#ddd;transition:background .2s}
+.de-dot.on{background:var(--ac)}
+.de-counter{font-size:10px;color:var(--tx2);font-weight:600}
 .de textarea{width:100%;border:1px solid #eee;border-radius:var(--rs);padding:7px;font-size:12px;font-family:inherit;resize:vertical;min-height:36px;outline:none}
 .de textarea:focus{border-color:var(--ac)}
 .de .dt{font-size:10px;color:var(--tx2);margin-bottom:3px}
@@ -388,7 +396,7 @@ body.font-lg .ql a{font-size:12px}
   <div class="drw">
     <div id="diaryCompose" style="display:none"></div>
     <div class="dup" id="diaryUpBtn" onclick="document.getElementById('phIn').click()">
-      📷 사진을 탭해서 업로드
+      📷 사진을 탭해서 업로드 (최대 5장)
       <input type="file" id="phIn" accept="image/*" multiple onchange="handlePhotos(event)">
     </div>
     <div id="diaryEntries"></div>
@@ -1331,6 +1339,7 @@ fbGet('diary_trash',function(val){
 function handlePhotos(e){
   var files=Array.from(e.target.files);
   if(!files.length)return;
+  if(files.length>5){alert('한 번에 최대 5장까지 업로드할 수 있어요');files=files.slice(0,5)}
   var remaining=files.length;
   files.forEach(function(file){
     getExifDate(file,function(exifDate,exifTime){
@@ -1376,12 +1385,23 @@ function saveCompose(){
   var memo=(document.getElementById('composeMemo').value||'').trim();
   var pw=(document.getElementById('composePw').value||'').trim();
   if(!pw||pw.length!==4||!/^\d{4}$/.test(pw)){alert('숫자 4자리 비밀번호를 입력해주세요');return}
-  pendingPhotos.forEach(function(p){p.memo=memo});
-  var toSave=pendingPhotos.slice();
-  pendingPhotos=[];
-  toSave.forEach(function(p){
-    db.ref('diary').push({data:p.data,memo:p.memo,date:p.date,time:p.time,pw:pw});
+  // Group pending photos by date
+  var dateGroups={};
+  pendingPhotos.forEach(function(p){
+    var d=p.date||'unknown';
+    if(!dateGroups[d])dateGroups[d]=[];
+    dateGroups[d].push(p);
   });
+  Object.keys(dateGroups).forEach(function(date){
+    var photos=dateGroups[date];
+    var gid=Date.now()+'_'+Math.random().toString(36).substr(2,6);
+    photos.forEach(function(p){
+      var entry={data:p.data,memo:memo,date:p.date,time:p.time,pw:pw};
+      if(photos.length>1)entry.groupId=gid;
+      db.ref('diary').push(entry);
+    });
+  });
+  pendingPhotos=[];
   renderCompose();
   alert(appSettings.saveMsg||'저장 완료!');
 }
@@ -1501,53 +1521,130 @@ function addNickColor(){
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
   if(!DD.length){el.innerHTML='<div style="text-align:center;color:#999;padding:30px;font-size:13px">아직 기록이 없어요</div>';return}
-  var groups={};DD.sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)});
-  DD.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
-  var html='';Object.keys(groups).sort().forEach(function(date){
+  DD.sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)});
+  // Group by date
+  var dateGroups={};
+  DD.forEach(function(e){if(!dateGroups[e.date])dateGroups[e.date]=[];dateGroups[e.date].push(e)});
+  var html='';
+  Object.keys(dateGroups).sort().forEach(function(date){
     html+='<div class="ddg"><div class="ddh">🌴 '+date+'</div>';
-    groups[date].forEach(function(e){
-      var eid=e._key;
-      {
-        // Saved: plain text display
-        html+='<div class="de"><button class="dd" onclick="delDE(\''+eid+'\')">✕</button><img src="'+e.data+'">'
-          +'<div class="dt">'+(e.time||'')+'</div>';
-        // View mode
-        html+='<div id="dv_'+eid+'">';
-        if(e.memo)html+='<div style="font-size:14px;line-height:1.7;padding:6px 0;white-space:pre-wrap">'+e.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
-        html+='<button onclick="startEditDE(\''+eid+'\')" style="padding:3px 10px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px">수정</button></div>';
-        // Edit mode (hidden)
+    // Sub-group by groupId within this date
+    var entries=dateGroups[date];
+    var cards=[];var gMap={};
+    entries.forEach(function(e){
+      if(e.groupId){
+        if(!gMap[e.groupId]){gMap[e.groupId]=[];cards.push(gMap[e.groupId])}
+        gMap[e.groupId].push(e);
+      }else{
+        cards.push([e]);
+      }
+    });
+    cards.forEach(function(group){
+      var primary=group[0];var eid=primary._key;
+      html+='<div class="de">';
+      // Delete button
+      if(group.length>1){
+        html+='<button class="dd" onclick="delGroup(\''+primary.groupId+'\')">✕</button>';
+      }else{
+        html+='<button class="dd" onclick="delDE(\''+eid+'\')">✕</button>';
+      }
+      // Image(s)
+      if(group.length>1){
+        var cid='car_'+eid;
+        html+='<div class="de-carousel" id="'+cid+'">';
+        group.forEach(function(e){html+='<img src="'+e.data+'">'});
+        html+='</div>';
+        html+='<div class="de-indicators"><div class="de-dots" id="dots_'+cid+'">';
+        group.forEach(function(e,i){html+='<span class="de-dot'+(i===0?' on':'')+'"></span>'});
+        html+='</div><div class="de-counter" id="cnt_'+cid+'">1 / '+group.length+'</div></div>';
+      }else{
+        html+='<img src="'+primary.data+'">';
+      }
+      html+='<div class="dt">'+(primary.time||'')+'</div>';
+      // View mode
+      html+='<div id="dv_'+eid+'">';
+      if(primary.memo)html+='<div style="font-size:14px;line-height:1.7;padding:6px 0;white-space:pre-wrap">'+primary.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+      html+='<button onclick="startEditDE(\''+eid+'\')" style="padding:3px 10px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px">수정</button></div>';
+      // Edit mode (hidden)
+      if(group.length===1){
         html+='<div id="de_'+eid+'" style="display:none">'
           +'<div style="margin:6px 0"><label style="display:block;padding:8px;border:1.5px dashed #ccc;border-radius:8px;text-align:center;font-size:11px;color:#888;cursor:pointer">사진 변경<input type="file" accept="image/*" style="display:none" onchange="changePhoto(\''+eid+'\',event)"></label></div>'
-          +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(e.memo||'')+'</textarea>'
+          +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(primary.memo||'')+'</textarea>'
           +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
           +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
           +'<div style="clear:both"></div></div>';
-        // Replies (guestbook)
-        var replies=diaryReplies[eid]||[];
-        html+='<div class="reply-section"><div class="reply-header">💬 댓글 ('+replies.length+')</div>';
-        replies.forEach(function(r){
-          var nc=nickColor(r.nick||'');
-          var initial=(r.nick||'?').charAt(0).toUpperCase();
-          html+='<div class="reply-item">';
-          html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">';
-          html+='<span style="width:24px;height:24px;border-radius:50%;background:'+nc+';color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+initial+'</span>';
-          html+='<span class="reply-nick" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</span></div>';
-          html+='<div class="reply-text">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
-          var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-          html+='<div class="reply-meta"><span>'+ts+'</span>';
-          html+='<button class="reply-del" onclick="deleteReply(\''+eid+'\',\''+r._key+'\')">삭제</button>';
-          html+='</div></div>';
-        });
-        var savedNick='';try{savedNick=localStorage.getItem('reply_nick')||''}catch(ex){}
-        html+='<div class="reply-form"><div class="rf-row"><input type="text" id="rn_'+eid+'" placeholder="이름 (닉네임)" value="'+savedNick.replace(/"/g,'&quot;')+'"><input type="tel" id="rp_'+eid+'" placeholder="비밀번호 (숫자 4자리)" maxlength="4" pattern="[0-9]{4}" style="-webkit-text-security:disc"></div>';
-        html+='<textarea id="rt_'+eid+'" placeholder="댓글 남기기..."></textarea>';
-        html+='<button class="reply-submit" onclick="addReply(\''+eid+'\')">등록</button></div></div>';
-        html+='</div>';
+      }else{
+        html+='<div id="de_'+eid+'" style="display:none">'
+          +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(primary.memo||'')+'</textarea>'
+          +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
+          +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
+          +'<div style="clear:both"></div></div>';
       }
-    });html+='</div>';
+      // Replies - collect from all entries in group
+      var allReplies=[];
+      group.forEach(function(ge){
+        var r=diaryReplies[ge._key]||[];
+        r.forEach(function(rr){allReplies.push({r:rr,dk:ge._key})});
+      });
+      allReplies.sort(function(a,b){return(a.r.ts||'').localeCompare(b.r.ts||'')});
+      html+='<div class="reply-section"><div class="reply-header">💬 댓글 ('+allReplies.length+')</div>';
+      allReplies.forEach(function(item){
+        var r=item.r;var dk=item.dk;
+        var nc=nickColor(r.nick||'');
+        var initial=(r.nick||'?').charAt(0).toUpperCase();
+        html+='<div class="reply-item">';
+        html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">';
+        html+='<span style="width:24px;height:24px;border-radius:50%;background:'+nc+';color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+initial+'</span>';
+        html+='<span class="reply-nick" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</span></div>';
+        html+='<div class="reply-text">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
+        var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+        html+='<div class="reply-meta"><span>'+ts+'</span>';
+        html+='<button class="reply-del" onclick="deleteReply(\''+dk+'\',\''+r._key+'\')">삭제</button>';
+        html+='</div></div>';
+      });
+      var savedNick='';try{savedNick=localStorage.getItem('reply_nick')||''}catch(ex){}
+      html+='<div class="reply-form"><div class="rf-row"><input type="text" id="rn_'+eid+'" placeholder="이름 (닉네임)" value="'+savedNick.replace(/"/g,'&quot;')+'"><input type="tel" id="rp_'+eid+'" placeholder="비밀번호 (숫자 4자리)" maxlength="4" pattern="[0-9]{4}" style="-webkit-text-security:disc"></div>';
+      html+='<textarea id="rt_'+eid+'" placeholder="댓글 남기기..."></textarea>';
+      html+='<button class="reply-submit" onclick="addReply(\''+eid+'\')">등록</button></div></div>';
+      html+='</div>';
+    });
+    html+='</div>';
   });
   el.innerHTML=html;
+  initCarousels();
   document.getElementById('trashSection').style.display=isAdmin?'block':'none';
+}
+function initCarousels(){
+  document.querySelectorAll('.de-carousel').forEach(function(c){
+    var cid=c.id;
+    var dots=document.getElementById('dots_'+cid);
+    var counter=document.getElementById('cnt_'+cid);
+    if(!dots)return;
+    var imgs=c.querySelectorAll('img');
+    var total=imgs.length;
+    c.addEventListener('scroll',function(){
+      var idx=Math.round(c.scrollLeft/c.offsetWidth);
+      if(idx<0)idx=0;if(idx>=total)idx=total-1;
+      dots.querySelectorAll('.de-dot').forEach(function(d,i){d.classList.toggle('on',i===idx)});
+      if(counter)counter.textContent=(idx+1)+' / '+total;
+    });
+  });
+}
+function delGroup(groupId){
+  var entries=DD.filter(function(x){return x.groupId===groupId});
+  if(!entries.length)return;
+  if(isAdmin){
+    if(!confirm(entries.length+'장의 사진을 모두 삭제하시겠습니까?'))return;
+    entries.forEach(function(e){moveToTrash(e._key,e)});
+    return;
+  }
+  var pw=prompt(appSettings.pwPrompt||'비밀번호 4자리를 입력하세요');
+  if(!pw)return;
+  if(pw===entries[0].pw){
+    entries.forEach(function(e){moveToTrash(e._key,e)});
+  }else{
+    alert(appSettings.pwError||'비밀번호가 틀렸습니다');
+  }
 }
 var _editPhotoData={};
 function updMemo(id,val){
@@ -1583,6 +1680,12 @@ function saveEditDE(id){
   var updates={memo:memo};
   if(_editPhotoData[id])updates.data=_editPhotoData[id];
   db.ref('diary/'+id).update(updates);
+  // Sync memo to all entries in the same group
+  if(found.groupId){
+    DD.filter(function(x){return x.groupId===found.groupId&&x._key!==id}).forEach(function(e){
+      db.ref('diary/'+e._key).update({memo:memo});
+    });
+  }
   _editPhotoData[id]=null;
 }
 function delDE(id){
