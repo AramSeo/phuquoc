@@ -1390,9 +1390,9 @@ var nickColorMap={'아람':'#7ECBC7','준규':'#D9A99A','엄마':'#B8AD8A','아�
 var _nickLoaded=false,_nickDirty=false;
 fbGet('nick_colors',function(val){
   if(val){nickColorMap=val}
-  // Ensure defaults
+  // Always apply latest muted palette for default 4
   var defs={'아람':'#7ECBC7','준규':'#D9A99A','엄마':'#B8AD8A','아빠':'#92C4A8'};
-  Object.keys(defs).forEach(function(n){if(!nickColorMap[n])nickColorMap[n]=defs[n]});
+  Object.keys(defs).forEach(function(n){nickColorMap[n]=defs[n]});
   _nickLoaded=true;
   _saveNickColors();
   renderDiary();
