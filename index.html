@@ -1671,41 +1671,51 @@ function toggleFont(){
   document.getElementById('fontBtn').style.fontWeight=_fontLg?'900':'400';
 }
 
-// ===== WEATHER (Open-Meteo API, free, no key) =====
-function loadWeather(){
-  var TRIP_DATES=['2025-04-13','2025-04-14','2025-04-15','2025-04-16','2025-04-17','2025-04-18'];
+// ===== WEATHER (Open-Meteo API, cached 6h) =====
+var WX_CACHE_KEY='pq_wx',WX_CACHE_TTL=6*60*60*1000;
+function renderWxHtml(data){
   var dayNames={'0':'일','1':'월','2':'화','3':'수','4':'목','5':'금','6':'토'};
-  var start=TRIP_DATES[0],end=TRIP_DATES[TRIP_DATES.length-1];
-  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&hourly=precipitation_probability,weathercode&timezone=Asia/Ho_Chi_Minh&start_date='+start+'&end_date='+end;
+  function wxIcon(p){return p>=50?'🌧️':p>=30?'🌦':p>=15?'🌤':'☀️'}
+  function probStr(p){return p>=5?p+'%':'맑음'}
+  var h='<table class="wxt"><tr><th>날짜</th><th>기온</th><th>오전</th><th>오후</th><th>저녁</th></tr>';
+  data.daily.time.forEach(function(date,i){
+    var d=new Date(date+'T00:00:00'),dn=dayNames[''+d.getDay()];
+    var hi=Math.round(data.daily.temperature_2m_max[i]),lo=Math.round(data.daily.temperature_2m_min[i]);
+    var base=i*24,am=0,pm=0,ev=0;
+    for(var a=6;a<12;a++){var v=data.hourly.precipitation_probability[base+a]||0;if(v>am)am=v}
+    for(var b=12;b<18;b++){var v2=data.hourly.precipitation_probability[base+b]||0;if(v2>pm)pm=v2}
+    for(var c=18;c<24;c++){var v3=data.hourly.precipitation_probability[base+c]||0;if(v3>ev)ev=v3}
+    var m=date.split('-');
+    h+='<tr><td class="wd">'+parseInt(m[1])+'/'+parseInt(m[2])+' '+dn+'</td><td>'+hi+'°/'+lo+'°</td>';
+    h+='<td>'+wxIcon(am)+' '+probStr(am)+'</td><td>'+wxIcon(pm)+' '+probStr(pm)+'</td><td>'+wxIcon(ev)+' '+probStr(ev)+'</td></tr>';
+  });
+  return h+'</table>';
+}
+function showWx(html,ts){
+  document.getElementById('wxTable').innerHTML=html;
+  var d=new Date(ts);
+  document.getElementById('wxUpdated').textContent='('+(d.getMonth()+1)+'/'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0')+')';
+}
+function loadWeather(){
+  // 1) Try cache first for instant display
+  try{
+    var cached=JSON.parse(localStorage.getItem(WX_CACHE_KEY));
+    if(cached&&cached.html&&cached.ts){
+      showWx(cached.html,cached.ts);
+      if(Date.now()-cached.ts<WX_CACHE_TTL)return; // fresh enough
+    }
+  }catch(e){}
+  // 2) Fetch from API
+  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&hourly=precipitation_probability,weathercode&timezone=Asia/Ho_Chi_Minh&start_date=2025-04-13&end_date=2025-04-18';
   fetch(url).then(function(r){return r.json()}).then(function(data){
     if(!data.daily)return;
-    var h='<table class="wxt"><tr><th>날짜</th><th>기온</th><th>☀️오전</th><th>🌤오후</th><th>🌙저녁</th></tr>';
-    data.daily.time.forEach(function(date,i){
-      var d=new Date(date+'T00:00:00');
-      var dn=dayNames[''+d.getDay()];
-      var hi=Math.round(data.daily.temperature_2m_max[i]);
-      var lo=Math.round(data.daily.temperature_2m_min[i]);
-      // Get hourly data for this day (indices: day*24 + hour)
-      var base=i*24;
-      var amProb=0,pmProb=0,evProb=0;
-      for(var hr=6;hr<12;hr++){var p=data.hourly.precipitation_probability[base+hr]||0;if(p>amProb)amProb=p}
-      for(var hr2=12;hr2<18;hr2++){var p2=data.hourly.precipitation_probability[base+hr2]||0;if(p2>pmProb)pmProb=p2}
-      for(var hr3=18;hr3<24;hr3++){var p3=data.hourly.precipitation_probability[base+hr3]||0;if(p3>evProb)evProb=p3}
-      function wxIcon(prob){return prob>=50?'🌧️ ':prob>=30?'🌦 ':prob>=15?'🌤 ':prob>=5?'☀️':'☀️'}
-      function probStr(prob){return prob>=5?prob+'%':'맑음'}
-      var m=date.split('-');
-      h+='<tr><td class="wd">'+parseInt(m[1])+'/'+parseInt(m[2])+' '+dn+'</td>';
-      h+='<td>'+hi+'°/'+lo+'°</td>';
-      h+='<td>'+wxIcon(amProb)+probStr(amProb)+'</td>';
-      h+='<td>'+wxIcon(pmProb)+probStr(pmProb)+'</td>';
-      h+='<td>'+wxIcon(evProb)+probStr(evProb)+'</td></tr>';
-    });
-    h+='</table>';
-    document.getElementById('wxTable').innerHTML=h;
-    var now=new Date();
-    document.getElementById('wxUpdated').textContent='('+now.getMonth()+1+'/'+now.getDate()+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')+' 업데이트)';
+    var html=renderWxHtml(data),ts=Date.now();
+    showWx(html,ts);
+    try{localStorage.setItem(WX_CACHE_KEY,JSON.stringify({html:html,ts:ts}))}catch(e){}
   }).catch(function(){
-    document.getElementById('wxTable').innerHTML='<div style="padding:12px;text-align:center;color:var(--tx2);font-size:11px">날씨를 불러올 수 없습니다. 오프라인이거나 API 오류입니다.</div>';
+    if(!document.getElementById('wxTable').querySelector('table')){
+      document.getElementById('wxTable').innerHTML='<div style="padding:12px;text-align:center;color:var(--tx2);font-size:11px">오프라인 — 날씨를 불러올 수 없습니다</div>';
+    }
   });
 }
 
