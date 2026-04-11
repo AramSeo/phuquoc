@@ -1229,7 +1229,7 @@ function renderDiary(){
   all.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
   var pids=new Set(pendingPhotos.map(function(p){return p.id}));
   var html='';Object.keys(groups).sort().forEach(function(date){
-    html+='<div class="ddg"><div class="ddh">📅 '+date+'</div>';
+    html+='<div class="ddg"><div class="ddh">🌴 '+date+'</div>';
     groups[date].forEach(function(e){
       var isPending=pids.has(e.id);
       var eid=e._key||e.id;
