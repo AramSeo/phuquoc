@@ -316,6 +316,10 @@ body.font-lg .ql a{font-size:12px}
 .guide-item .gi-icon{font-size:16px;margin-right:6px}
 .guide-item .gi-label{font-weight:700;color:var(--tx)}
 .guide-item .gi-desc{color:var(--tx2);font-size:12px;margin-top:2px}
+.guide-sec{font-size:11px;font-weight:700;color:var(--ac);margin-top:16px;margin-bottom:2px;padding:5px 10px;background:var(--acl);border-radius:8px;letter-spacing:.5px}
+.guide-sec:first-child{margin-top:0}
+.gi-steps{color:var(--tx2);font-size:11.5px;margin-top:4px;padding-left:2px;line-height:1.7}
+.gi-steps span{display:block}
 .tab-manage-item{display:flex;align-items:center;gap:6px;padding:8px 10px;margin:4px 0;background:var(--sf2);border-radius:var(--rs)}
 .tab-manage-item.is-hidden{opacity:.45}
 .tab-manage-item .tmi-icon{font-size:16px}
@@ -514,13 +518,35 @@ body.font-lg .ql a{font-size:12px}
 <div class="guide-overlay" id="guideOv" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="guide-box">
     <h3>🌴 이용 가이드</h3>
+
+    <div class="guide-sec">📲 앱 설치 방법</div>
+    <div class="guide-item"><span class="gi-icon">🍎</span><span class="gi-label">iPhone (Safari)</span>
+      <div class="gi-steps">
+        <span>1. Safari로 이 페이지 접속</span>
+        <span>2. 하단 <b>공유 버튼</b> (□↑) 탭</span>
+        <span>3. <b>"홈 화면에 추가"</b> 선택</span>
+        <span>4. 홈 화면에 앱 아이콘 생성!</span>
+      </div>
+    </div>
+    <div class="guide-item"><span class="gi-icon">🤖</span><span class="gi-label">Android (Chrome)</span>
+      <div class="gi-steps">
+        <span>1. Chrome으로 이 페이지 접속</span>
+        <span>2. 우측 상단 <b>⋮ 메뉴</b> 탭</span>
+        <span>3. <b>"홈 화면에 추가"</b> 또는 <b>"앱 설치"</b> 선택</span>
+        <span>4. 홈 화면에 앱 아이콘 생성!</span>
+      </div>
+    </div>
+
+    <div class="guide-sec">📋 탭 사용법</div>
     <div class="guide-item"><span class="gi-icon">🗺️</span><span class="gi-label">지도</span><div class="gi-desc">장소별 위치 확인. 카테고리 필터로 식당·카페·마사지 등 모아보기. 푸꾸옥에서 <b>🔵내 위치</b>도 확인 가능!</div></div>
     <div class="guide-item"><span class="gi-icon">🗓️</span><span class="gi-label">일정</span><div class="gi-desc">날짜별 일정표 + 날씨 정보. 어떤 날에 뭘 할지 한눈에!</div></div>
     <div class="guide-item"><span class="gi-icon">📓</span><span class="gi-label">다이어리</span><div class="gi-desc">여행 사진 올리고 메모 남기기. 댓글로 서로 소통해요! 비밀번호 4자리로 관리.</div></div>
     <div class="guide-item"><span class="gi-icon">💰</span><span class="gi-label">예산·팁</span><div class="gi-desc">예산표, 체크리스트, 베트남어, 긴급연락처 등 여행 필수 정보.</div></div>
+
+    <div class="guide-sec">✨ 주요 기능</div>
+    <div class="guide-item"><span class="gi-icon">📌</span><span class="gi-label">MY루트</span><div class="gi-desc">지도 탭에서 <b>MY루트</b> 필터로 우리 여행 루트만 모아보기. 장소 추가/수정은 주인장에게 문의!</div></div>
+    <div class="guide-item"><span class="gi-icon">📄</span><span class="gi-label">내보내기</span><div class="gi-desc">다이어리 하단 <b>내보내기</b> → 책 형태 PDF로 저장. 여행 추억을 간직하세요!</div></div>
     <div class="guide-item"><span class="gi-icon">가</span><span class="gi-label">글자 크기</span><div class="gi-desc">오른쪽 상단 <b>가</b> 버튼으로 글자 크기를 키울 수 있어요.</div></div>
-    <div class="guide-item"><span class="gi-icon">📌</span><span class="gi-label">MY루트</span><div class="gi-desc">우리만의 여행 루트! 장소 추가/수정은 주인장에게 문의하세요.</div></div>
-    <div class="guide-item"><span class="gi-icon">📤</span><span class="gi-label">내보내기</span><div class="gi-desc">다이어리에서 <b>내보내기</b> → 여행 다이어리를 PDF/인쇄/공유할 수 있어요.</div></div>
     <button onclick="document.getElementById('guideOv').classList.remove('show')" style="width:100%;margin-top:16px;padding:12px;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">확인</button>
   </div>
 </div>
