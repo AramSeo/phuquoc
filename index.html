@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
@@ -1777,6 +1778,34 @@ function exportDiary(){
     buildExport(all,mapImg);
   });
 }
+function generateSharePDF(overlay,title,cb){
+  var spreads=Array.from(overlay.querySelectorAll('.spread'));
+  if(!spreads.length){cb(null);return}
+  var JsPDF=window.jspdf&&window.jspdf.jsPDF;
+  if(!JsPDF){cb(null);return}
+  // Save and reset scale for accurate capture
+  var saved=[];
+  spreads.forEach(function(s){
+    saved.push({t:s.style.transform,m:s.style.marginBottom});
+    s.style.transform='none';s.style.marginBottom='20px';
+  });
+  overlay.scrollTop=0;
+  var pdf=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  var idx=0;
+  function next(){
+    if(idx>=spreads.length){
+      spreads.forEach(function(s,i){s.style.transform=saved[i].t;s.style.marginBottom=saved[i].m});
+      cb(pdf.output('blob'));return;
+    }
+    html2canvas(spreads[idx],{useCORS:true,scale:1.5,logging:false,backgroundColor:'#ffffff'}).then(function(canvas){
+      var imgData=canvas.toDataURL('image/jpeg',0.82);
+      if(idx>0)pdf.addPage();
+      pdf.addImage(imgData,'JPEG',0,0,297,210);
+      idx++;setTimeout(next,50);
+    }).catch(function(){idx++;setTimeout(next,50)});
+  }
+  setTimeout(next,100);
+}
 function buildExport(all,mapImg){
   var title=appSettings.diaryTitle||'푸꾸옥 다이어리';
   var sorted=all.slice().sort(function(a,b){return (a.date+(a.time||''))<(b.date+(b.time||''))?-1:1});
@@ -2008,12 +2037,22 @@ function buildExport(all,mapImg){
   ov.querySelector('.tb-pdf').onclick=function(){window.print()};
   ov.querySelector('.tb-close').onclick=function(){ov.remove()};
   ov.querySelector('.tb-share').onclick=function(){
-    if(navigator.share){
-      navigator.share({title:title,text:'🌴 '+title,url:location.href}).catch(function(){});
-    } else {
-      var ta=document.createElement('textarea');ta.value=location.href;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
-      alert('링크가 복사되었습니다!\n카톡 등에 붙여넣기 하세요.');
-    }
+    var btn=this;var orig=btn.innerHTML;
+    btn.innerHTML='⏳ PDF 생성 중...';btn.style.opacity='0.6';btn.disabled=true;
+    generateSharePDF(ov,title,function(blob){
+      btn.innerHTML=orig;btn.style.opacity='1';btn.disabled=false;
+      if(!blob){alert('PDF 생성에 실패했습니다.\nPDF 저장 버튼을 이용해주세요.');return}
+      var fileName=(title||'다이어리').replace(/[^a-zA-Z0-9가-힣\s]/g,'')+'.pdf';
+      var file=new File([blob],fileName,{type:'application/pdf'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        navigator.share({title:title,files:[file]}).catch(function(){});
+      }else{
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement('a');a.href=url;a.download=fileName;
+        document.body.appendChild(a);a.click();document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    });
   };
 }
 
