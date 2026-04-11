@@ -1,4 +1,4 @@
-var CACHE='pq-v5';
+var CACHE='pq-v6';
 var ASSETS=['./index.html','./manifest.json'];
 
 self.addEventListener('install',function(e){
