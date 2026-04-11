@@ -33,7 +33,8 @@ var db=firebase.database();
 :root{--bg:#FAF7F2;--sf:#fff;--sf2:#F5F3EE;--tx:#1A2B2D;--tx2:#7A9295;--ac:#0ABAB5;--acd:#089B97;--acl:#E0F7F5;--co:#E07A5F;--gd:#D4A843;--gdl:#FDF8ED;--pu:#9c27b0;--bl:#3a7bd5;--or:#ff9800;--pk:#e91e63;--green:#1A6B5A;--r:16px;--rs:10px;--sh:0 2px 16px rgba(10,186,181,.07);--sh-lg:0 8px 30px rgba(10,186,181,.1);--hh:56px;--th:58px;--ease:cubic-bezier(.4,0,.2,1)}
 html,body{height:100%;overflow:hidden}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.6}
-.hd{height:var(--hh);background:linear-gradient(135deg,#0ABAB5 0%,#089B97 40%,#1A6B5A 100%);display:flex;align-items:center;justify-content:space-between;padding:0 18px;color:#fff;z-index:100;position:fixed;top:0;left:0;right:0;box-shadow:0 2px 20px rgba(10,186,181,.15)}
+.hd{height:var(--hh);background:linear-gradient(135deg,#0ABAB5 0%,#089B97 40%,#1A6B5A 100%);display:flex;align-items:center;justify-content:space-between;padding:0 18px;padding-top:env(safe-area-inset-top,0);color:#fff;z-index:100;position:fixed;top:0;left:0;right:0;box-shadow:0 2px 20px rgba(10,186,181,.15)}
+@supports(padding:env(safe-area-inset-top)){.hd{height:calc(var(--hh) + env(safe-area-inset-top))}.mn{top:calc(var(--hh) + env(safe-area-inset-top))}}
 .hd h1{font-size:18px;font-weight:900;letter-spacing:-.3px}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;display:inline-block;margin-right:6px;animation:pulse 2s infinite;box-shadow:0 0 6px rgba(74,222,128,.5)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
@@ -50,7 +51,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .ti.on{color:var(--ac);font-weight:700}
 .ti em{font-size:18px;display:block;margin:0 auto 2px;font-style:normal;transition:all .25s var(--ease);border-radius:16px;padding:2px 0;line-height:1.3;width:fit-content;min-width:36px}
 .ti.on em{background:var(--acl);padding:3px 18px;box-shadow:0 1px 4px rgba(10,186,181,.12)}
-.mn{height:calc(100vh - var(--hh) - var(--th));overflow-y:auto;-webkit-overflow-scrolling:touch;margin-top:var(--hh)}
+.mn{position:fixed;top:var(--hh);bottom:var(--th);left:0;right:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .tc{display:none;min-height:100%}.tc.on{display:block}
 
 /* Schedule */
@@ -126,7 +127,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .picker-item.selected .pi-check{visibility:visible}
 
 /* Map - fixed height for mobile */
-.mwrap{display:flex;flex-direction:column;height:calc(100vh - var(--hh) - var(--th))}
+.mwrap{display:flex;flex-direction:column;height:100%}
 .mflt{display:flex;gap:5px;padding:8px 10px;overflow-x:auto;background:var(--sf);border-bottom:1px solid #eee;flex-shrink:0;-webkit-overflow-scrolling:touch}
 .mflt::-webkit-scrollbar{display:none}
 .fc{white-space:nowrap;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-family:inherit;color:var(--tx2);flex-shrink:0;transition:all .2s var(--ease)}
@@ -263,8 +264,11 @@ body.font-lg .ti em{font-size:19px}
 .cal-t tr:nth-child(even) td{background:#fafaf7}
 .cal-t .cal-cat{font-weight:600;color:var(--tx2);white-space:nowrap;font-size:9px;background:var(--sf)!important;border-right:1px solid #eee;padding:4px 5px;text-align:center}
 .cal-item{font-size:10.5px;line-height:1.4;padding:2px 0}
-.cal-item::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ac);margin-right:4px;vertical-align:middle}
-.cal-item a{color:inherit;text-decoration:none;font-weight:600}
+.cal-item{display:flex;align-items:baseline;gap:4px}
+.cal-item::before{display:none}
+.cal-dot{width:6px;height:6px;border-radius:50%;background:var(--ac);flex-shrink:0;margin-top:5px}
+.cal-item a{color:var(--tx);text-decoration:none;font-weight:600}
+.cal-item span{color:var(--tx)}
 .cal-memo{font-size:10.5px;color:var(--tx2);padding:2px 0;line-height:1.4}
 #tab-schedule{padding-bottom:60px}
 /* Reply / guestbook */
@@ -327,17 +331,9 @@ body.font-lg .ti em{font-size:19px}
 <!-- SCHEDULE -->
 <div class="tc" id="tab-schedule">
   <div id="schOverview"></div>
-  <div class="ic" style="margin:8px 12px"><div class="ich" onclick="tic(this)"><span id="weatherTitle">날씨</span> <span class="ica">▾</span></div>
+  <div class="ic" style="margin:8px 12px"><div class="ich" onclick="tic(this)"><span id="weatherTitle">날씨</span> <span id="wxUpdated" style="font-size:9px;font-weight:400;color:var(--tx2);margin-left:6px"></span> <span class="ica">▾</span></div>
   <div class="icb">
-    <div class="wx-strip"><table class="wxt">
-      <tr><th>날짜</th><th>기온</th><th>☀️오전</th><th>🌤오후</th><th>🌙저녁</th></tr>
-      <tr><td class="wd">4/13 월</td><td>32°/27°</td><td>☀️</td><td>🌤 10%</td><td>🌙 맑음</td></tr>
-      <tr><td class="wd">4/14 화</td><td>31°/27°</td><td>☀️</td><td>🌦 40%</td><td>🌤 15%</td></tr>
-      <tr><td class="wd">4/15 수</td><td>31°/27°</td><td>🌤 15%</td><td>🌦 45%</td><td>🌤 20%</td></tr>
-      <tr><td class="wd">4/16 목</td><td>31°/27°</td><td>☀️</td><td>🌤 20%</td><td>🌤 10%</td></tr>
-      <tr><td class="wd">4/17 금</td><td>32°/27°</td><td>☀️</td><td>🌤 15%</td><td>🌙 맑음</td></tr>
-      <tr><td class="wd">4/18 토</td><td>30°/26°</td><td>🌤 10%</td><td>🌦 30%</td><td>🌤 15%</td></tr>
-    </table></div>
+    <div class="wx-strip" id="wxTable"><div style="padding:16px;text-align:center;color:var(--tx2);font-size:12px">날씨 불러오는 중...</div></div>
   </div></div>
   <div class="ql" style="padding:6px 12px"><span style="font-size:11px;color:var(--tx2);margin-right:4px">참고:</span><a href="https://www.accuweather.com/ko/vn/phu-quoc/354237/weather-forecast/354237" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">AccuWeather</a><a href="https://rp5.ru/%ED%91%B8%EA%BE%B8%EC%98%A5_%EA%B3%B5%ED%95%AD%EC%9D%98_%EB%82%A0%EC%94%A8" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">rp5.ru</a><a href="https://www.timeanddate.com/weather/@8531735/hourly" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">시간별</a><a href="https://vinbus.vn/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">VinBus</a><a href="https://kissofthesea.com/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">Kiss of Sea</a><a href="https://onbird.vn/" target="_blank" style="background:#fff;color:#555;border:1.5px solid #ddd">OnBird</a></div>
 </div>
@@ -739,9 +735,8 @@ function renderSch(){
         if(items.length){items.forEach(function(it,idx){
           var gl=it.placeKey?'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(it.text+' Phu Quoc'):'';
           var plc=it.placeKey?gAll().find(function(pp){return pp.n===it.text}):null;
-          var cc=plc&&CM[plc.c]?CM[plc.c].co:'';
-          var cStyle=cc?' style="color:'+cc+'"':'';
-          ch+='<div class="cal-item">'+(gl?'<a href="'+gl+'" target="_blank"'+cStyle+'>'+it.text+'</a>':'<span'+cStyle+'>'+it.text+'</span>');
+          var dotColor=plc&&CM[plc.c]?CM[plc.c].co:'var(--ac)';
+          ch+='<div class="cal-item"><span class="cal-dot" style="background:'+dotColor+'"></span>'+(gl?'<a href="'+gl+'" target="_blank">'+it.text+'</a>':'<span>'+it.text+'</span>');
           if(isAdmin)ch+=' <span onclick="delSchItem('+d.day+',\''+key+'\','+idx+')" style="color:#ccc;cursor:pointer;font-size:10px">✕</span>';
           ch+='</div>';
         })}else{ch+='<span style="color:#ddd">—</span>'}
@@ -1387,9 +1382,53 @@ function exportDiary(){
   if(!all.length){alert('내보낼 기록이 없습니다');return}
   var title=appSettings.diaryTitle||'푸꾸옥 다이어리';
   var w=window.open('','_blank');
-  var h='<html><head><title>'+title+'</title><style>body{font-family:sans-serif;max-width:700px;margin:0 auto;padding:20px}img{max-width:100%;border-radius:8px;margin:8px 0}h2{color:#1a6b5a;border-bottom:2px solid #1a6b5a;padding-bottom:4px}.m{background:#f5f0e8;padding:8px 12px;border-radius:6px;margin:4px 0;white-space:pre-wrap}@media print{body{padding:0}}</style></head><body><h1>'+title+'</h1>';
+  var h='<html><head><title>'+title+'</title><style>'
+    +'@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;900&display=swap");'
+    +'*{margin:0;padding:0;box-sizing:border-box}'
+    +'body{font-family:"Noto Sans KR",sans-serif;max-width:680px;margin:0 auto;padding:40px 24px;background:#FAF7F2;color:#1A2B2D;line-height:1.7}'
+    +'.cover{text-align:center;padding:60px 20px;margin-bottom:40px;background:linear-gradient(135deg,#0ABAB5,#089B97,#1A6B5A);border-radius:20px;color:#fff}'
+    +'.cover h1{font-size:28px;font-weight:900;margin-bottom:8px;letter-spacing:-0.5px}'
+    +'.cover p{font-size:14px;opacity:.8}'
+    +'.day-header{margin:40px 0 20px;padding:12px 0;border-bottom:3px solid #0ABAB5;display:flex;align-items:center;gap:10px}'
+    +'.day-header h2{font-size:20px;font-weight:900;color:#0ABAB5}'
+    +'.entry{background:#fff;border-radius:16px;padding:20px;margin-bottom:24px;box-shadow:0 2px 16px rgba(10,186,181,.07)}'
+    +'.entry img{width:100%;border-radius:12px;margin-bottom:12px}'
+    +'.entry .time{font-size:12px;color:#7A9295;margin-bottom:6px}'
+    +'.entry .memo{font-size:14px;line-height:1.8;white-space:pre-wrap;padding:12px 16px;background:#F5F3EE;border-radius:10px;border-left:3px solid #D4A843}'
+    +'.replies{margin-top:16px;padding-top:12px;border-top:1px solid #eee}'
+    +'.replies h4{font-size:12px;color:#7A9295;margin-bottom:8px}'
+    +'.reply{padding:8px 12px;margin:4px 0;background:#F5F3EE;border-radius:8px;font-size:13px}'
+    +'.reply .rn{font-weight:700;font-size:12px;margin-bottom:2px}'
+    +'.reply .rt{line-height:1.6}'
+    +'.reply .rm{font-size:10px;color:#7A9295;margin-top:2px}'
+    +'@media print{body{padding:10px;background:#fff}.cover{break-after:page}.entry{break-inside:avoid;box-shadow:none;border:1px solid #eee}}'
+    +'</style></head><body>';
+  h+='<div class="cover"><h1>'+title+'</h1><p>🌴 Our Phú Quốc Memories</p></div>';
   var groups={};all.forEach(function(e){if(!groups[e.date])groups[e.date]=[];groups[e.date].push(e)});
-  Object.keys(groups).sort().forEach(function(date){h+='<h2>'+date+'</h2>';groups[date].forEach(function(e){h+='<img src="'+e.data+'">';if(e.memo)h+='<div class="m">'+e.memo+'</div>'})});
+  Object.keys(groups).sort().forEach(function(date){
+    h+='<div class="day-header"><h2>🌴 '+date+'</h2></div>';
+    groups[date].forEach(function(e){
+      var eid=e._key||e.id;
+      h+='<div class="entry"><img src="'+e.data+'">';
+      if(e.time)h+='<div class="time">'+e.time+'</div>';
+      if(e.memo)h+='<div class="memo">'+e.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+      // Replies
+      var replies=diaryReplies[eid]||[];
+      if(replies.length){
+        h+='<div class="replies"><h4>💬 댓글 ('+replies.length+')</h4>';
+        replies.forEach(function(r){
+          var nc=nickColor(r.nick||'');
+          var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+          h+='<div class="reply"><div class="rn" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</div>';
+          h+='<div class="rt">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
+          if(ts)h+='<div class="rm">'+ts+'</div>';
+          h+='</div>';
+        });
+        h+='</div>';
+      }
+      h+='</div>';
+    });
+  });
   h+='</body></html>';w.document.write(h);w.document.close();
 }
 
@@ -1626,8 +1665,46 @@ function toggleFont(){
   document.getElementById('fontBtn').style.fontWeight=_fontLg?'900':'400';
 }
 
+// ===== WEATHER (Open-Meteo API, free, no key) =====
+function loadWeather(){
+  var TRIP_DATES=['2025-04-13','2025-04-14','2025-04-15','2025-04-16','2025-04-17','2025-04-18'];
+  var dayNames={'0':'일','1':'월','2':'화','3':'수','4':'목','5':'금','6':'토'};
+  var start=TRIP_DATES[0],end=TRIP_DATES[TRIP_DATES.length-1];
+  var url='https://api.open-meteo.com/v1/forecast?latitude=10.22&longitude=103.96&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&hourly=precipitation_probability,weathercode&timezone=Asia/Ho_Chi_Minh&start_date='+start+'&end_date='+end;
+  fetch(url).then(function(r){return r.json()}).then(function(data){
+    if(!data.daily)return;
+    var h='<table class="wxt"><tr><th>날짜</th><th>기온</th><th>☀️오전</th><th>🌤오후</th><th>🌙저녁</th></tr>';
+    data.daily.time.forEach(function(date,i){
+      var d=new Date(date+'T00:00:00');
+      var dn=dayNames[''+d.getDay()];
+      var hi=Math.round(data.daily.temperature_2m_max[i]);
+      var lo=Math.round(data.daily.temperature_2m_min[i]);
+      // Get hourly data for this day (indices: day*24 + hour)
+      var base=i*24;
+      var amProb=0,pmProb=0,evProb=0;
+      for(var hr=6;hr<12;hr++){var p=data.hourly.precipitation_probability[base+hr]||0;if(p>amProb)amProb=p}
+      for(var hr2=12;hr2<18;hr2++){var p2=data.hourly.precipitation_probability[base+hr2]||0;if(p2>pmProb)pmProb=p2}
+      for(var hr3=18;hr3<24;hr3++){var p3=data.hourly.precipitation_probability[base+hr3]||0;if(p3>evProb)evProb=p3}
+      function wxIcon(prob){return prob>=50?'🌧️ ':prob>=30?'🌦 ':prob>=15?'🌤 ':prob>=5?'☀️':'☀️'}
+      function probStr(prob){return prob>=5?prob+'%':'맑음'}
+      var m=date.split('-');
+      h+='<tr><td class="wd">'+parseInt(m[1])+'/'+parseInt(m[2])+' '+dn+'</td>';
+      h+='<td>'+hi+'°/'+lo+'°</td>';
+      h+='<td>'+wxIcon(amProb)+probStr(amProb)+'</td>';
+      h+='<td>'+wxIcon(pmProb)+probStr(pmProb)+'</td>';
+      h+='<td>'+wxIcon(evProb)+probStr(evProb)+'</td></tr>';
+    });
+    h+='</table>';
+    document.getElementById('wxTable').innerHTML=h;
+    var now=new Date();
+    document.getElementById('wxUpdated').textContent='('+now.getMonth()+1+'/'+now.getDate()+' '+now.getHours()+':'+String(now.getMinutes()).padStart(2,'0')+' 업데이트)';
+  }).catch(function(){
+    document.getElementById('wxTable').innerHTML='<div style="padding:12px;text-align:center;color:var(--tx2);font-size:11px">날씨를 불러올 수 없습니다. 오프라인이거나 API 오류입니다.</div>';
+  });
+}
+
 // INIT
-renderTabs();renderSch();bCl();
+renderTabs();renderSch();bCl();loadWeather();
 // Clear old data
 fbOnce('schedule_picks').then(function(v){if(v)fbSet('schedule_picks',null)});
 fbOnce('schedule_v2').then(function(v){if(v){var dominated=false;Object.keys(v).forEach(function(k){if(v[k]&&typeof v[k]==='object'&&!Array.isArray(v[k])){/*ok*/}else{dominated=true}});if(dominated)fbSet('schedule_v2',null)}});
