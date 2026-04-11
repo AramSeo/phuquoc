@@ -1361,17 +1361,20 @@ function gFD(f){var d=new Date(f.lastModified||Date.now());return d.toISOString(
 function gFT(f){var d=new Date(f.lastModified||Date.now());return d.toTimeString().slice(0,5)}
 
 // Nick color: soft pastel palette, Firebase-synced
+// Nick colors: soft pastels, Firebase-synced, admin-editable
 var NICK_PALETTE=['#5BBFBA','#E8A090','#C4B07B','#A8D5BA','#8BB5D9','#C9A8D2','#E8B4B8','#89C4C8','#D4B896','#A3C9A8'];
-var nickColorMap={};
-var NICK_DEFAULTS={'아람':'#5BBFBA','준규':'#E8A090','엄마':'#C4B07B','아빠':'#A8D5BA'};
+var nickColorMap={'아람':'#5BBFBA','준규':'#E8A090','엄마':'#C4B07B','아빠':'#A8D5BA'};
+var _nickLoaded=false,_nickDirty=false;
 fbGet('nick_colors',function(val){
-  nickColorMap=val||{};
-  // Ensure defaults exist
-  var changed=false;
-  Object.keys(NICK_DEFAULTS).forEach(function(n){if(!nickColorMap[n]){nickColorMap[n]=NICK_DEFAULTS[n];changed=true}});
-  if(changed)fbSet('nick_colors',nickColorMap);
+  if(val){nickColorMap=val}
+  // Ensure defaults
+  var defs={'아람':'#5BBFBA','준규':'#E8A090','엄마':'#C4B07B','아빠':'#A8D5BA'};
+  Object.keys(defs).forEach(function(n){if(!nickColorMap[n])nickColorMap[n]=defs[n]});
+  _nickLoaded=true;
+  _saveNickColors();
   renderDiary();
 });
+function _saveNickColors(){fbSet('nick_colors',nickColorMap)}
 function _nextPaletteColor(){
   var used={};Object.keys(nickColorMap).forEach(function(k){used[nickColorMap[k]]=true});
   for(var i=0;i<NICK_PALETTE.length;i++){if(!used[NICK_PALETTE[i]])return NICK_PALETTE[i]}
@@ -1379,7 +1382,11 @@ function _nextPaletteColor(){
 }
 function nickColor(name){
   if(!name)return NICK_PALETTE[0];
-  if(!nickColorMap[name]){nickColorMap[name]=_nextPaletteColor();fbSet('nick_colors',nickColorMap)}
+  if(!nickColorMap[name]){
+    nickColorMap[name]=_nextPaletteColor();
+    // Defer save to avoid loop
+    if(!_nickDirty){_nickDirty=true;setTimeout(function(){_saveNickColors();_nickDirty=false},500)}
+  }
   return nickColorMap[name];
 }
 function renderNickSettings(){
@@ -1387,17 +1394,29 @@ function renderNickSettings(){
   var h='';
   Object.keys(nickColorMap).forEach(function(name){
     var co=nickColorMap[name];
-    h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0">';
-    h+='<span style="width:24px;height:24px;border-radius:50%;background:'+co+';flex-shrink:0"></span>';
+    var eName=name.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    h+='<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f0f0f0">';
+    h+='<span style="width:26px;height:26px;border-radius:50%;background:'+co+';flex-shrink:0"></span>';
     h+='<span style="flex:1;font-size:13px;font-weight:600">'+name+'</span>';
-    h+='<input type="color" value="'+co+'" onchange="updateNickColor(\''+name.replace(/'/g,"\\'")+'\',this.value)" style="width:32px;height:28px;border:none;padding:0;cursor:pointer;border-radius:4px">';
-    h+='<button onclick="deleteNickColor(\''+name.replace(/'/g,"\\'")+'\',this)" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:2px 6px">✕</button>';
+    h+='<input type="color" value="'+co+'" onchange="updateNickColor(\''+eName+'\',this.value)" style="width:36px;height:30px;border:1px solid #ddd;padding:0;cursor:pointer;border-radius:6px">';
+    h+='<button onclick="deleteNickColor(\''+eName+'\')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:2px 6px">✕</button>';
     h+='</div>';
   });
+  // Admin: add new name+color
+  h+='<div style="display:flex;gap:6px;margin-top:10px;align-items:center">';
+  h+='<input type="text" id="newNickName" placeholder="이름" style="flex:1;padding:8px;border:1.5px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none">';
+  h+='<input type="color" id="newNickColor" value="'+_nextPaletteColor()+'" style="width:36px;height:34px;border:1px solid #ddd;padding:0;cursor:pointer;border-radius:6px">';
+  h+='<button onclick="addNickColor()" style="padding:8px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">추가</button>';
+  h+='</div>';
   el.innerHTML=h;
 }
-function updateNickColor(name,color){nickColorMap[name]=color;fbSet('nick_colors',nickColorMap);renderDiary();renderNickSettings()}
-function deleteNickColor(name){delete nickColorMap[name];fbSet('nick_colors',nickColorMap);renderDiary();renderNickSettings()}
+function updateNickColor(name,color){nickColorMap[name]=color;_saveNickColors();renderDiary();renderNickSettings()}
+function deleteNickColor(name){delete nickColorMap[name];_saveNickColors();renderDiary();renderNickSettings()}
+function addNickColor(){
+  var nameEl=document.getElementById('newNickName'),colorEl=document.getElementById('newNickColor');
+  var name=nameEl.value.trim();if(!name){alert('이름을 입력해주세요');return}
+  nickColorMap[name]=colorEl.value;_saveNickColors();renderDiary();renderNickSettings();
+}
 
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
