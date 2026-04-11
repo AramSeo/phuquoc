@@ -292,7 +292,7 @@ body.font-lg .ql a{font-size:12px}
 /* Reply / guestbook */
 .reply-section{margin-top:10px;border-top:1px solid #eee;padding-top:8px}
 .reply-header{font-size:11px;font-weight:700;color:var(--tx2);margin-bottom:6px;display:flex;align-items:center;gap:4px}
-.reply-item{padding:10px 12px;margin:5px 0;background:var(--sf2);border-radius:var(--rs);font-size:12px;position:relative;border-left:3px solid var(--ac)}
+.reply-item{padding:10px 12px;margin:5px 0;background:var(--sf2);border-radius:var(--rs);font-size:12px;position:relative}
 .reply-nick{font-weight:700;color:var(--ac);font-size:11px;margin-bottom:2px}
 .reply-text{line-height:1.5;word-break:break-word}
 .reply-meta{font-size:10px;color:var(--tx2);margin-top:3px;display:flex;align-items:center;gap:6px}
@@ -1361,31 +1361,13 @@ function cImg(f,cb){var r=new FileReader();r.onload=function(e){var img=new Imag
 function gFD(f){var d=new Date(f.lastModified||Date.now());return d.toISOString().split('T')[0]}
 function gFT(f){var d=new Date(f.lastModified||Date.now());return d.toTimeString().slice(0,5)}
 
-// Name → color: each Korean initial consonant gets a unique hue (19 consonants, evenly spaced)
-function _getHue(ch){
-  var code=ch.charCodeAt(0);
-  if(code>=0xAC00&&code<=0xD7A3){
-    var idx=Math.floor((code-0xAC00)/588)%19;
-    // ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ → maximally spread hues
-    return[0,20,40,60,80,110,140,170,190,210,230,260,290,310,325,340,355,160,200][idx];
-  }
-  // a-z/A-Z: spread across hue wheel
-  if((code>=65&&code<=90)||(code>=97&&code<=122)){return((code%26)*360/26)|0}
-  return(code*47)%360;
-}
+// Nick color: 7 distinct key colors, assigned by first-appearance order
+var NICK_PALETTE=['#0ABAB5','#E07A5F','#D4A843','#9c27b0','#3a7bd5','#1A6B5A','#e91e63'];
+var _nickMap={},_nickIdx=0;
 function nickColor(name){
-  if(!name)return'hsl(174,55%,45%)';
-  var hues=[];for(var i=0;i<name.length;i++){var c=name.charAt(i);if(c!==' ')hues.push(_getHue(c))}
-  if(!hues.length)return'hsl(174,55%,45%)';
-  var sx=0,sy=0;hues.forEach(function(h){sx+=Math.cos(h*Math.PI/180);sy+=Math.sin(h*Math.PI/180)});
-  var avg=Math.atan2(sy/hues.length,sx/hues.length)*180/Math.PI;
-  if(avg<0)avg+=360;
-  return'hsl('+Math.round(avg)+',55%,45%)';
-}
-function nickBg(name){
-  if(!name)return'hsl(174,35%,94%)';
-  var col=nickColor(name);
-  return col.replace('55%,45%','35%,94%');
+  if(!name)return NICK_PALETTE[0];
+  if(!_nickMap[name]){_nickMap[name]=NICK_PALETTE[_nickIdx%NICK_PALETTE.length];_nickIdx++}
+  return _nickMap[name];
 }
 
 function renderDiary(){
@@ -1417,11 +1399,10 @@ function renderDiary(){
         html+='<div class="reply-section"><div class="reply-header">💬 댓글 ('+replies.length+')</div>';
         replies.forEach(function(r){
           var nc=nickColor(r.nick||'');
-          var nb=nickBg(r.nick||'');
           var initial=(r.nick||'?').charAt(0).toUpperCase();
-          html+='<div class="reply-item" style="border-left-color:'+nc+';background:'+nb+'">';
+          html+='<div class="reply-item">';
           html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">';
-          html+='<span style="width:22px;height:22px;border-radius:50%;background:'+nc+';color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+initial+'</span>';
+          html+='<span style="width:24px;height:24px;border-radius:50%;background:'+nc+';color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+initial+'</span>';
           html+='<span class="reply-nick" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</span></div>';
           html+='<div class="reply-text">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
           var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
