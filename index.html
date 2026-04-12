@@ -594,9 +594,14 @@ function applySettings(){
   var mb=document.getElementById('modeBtn');if(mb)mb.textContent=isAdmin?(appSettings.adminLabel||'Admin'):(appSettings.visitorLabel||'Login');
   renderTabs();
 }
+function closeAllPopups(){
+  document.getElementById('guideOv').classList.remove('show');
+  document.getElementById('settingsOverlay').classList.remove('show');
+  document.getElementById('pwMo').classList.remove('show');
+}
 function showGuide(){toggleGuide()}
-function toggleGuide(){document.getElementById('guideOv').classList.toggle('show')}
-function toggleSettings(){var ov=document.getElementById('settingsOverlay');if(ov.classList.contains('show')){closeSettings();return}openSettings()}
+function toggleGuide(){var g=document.getElementById('guideOv');var opening=!g.classList.contains('show');closeAllPopups();if(opening)g.classList.add('show')}
+function toggleSettings(){var ov=document.getElementById('settingsOverlay');var opening=!ov.classList.contains('show');closeAllPopups();if(opening)openSettings()}
 function openSettings(){
   document.getElementById('set-title').value=appSettings.title||'';
   document.getElementById('set-diary-title').value=appSettings.diaryTitle||'';
@@ -698,7 +703,7 @@ function renderTabSettings(){
 // ===== TAB SWITCH =====
 function sw(t){
   if(tabConfig.hidden.indexOf(t)>=0)return;
-  location.hash=t;document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});var te=document.querySelector('[data-tab="'+t+'"]');if(te)te.classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100)
+  closeAllPopups();location.hash=t;document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});var te=document.querySelector('[data-tab="'+t+'"]');if(te)te.classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100)
 }
 
 // ===== DIARY REPLIES (guestbook) =====
@@ -730,7 +735,7 @@ function deleteReply(dk,rk){
 }
 
 // ===== MODE =====
-function toggleMode(){if(isAdmin){if(!confirm('로그아웃 하시겠습니까?'))return;isAdmin=false;updMode()}else{document.getElementById('pwMo').classList.add('show');document.getElementById('pwIn').value='';document.getElementById('pwEr').style.display='none';setTimeout(function(){document.getElementById('pwIn').focus()},100)}}
+function toggleMode(){if(isAdmin){if(!confirm('로그아웃 하시겠습니까?'))return;isAdmin=false;updMode()}else{closeAllPopups();document.getElementById('pwMo').classList.add('show');document.getElementById('pwIn').value='';document.getElementById('pwEr').style.display='none';setTimeout(function(){document.getElementById('pwIn').focus()},100)}}
 function closePw(){document.getElementById('pwMo').classList.remove('show')}
 function cfPw(){if(document.getElementById('pwIn').value==='1234'){isAdmin=true;closePw();updMode()}else document.getElementById('pwEr').style.display='block'}
 document.getElementById('pwIn').addEventListener('keydown',function(e){if(e.key==='Enter')cfPw()});
