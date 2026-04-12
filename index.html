@@ -162,6 +162,11 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 
 /* Diary */
 .drw{padding:12px;padding-bottom:100px}
+.diary-nav{display:flex;gap:5px;overflow-x:auto;padding:0 0 10px;margin-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.diary-nav::-webkit-scrollbar{display:none}
+.diary-nav button{white-space:nowrap;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-family:inherit;color:var(--tx2);flex-shrink:0}
+.diary-nav button:active{transform:scale(.95)}
+.diary-scroll-btn{position:sticky;bottom:70px;float:right;width:38px;height:38px;border-radius:50%;border:none;background:var(--ac);color:#fff;font-size:16px;cursor:pointer;box-shadow:0 2px 12px rgba(10,186,181,.3);z-index:50;display:flex;align-items:center;justify-content:center;margin-right:2px}
 .dup{padding:28px 24px;border:2px dashed var(--ac);border-radius:var(--r);text-align:center;color:var(--ac);margin-bottom:14px;cursor:pointer;background:var(--acl);font-weight:500;transition:all .2s var(--ease)}
 .dup:active{background:#d0f0ed;transform:scale(.98)}
 .dup input{display:none}
@@ -1381,7 +1386,18 @@ function renderCompose(){
   h+='</div></div>';
   el.innerHTML=h;el.style.display='block';
 }
-function removePending(i){pendingPhotos.splice(i,1);renderCompose()}
+function removePending(i){
+  var memoEl=document.getElementById('composeMemo');
+  var pwEl=document.getElementById('composePw');
+  var savedMemo=memoEl?memoEl.value:'';
+  var savedPw=pwEl?pwEl.value:'';
+  pendingPhotos.splice(i,1);
+  renderCompose();
+  var memoEl2=document.getElementById('composeMemo');
+  var pwEl2=document.getElementById('composePw');
+  if(memoEl2)memoEl2.value=savedMemo;
+  if(pwEl2)pwEl2.value=savedPw;
+}
 function cancelCompose(){pendingPhotos=[];renderCompose();renderDiary()}
 function saveCompose(){
   if(!pendingPhotos.length){alert('저장할 사진이 없습니다');return}
@@ -1406,7 +1422,7 @@ function saveCompose(){
   });
   pendingPhotos=[];
   renderCompose();
-  alert(appSettings.saveMsg||'저장 완료!');
+  alert('저장 완료!\n📅 날짜·시간은 사진 촬영일 기준으로 표시됩니다.');
 }
 function getExifDate(file,cb){
   if(!file.type||file.type.indexOf('image/')<0){cb(null,null);return}
@@ -1528,9 +1544,18 @@ function renderDiary(){
   // Group by date
   var dateGroups={};
   DD.forEach(function(e){if(!dateGroups[e.date])dateGroups[e.date]=[];dateGroups[e.date].push(e)});
-  var html='';
+  var dates=Object.keys(dateGroups).sort();
+  // Date navigation
+  var html='<div class="diary-nav">';
+  dates.forEach(function(d,i){
+    var short=d.replace(/^\d{4}-/,'').replace(/-/,'/');
+    html+='<button onclick="document.getElementById(\'dg_'+i+'\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">'+(i+1)+'. '+short+'</button>';
+  });
+  html+='</div>';
+  var dateIdx=0;
   Object.keys(dateGroups).sort().forEach(function(date){
-    html+='<div class="ddg"><div class="ddh">🌴 '+date+'</div>';
+    html+='<div class="ddg" id="dg_'+dateIdx+'"><div class="ddh">🌴 '+date+'</div>';
+    dateIdx++;
     // Sub-group by groupId within this date
     var entries=dateGroups[date];
     var cards=[];var gMap={};
@@ -1545,12 +1570,6 @@ function renderDiary(){
     cards.forEach(function(group){
       var primary=group[0];var eid=primary._key;
       html+='<div class="de">';
-      // Delete button
-      if(group.length>1){
-        html+='<button class="dd" onclick="delGroup(\''+primary.groupId+'\')">✕</button>';
-      }else{
-        html+='<button class="dd" onclick="delDE(\''+eid+'\')">✕</button>';
-      }
       // Image(s)
       if(group.length>1){
         var cid='car_'+eid;
@@ -1567,7 +1586,11 @@ function renderDiary(){
       // View mode
       html+='<div id="dv_'+eid+'">';
       if(primary.memo)html+='<div style="font-size:14px;line-height:1.7;padding:6px 0;white-space:pre-wrap">'+primary.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
-      html+='<button onclick="startEditDE(\''+eid+'\')" style="padding:3px 10px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit;margin-top:4px">수정</button></div>';
+      var delCall=group.length>1?'delGroup(\''+primary.groupId+'\')':'delDE(\''+eid+'\')';
+      html+='<div style="display:flex;gap:6px;margin-top:4px">';
+      html+='<button onclick="startEditDE(\''+eid+'\')" style="padding:3px 10px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit">수정</button>';
+      html+='<button onclick="'+delCall+'" style="padding:3px 10px;background:none;border:1px solid #f0c0b0;border-radius:6px;font-size:10px;color:var(--co);cursor:pointer;font-family:inherit">삭제</button>';
+      html+='</div></div>';
       // Edit mode (hidden)
       if(group.length===1){
         html+='<div id="de_'+eid+'" style="display:none">'
@@ -1613,6 +1636,8 @@ function renderDiary(){
     });
     html+='</div>';
   });
+  // Scroll to top button
+  html+='<button class="diary-scroll-btn" onclick="document.querySelector(\'.mn\').scrollTo({top:0,behavior:\'smooth\'})">↑</button>';
   el.innerHTML=html;
   initCarousels();
   document.getElementById('trashSection').style.display=isAdmin?'block':'none';
@@ -1926,7 +1951,15 @@ function buildExport(all,mapImg){
   h+='<div class="half right cv-right"><div class="cv-info"><h1>'+title+'</h1><p>🌴 Our Phú Quốc Memories</p><div class="dates">2026.04.13 — 04.18</div></div></div>';
   h+='<div class="gutter"></div></div>';
 
-  // === SPREAD 2: Route / Schedule ===
+  // === SPREAD 2: Map (if available) ===
+  if(mapImg){
+    h+='<div class="spread">';
+    h+='<div class="half left photo-half"><img class="map-img" src="'+mapImg+'" style="max-height:100%;max-width:100%"></div>';
+    h+='<div class="half right" style="padding:16mm 18mm;justify-content:center"><div class="rt-title">🗺️ 여행 지도</div><div style="flex:1;display:flex;align-items:center;justify-content:center;color:#e0ddd6;font-size:12pt">MY루트 기반 여행 경로</div><span class="pg-num">'+(pgNum++)+'</span></div>';
+    h+='<div class="gutter"></div></div>';
+  }
+
+  // === SPREAD 3: Route / Schedule ===
   var secLabels={hotel:'🛏️ 숙소',breakfast:'🌅 아침',am_act:'🎯 오전',lunch:'🍜 점심',pm_act:'🎯 오후',dinner:'🌙 저녁',eve_act:'🌃 저녁활동',snack:'🍉 야식'};
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
   var dayList=DAY_INFO.filter(function(d){return d.day!==19});
@@ -1951,10 +1984,8 @@ function buildExport(all,mapImg){
   }
 
   h+='<div class="spread">';
-  // Left page: map + first half days
   h+='<div class="half left">';
-  if(mapImg)h+='<img class="map-img" src="'+mapImg+'">';
-  h+='<div class="rt-title">🗺️ 여행 일정</div>';
+  h+='<div class="rt-title">🗓️ 여행 일정</div>';
   dayList.slice(0,mid).forEach(function(di){
     var dd=schData[''+di.day]||{};
     h+='<div class="rt-day"><div class="rt-dh"><span class="rt-dd">4/'+di.day+' '+dayNames[di.day]+'</span><span class="rt-dt">'+getDayTitle(di.day)+'</span></div>';
@@ -1962,7 +1993,6 @@ function buildExport(all,mapImg){
     h+='</div>';
   });
   h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
-  // Right page: remaining days
   h+='<div class="half right">';
   dayList.slice(mid).forEach(function(di){
     var dd=schData[''+di.day]||{};
