@@ -1949,7 +1949,8 @@ function buildExport(all,mapImg){
   function buildEntryHalf(group,showDate,date){
     var primary=group[0];
     var o='';
-    if(showDate)o+='<div class="ep-date">🌴 '+date+'</div>';
+    if(showDate){o+='<div class="ep-date">🌴 '+date+'</div>';}
+    else{o+='<div class="ep-date" style="visibility:hidden">-</div>';}
     // Photo(s)
     if(group.length===1){
       o+='<div class="ep-photo"><img src="'+primary.data+'"></div>';
@@ -2045,11 +2046,11 @@ function buildExport(all,mapImg){
   h+='<div class="half right cv-right"><div class="cv-info"><h1>'+title+'</h1><p>🌴 Our Phú Quốc Memories</p><div class="dates">2026.04.13 — 04.18</div></div></div>';
   h+='<div class="gutter"></div></div>';
 
-  // === SPREAD 2: Map (MY루트) ===
+  // === SPREAD 2: Map + Title ===
   if(mapImg){
     h+='<div class="spread">';
-    h+='<div class="half left photo-half"><img src="'+mapImg+'" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 2px 20px rgba(0,0,0,.08)"><span class="pg-num">'+(pgNum++)+'</span></div>';
-    h+='<div class="half right" style="padding:16mm 18mm;display:flex;flex-direction:column;justify-content:center"><div style="font-size:16pt;font-weight:900;color:#0ABAB5;margin-bottom:12px">🗺️ MY루트</div><div style="font-size:10pt;color:#7A9295;line-height:1.8">우리의 여행 경로</div><span class="pg-num">'+(pgNum++)+'</span></div>';
+    h+='<div class="half left" style="display:flex;align-items:center;justify-content:center;background:#F5F3EE;padding:10mm"><img src="'+mapImg+'" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 2px 20px rgba(0,0,0,.08)"><span class="pg-num">'+(pgNum++)+'</span></div>';
+    h+='<div class="half right" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16mm 18mm;text-align:center"><div style="font-size:36pt;margin-bottom:16px">📸</div><div style="font-size:18pt;font-weight:900;color:#0ABAB5;margin-bottom:10px">우리들의 이야기</div><div style="font-size:9pt;color:#7A9295;line-height:1.8">사진과 메모, 그리고 댓글로<br>기록한 푸꾸옥의 순간들</div><span class="pg-num">'+(pgNum++)+'</span></div>';
     h+='<div class="gutter"></div></div>';
   }
 
