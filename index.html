@@ -162,11 +162,13 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 
 /* Diary */
 .drw{padding:12px;padding-bottom:100px}
-.diary-nav{display:flex;gap:5px;overflow-x:auto;padding:0 0 10px;margin-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.diary-nav::-webkit-scrollbar{display:none}
-.diary-nav button{white-space:nowrap;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600;border:1.5px solid #ddd;background:#fff;cursor:pointer;font-family:inherit;color:var(--tx2);flex-shrink:0}
-.diary-nav button:active{transform:scale(.95)}
-.diary-scroll-btn{position:sticky;bottom:70px;float:right;width:38px;height:38px;border-radius:50%;border:none;background:var(--ac);color:#fff;font-size:16px;cursor:pointer;box-shadow:0 2px 12px rgba(10,186,181,.3);z-index:50;display:flex;align-items:center;justify-content:center;margin-right:2px}
+.diary-pager{display:flex;align-items:center;justify-content:center;gap:4px;padding:8px 0 10px}
+.diary-pager button{width:30px;height:30px;border-radius:50%;border:1.5px solid #ddd;background:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--tx2);display:flex;align-items:center;justify-content:center}
+.diary-pager button:active{transform:scale(.9)}
+.diary-pager button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
+.diary-pager .pg-arrow{font-size:14px;background:none;border:none;color:var(--tx2);width:28px}
+.diary-scroll-btns{position:sticky;bottom:70px;float:right;display:flex;flex-direction:column;gap:6px;margin-right:2px;z-index:50}
+.diary-scroll-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--ac);color:#fff;font-size:16px;cursor:pointer;box-shadow:0 2px 12px rgba(10,186,181,.3);display:flex;align-items:center;justify-content:center}
 .dup{padding:28px 24px;border:2px dashed var(--ac);border-radius:var(--r);text-align:center;color:var(--ac);margin-bottom:14px;cursor:pointer;background:var(--acl);font-weight:500;transition:all .2s var(--ease)}
 .dup:active{background:#d0f0ed;transform:scale(.98)}
 .dup input{display:none}
@@ -1545,12 +1547,13 @@ function renderDiary(){
   var dateGroups={};
   DD.forEach(function(e){if(!dateGroups[e.date])dateGroups[e.date]=[];dateGroups[e.date].push(e)});
   var dates=Object.keys(dateGroups).sort();
-  // Date navigation
-  var html='<div class="diary-nav">';
+  // Page navigation: <- 1 2 3 ... ->
+  var html='<div class="diary-pager">';
+  html+='<button class="pg-arrow" onclick="diaryPagePrev()">‹</button>';
   dates.forEach(function(d,i){
-    var short=d.replace(/^\d{4}-/,'').replace(/-/,'/');
-    html+='<button onclick="document.getElementById(\'dg_'+i+'\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">'+(i+1)+'. '+short+'</button>';
+    html+='<button id="dpg_'+i+'" onclick="diaryGoPage('+i+')">'+(i+1)+'</button>';
   });
+  html+='<button class="pg-arrow" onclick="diaryPageNext()">›</button>';
   html+='</div>';
   var dateIdx=0;
   Object.keys(dateGroups).sort().forEach(function(date){
@@ -1637,11 +1640,25 @@ function renderDiary(){
     html+='</div>';
   });
   // Scroll to top button
-  html+='<button class="diary-scroll-btn" onclick="document.querySelector(\'.mn\').scrollTo({top:0,behavior:\'smooth\'})">↑</button>';
+  html+='<div class="diary-scroll-btns">';
+  html+='<button class="diary-scroll-btn" onclick="document.querySelector(\'.mn\').scrollTo({top:0,behavior:\'smooth\'})">▲</button>';
+  html+='<button class="diary-scroll-btn" onclick="var m=document.querySelector(\'.mn\');m.scrollTo({top:m.scrollHeight,behavior:\'smooth\'})">▼</button>';
+  html+='</div>';
   el.innerHTML=html;
   initCarousels();
+  if(dates.length)diaryGoPage(0);
   document.getElementById('trashSection').style.display=isAdmin?'block':'none';
 }
+var _diaryPage=0,_diaryPageCount=0;
+function diaryGoPage(i){
+  _diaryPageCount=document.querySelectorAll('[id^="dg_"]').length;
+  if(i<0||i>=_diaryPageCount)return;
+  _diaryPage=i;
+  document.getElementById('dg_'+i).scrollIntoView({behavior:'smooth',block:'start'});
+  document.querySelectorAll('.diary-pager button:not(.pg-arrow)').forEach(function(b,idx){b.classList.toggle('on',idx===i)});
+}
+function diaryPagePrev(){diaryGoPage(_diaryPage-1)}
+function diaryPageNext(){diaryGoPage(_diaryPage+1)}
 function initCarousels(){
   document.querySelectorAll('.de-carousel').forEach(function(c){
     var cid=c.id;
