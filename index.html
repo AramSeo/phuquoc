@@ -1422,7 +1422,7 @@ function saveCompose(){
   });
   pendingPhotos=[];
   renderCompose();
-  alert('저장 완료!\n📅 날짜·시간은 사진 촬영일 기준으로 표시됩니다.');
+  alert('저장 완료!\n날짜·시간은 사진 촬영일 기준으로 표시됩니다.');
 }
 function getExifDate(file,cb){
   if(!file.type||file.type.indexOf('image/')<0){cb(null,null);return}
