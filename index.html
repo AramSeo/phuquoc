@@ -2000,25 +2000,28 @@ function buildExport(all,mapImg){
     if(!hasSomething&&!memo)h+='<div style="color:#ddd;font-size:8pt">아직 일정이 없어요</div>';
   }
 
-  h+='<div class="spread">';
-  h+='<div class="half left">';
-  h+='<div class="rt-title">🗓️ 여행 일정</div>';
-  dayList.slice(0,mid).forEach(function(di){
-    var dd=schData[''+di.day]||{};
-    h+='<div class="rt-day"><div class="rt-dh"><span class="rt-dd">4/'+di.day+' '+dayNames[di.day]+'</span><span class="rt-dt">'+getDayTitle(di.day)+'</span></div>';
-    buildRouteDay(dd,di.day);
+  // 2 days per spread (1 left, 1 right) — prevents clipping
+  for(var di=0;di<dayList.length;di+=2){
+    h+='<div class="spread">';
+    // Left page
+    h+='<div class="half left">';
+    if(di===0)h+='<div class="rt-title">🗓️ 여행 일정</div>';
+    var d1=dayList[di];var dd1=schData[''+d1.day]||{};
+    h+='<div class="rt-day"><div class="rt-dh"><span class="rt-dd">4/'+d1.day+' '+dayNames[d1.day]+'</span><span class="rt-dt">'+getDayTitle(d1.day)+'</span></div>';
+    buildRouteDay(dd1,d1.day);
     h+='</div>';
-  });
-  h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
-  h+='<div class="half right">';
-  dayList.slice(mid).forEach(function(di){
-    var dd=schData[''+di.day]||{};
-    h+='<div class="rt-day"><div class="rt-dh"><span class="rt-dd">4/'+di.day+' '+dayNames[di.day]+'</span><span class="rt-dt">'+getDayTitle(di.day)+'</span></div>';
-    buildRouteDay(dd,di.day);
-    h+='</div>';
-  });
-  h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
-  h+='<div class="gutter"></div></div>';
+    h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
+    // Right page
+    h+='<div class="half right">';
+    if(dayList[di+1]){
+      var d2=dayList[di+1];var dd2=schData[''+d2.day]||{};
+      h+='<div class="rt-day"><div class="rt-dh"><span class="rt-dd">4/'+d2.day+' '+dayNames[d2.day]+'</span><span class="rt-dt">'+getDayTitle(d2.day)+'</span></div>';
+      buildRouteDay(dd2,d2.day);
+      h+='</div>';
+    }
+    h+='<span class="pg-num">'+(pgNum++)+'</span></div>';
+    h+='<div class="gutter"></div></div>';
+  }
 
   // === SPREAD 3+: Diary entries (left=photo, right=text) ===
   var diaryCards=[];var gMap={};
