@@ -403,8 +403,8 @@ body.font-lg .ql a{font-size:12px}
   </div>
 </div>
 <div class="tc" id="tab-diary">
-  <button class="diary-scroll-btn up" onclick="var m=document.querySelector('.mn');var step=m.scrollHeight/8;var cur=m.scrollTop;m.scrollTo({top:Math.max(0,cur-step),behavior:'smooth'})">▲</button>
-  <button class="diary-scroll-btn down" onclick="var m=document.querySelector('.mn');var step=m.scrollHeight/8;var cur=m.scrollTop;m.scrollTo({top:cur+step,behavior:'smooth'})">▼</button>
+  <button class="diary-scroll-btn up" onclick="document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'})">▲</button>
+  <button class="diary-scroll-btn down" onclick="var m=document.querySelector('.mn');m.scrollTo({top:m.scrollHeight,behavior:'smooth'})">▼</button>
   <div class="drw">
     <div id="diaryCompose" style="display:none"></div>
     <div class="dup" id="diaryUpBtn" onclick="document.getElementById('phIn').click()">
@@ -1549,7 +1549,7 @@ function addNickColor(){
 
 var _allDiaryCards=[];
 var _diaryPage=0;
-var DIARY_PER_PAGE=5;
+var DIARY_PER_PAGE=4;
 
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
