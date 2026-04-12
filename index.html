@@ -615,11 +615,28 @@ var defaultGuide=[
 var guideData=null;
 fbGet('guide_items',function(val){guideData=val||defaultGuide;renderGuide()});
 
+var _guideEditIdx=-1;
 function renderGuide(){
   var el=document.getElementById('guideContent');if(!el||!guideData)return;
   var h='';
   guideData.forEach(function(item,i){
-    if(item.t==='sec'){
+    if(_guideEditIdx===i){
+      // Inline edit form
+      h+='<div class="guide-item" style="background:#f8f8f5;border-radius:8px;padding:10px;margin:4px 0">';
+      if(item.t==='sec'){
+        h+='<input id="ge_text" value="'+item.text.replace(/"/g,'&quot;')+'" style="width:100%;padding:6px;border:1.5px solid var(--ac);border-radius:6px;font-size:12px;font-family:inherit;font-weight:700;outline:none">';
+      }else{
+        h+='<div style="display:flex;gap:4px;margin-bottom:4px">';
+        h+='<input id="ge_icon" value="'+item.icon.replace(/"/g,'&quot;')+'" style="width:40px;padding:6px;border:1.5px solid #ddd;border-radius:6px;font-size:14px;text-align:center;outline:none">';
+        h+='<input id="ge_label" value="'+item.label.replace(/"/g,'&quot;')+'" style="flex:1;padding:6px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;font-family:inherit;font-weight:700;outline:none">';
+        h+='</div>';
+        h+='<textarea id="ge_desc" style="width:100%;padding:6px;border:1.5px solid #ddd;border-radius:6px;font-size:11px;font-family:inherit;resize:vertical;min-height:60px;outline:none;line-height:1.6">'+(item.desc||'')+'</textarea>';
+      }
+      h+='<div style="display:flex;gap:6px;margin-top:6px">';
+      h+='<button onclick="saveGuideEdit('+i+')" style="flex:1;padding:6px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">저장</button>';
+      h+='<button onclick="cancelGuideEdit()" style="flex:1;padding:6px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit">취소</button>';
+      h+='</div></div>';
+    }else if(item.t==='sec'){
       h+='<div class="guide-sec">'+item.text;
       if(isAdmin)h+=' <button onclick="editGuideItem('+i+')" style="float:right;background:none;border:none;font-size:10px;color:var(--ac);cursor:pointer">수정</button>';
       h+='</div>';
@@ -649,18 +666,20 @@ function renderGuide(){
   }
   el.innerHTML=h;
 }
-function editGuideItem(i){
+function editGuideItem(i){_guideEditIdx=i;renderGuide()}
+function cancelGuideEdit(){_guideEditIdx=-1;renderGuide()}
+function saveGuideEdit(i){
   var item=guideData[i];if(!item)return;
   if(item.t==='sec'){
-    var v=prompt('섹션 제목',item.text);if(v===null)return;
-    guideData[i].text=v;
+    guideData[i].text=document.getElementById('ge_text').value.trim()||item.text;
   }else{
-    var icon=prompt('아이콘',item.icon);if(icon===null)return;
-    var label=prompt('제목',item.label);if(label===null)return;
-    var desc=prompt('설명 (\\n으로 줄바꿈)',item.desc);if(desc===null)return;
-    guideData[i].icon=icon;guideData[i].label=label;guideData[i].desc=desc;
+    guideData[i].icon=document.getElementById('ge_icon').value.trim()||item.icon;
+    guideData[i].label=document.getElementById('ge_label').value.trim()||item.label;
+    guideData[i].desc=document.getElementById('ge_desc').value;
   }
+  _guideEditIdx=-1;
   fbSet('guide_items',guideData);renderGuide();
+}
 }
 function deleteGuideItem(i){
   if(!confirm('삭제하시겠습니까?'))return;
