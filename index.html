@@ -606,7 +606,7 @@ var defaultGuide=[
   {t:'item',icon:'🗺️',label:'지도',desc:'장소별 위치 확인. 카테고리 필터로 식당·카페·마사지 등 모아보기. 푸꾸옥에서 🔵내 위치도 확인 가능!'},
   {t:'item',icon:'🗓️',label:'일정',desc:'날짜별 일정표 + 날씨 정보. 어떤 날에 뭘 할지 한눈에!'},
   {t:'item',icon:'📓',label:'다이어리',desc:'여행 사진 올리고 메모 남기기. 댓글로 서로 소통해요! 비밀번호 4자리로 관리.'},
-  {t:'item',icon:'📋',label:'예산·팁',desc:'예산표, 체크리스트, 베트남어, 긴급연락처 등 여행 필수 정보.'},
+  {t:'item',icon:'🧳',label:'예산·팁',desc:'예산표, 체크리스트, 베트남어, 긴급연락처 등 여행 필수 정보.'},
   {t:'sec',text:'✨ 주요 기능'},
   {t:'item',icon:'📌',label:'MY루트',desc:'지도 탭에서 MY루트 필터로 우리 여행 루트만 모아보기. 장소 추가/수정은 주인장에게 문의!'},
   {t:'item',icon:'📄',label:'내보내기',desc:'다이어리 하단 내보내기 → 책 형태 PDF로 저장. 여행 추억을 간직하세요!'},
@@ -701,7 +701,7 @@ function saveSettings(){
 }
 
 // ===== TAB CONFIG (order + hide) =====
-var TAB_DEFS={map:{icon:'🗺️',labelKey:'tab_map',def:'지도'},schedule:{icon:'🗓️',labelKey:'tab_schedule',def:'일정'},diary:{icon:'📓',labelKey:'tab_diary',def:'다이어리'},budget:{icon:'💰',labelKey:'tab_budget',def:'예산·팁'}};
+var TAB_DEFS={map:{icon:'🗺️',labelKey:'tab_map',def:'지도'},schedule:{icon:'🗓️',labelKey:'tab_schedule',def:'일정'},diary:{icon:'📓',labelKey:'tab_diary',def:'다이어리'},budget:{icon:'🧳',labelKey:'tab_budget',def:'예산·팁'}};
 var tabConfig={order:['map','schedule','diary','budget'],hidden:[]};
 var _tabInited=false;
 fbGet('tab_config',function(val){
