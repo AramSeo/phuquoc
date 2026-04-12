@@ -1828,7 +1828,7 @@ function exportDiary(){
   });
 }
 function generateSharePDF(overlay,title,cb){
-  var spreads=Array.from(overlay.querySelectorAll('.spread,.sched-flow'));
+  var spreads=Array.from(overlay.querySelectorAll('.spread'));
   if(!spreads.length){cb(null);return}
   var JsPDF=window.jspdf&&window.jspdf.jsPDF;
   if(!JsPDF){cb(null);return}
@@ -1927,21 +1927,7 @@ function buildExport(all,mapImg){
     +'.cv-info h1{font-size:26pt;font-weight:900;letter-spacing:-0.5px;margin-bottom:10px}'
     +'.cv-info p{font-size:12pt;opacity:.75;margin-bottom:4px}'
     +'.cv-info .dates{margin-top:16px;font-size:10pt;opacity:.5}'
-    /* Schedule flow page */
-    +'.sched-flow{width:297mm;background:#fff;padding:14mm 16mm;margin:0 auto;page-break-after:always}'
-    +'.sched-grid{display:grid;grid-template-columns:1fr 1fr;gap:3mm}'
-    /* Route */
-    +'.rt-title{font-size:13pt;font-weight:900;color:#0ABAB5;margin-bottom:10px;text-align:center}'
-    +'.rt-day{background:#f9f7f3;border-radius:8px;padding:7px 10px;margin-bottom:0;break-inside:avoid;page-break-inside:avoid}'
-    +'.rt-dh{display:flex;align-items:center;gap:6px;margin-bottom:3px;padding-bottom:3px;border-bottom:1.5px solid #E0F7F5}'
-    +'.rt-dd{font-size:10pt;font-weight:900;color:#0ABAB5}'
-    +'.rt-dt{font-size:8pt;color:#7A9295}'
-    +'.rt-sec{display:flex;flex-wrap:wrap;gap:3px;margin:2px 0}'
-    +'.rt-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:#fff;border-radius:6px;font-size:7.5pt;font-weight:500}'
-    +'.rt-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}'
-    +'.rt-sl{font-size:7pt;color:#7A9295;font-weight:700;margin:3px 0 1px}'
-    +'.rt-memo{font-size:7.5pt;color:#7A9295;line-height:1.4;margin-top:2px}'
-    +'.map-img{width:100%;border-radius:10px;margin-bottom:10px;max-height:80mm;object-fit:contain}'
+    /* (schedule styles removed) */
     /* Photo page (left) */
     +'.photo-half{padding:10mm;display:flex;align-items:center;justify-content:center;background:#F5F3EE}'
     +'.photo-half img{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 2px 20px rgba(0,0,0,.08)}'
@@ -1961,10 +1947,10 @@ function buildExport(all,mapImg){
     +'.rp-m{font-size:6.5pt;color:#7A9295;margin-top:2px}'
     +'.empty-half{flex:1;display:flex;align-items:center;justify-content:center;color:#e8e5df;font-size:20pt}'
     /* Print */
-    +'@media print{body{background:#fff}.spread,.sched-flow{box-shadow:none;margin:0}.toolbar{display:none!important}}'
+    +'@media print{body{background:#fff}.spread{box-shadow:none;margin:0}.toolbar{display:none!important}}'
     /* Screen preview */
     +'@media screen{body{background:#555;padding:16px 0 80px}'
-    +'.spread,.sched-flow{margin:0 auto 20px;box-shadow:0 6px 30px rgba(0,0,0,.35);border-radius:3px}'
+    +'.spread{margin:0 auto 20px;box-shadow:0 6px 30px rgba(0,0,0,.35);border-radius:3px}'
     +'}'
     +'</style></head><body>';
 
@@ -1976,41 +1962,13 @@ function buildExport(all,mapImg){
   h+='<div class="half right cv-right"><div class="cv-info"><h1>'+title+'</h1><p>🌴 Our Phú Quốc Memories</p><div class="dates">2026.04.13 — 04.18</div></div></div>';
   h+='<div class="gutter"></div></div>';
 
-  // === PAGE 2: Map + Schedule (flow layout) ===
-  var secLabels={hotel:'🛏️ 숙소',breakfast:'🌅 아침',am_act:'🎯 오전',lunch:'🍜 점심',pm_act:'🎯 오후',dinner:'🌙 저녁',eve_act:'🌃 저녁활동',snack:'🍉 야식'};
-  var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토'};
-  var dayList=DAY_INFO.filter(function(d){return d.day!==19});
-
-  function buildRouteDayStr(dd,day){
-    var o='';var hasSomething=false;
-    ['hotel','breakfast','am_act','lunch','pm_act','dinner','eve_act','snack'].forEach(function(sec){
-      var items=dd[sec];if(!items||!items.length)return;
-      hasSomething=true;
-      o+='<div class="rt-sl">'+secLabels[sec]+'</div><div class="rt-sec">';
-      items.forEach(function(it){
-        var plc=it.placeKey?gAll().find(function(pp){return pp.n===it.text}):null;
-        var dotColor=plc&&CM[plc.c]?CM[plc.c].co:'#0ABAB5';
-        o+='<span class="rt-chip"><span class="rt-dot" style="background:'+dotColor+'"></span>'+it.text+'</span>';
-      });
-      o+='</div>';
-    });
-    var memo=(dayMemos&&dayMemos[''+day])||'';
-    if(memo)o+='<div class="rt-memo">'+memo.replace(/</g,'&lt;')+'</div>';
-    if(!hasSomething&&!memo)o+='<div style="color:#ddd;font-size:8pt">아직 일정이 없어요</div>';
-    return o;
+  // === SPREAD 2: Map (MY루트) ===
+  if(mapImg){
+    h+='<div class="spread">';
+    h+='<div class="half left photo-half"><img src="'+mapImg+'" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;box-shadow:0 2px 20px rgba(0,0,0,.08)"><span class="pg-num">'+(pgNum++)+'</span></div>';
+    h+='<div class="half right" style="padding:16mm 18mm;display:flex;flex-direction:column;justify-content:center"><div style="font-size:16pt;font-weight:900;color:#0ABAB5;margin-bottom:12px">🗺️ MY루트</div><div style="font-size:10pt;color:#7A9295;line-height:1.8">우리의 여행 경로</div><span class="pg-num">'+(pgNum++)+'</span></div>';
+    h+='<div class="gutter"></div></div>';
   }
-
-  h+='<div class="sched-flow">';
-  if(mapImg)h+='<div style="margin-bottom:10mm;border-radius:10px;overflow:hidden"><img src="'+mapImg+'" style="width:100%;max-height:120mm;object-fit:contain;display:block;background:#F5F3EE;border-radius:10px"></div>';
-  h+='<div class="rt-title">🗓️ 여행 일정</div>';
-  h+='<div class="sched-grid">';
-  dayList.forEach(function(di){
-    var dd=schData[''+di.day]||{};
-    h+='<div class="rt-day"><div class="rt-dh"><span class="rt-dd">4/'+di.day+' '+dayNames[di.day]+'</span><span class="rt-dt">'+getDayTitle(di.day)+'</span></div>';
-    h+=buildRouteDayStr(dd,di.day);
-    h+='</div>';
-  });
-  h+='</div></div>';
 
   // === SPREAD 3+: Diary entries (left=photo, right=text) ===
   var diaryCards=[];var gMap={};
@@ -2063,7 +2021,7 @@ function buildExport(all,mapImg){
   // Scale spreads to fit mobile viewport
   function scaleBooks(){
     var vw=ov.clientWidth;
-    var spreads=ov.querySelectorAll('.spread,.sched-flow');
+    var spreads=ov.querySelectorAll('.spread');
     spreads.forEach(function(s){
       var natW=s.scrollWidth||s.offsetWidth;
       if(natW>vw){
