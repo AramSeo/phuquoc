@@ -538,36 +538,8 @@ body.font-lg .ql a{font-size:12px}
 <div class="guide-overlay" id="guideOv" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="guide-box">
     <h3>🌴 이용 가이드<button class="guide-close" onclick="toggleGuide()">✕</button></h3>
-
-    <div class="guide-sec">📲 앱 설치 방법</div>
-    <div class="guide-item"><span class="gi-icon">🍎</span><span class="gi-label">iPhone (Safari)</span>
-      <div class="gi-steps">
-        <span>1. Safari로 이 페이지 접속</span>
-        <span>2. 하단 <b>공유 버튼</b> (□↑) 탭</span>
-        <span>3. <b>"홈 화면에 추가"</b> 선택</span>
-        <span>4. 홈 화면에 앱 아이콘 생성!</span>
-      </div>
-    </div>
-    <div class="guide-item"><span class="gi-icon">🤖</span><span class="gi-label">Android (Chrome)</span>
-      <div class="gi-steps">
-        <span>1. Chrome으로 이 페이지 접속</span>
-        <span>2. 우측 상단 <b>⋮ 메뉴</b> 탭</span>
-        <span>3. <b>"홈 화면에 추가"</b> 또는 <b>"앱 설치"</b> 선택</span>
-        <span>4. 홈 화면에 앱 아이콘 생성!</span>
-      </div>
-    </div>
-
-    <div class="guide-sec">📋 탭 사용법</div>
-    <div class="guide-item"><span class="gi-icon">🗺️</span><span class="gi-label">지도</span><div class="gi-desc">장소별 위치 확인. 카테고리 필터로 식당·카페·마사지 등 모아보기. 푸꾸옥에서 <b>🔵내 위치</b>도 확인 가능!</div></div>
-    <div class="guide-item"><span class="gi-icon">🗓️</span><span class="gi-label">일정</span><div class="gi-desc">날짜별 일정표 + 날씨 정보. 어떤 날에 뭘 할지 한눈에!</div></div>
-    <div class="guide-item"><span class="gi-icon">📓</span><span class="gi-label">다이어리</span><div class="gi-desc">여행 사진 올리고 메모 남기기. 댓글로 서로 소통해요! 비밀번호 4자리로 관리.</div></div>
-    <div class="guide-item"><span class="gi-icon">💰</span><span class="gi-label">예산·팁</span><div class="gi-desc">예산표, 체크리스트, 베트남어, 긴급연락처 등 여행 필수 정보.</div></div>
-
-    <div class="guide-sec">✨ 주요 기능</div>
-    <div class="guide-item"><span class="gi-icon">📌</span><span class="gi-label">MY루트</span><div class="gi-desc">지도 탭에서 <b>MY루트</b> 필터로 우리 여행 루트만 모아보기. 장소 추가/수정은 주인장에게 문의!</div></div>
-    <div class="guide-item"><span class="gi-icon">📄</span><span class="gi-label">내보내기</span><div class="gi-desc">다이어리 하단 <b>내보내기</b> → 책 형태 PDF로 저장. 여행 추억을 간직하세요!</div></div>
-    <div class="guide-item"><span class="gi-icon">가</span><span class="gi-label">글자 크기</span><div class="gi-desc">오른쪽 상단 <b>가</b> 버튼으로 글자 크기를 키울 수 있어요.</div></div>
-    <button onclick="document.getElementById('guideOv').classList.remove('show')" style="width:100%;margin-top:16px;padding:12px;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">확인</button>
+    <div id="guideContent"></div>
+    <button onclick="toggleGuide()" style="width:100%;margin-top:16px;padding:12px;background:var(--ac);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">확인</button>
   </div>
 </div>
 <div class="mo" id="pwMo"><div class="md"><h3>Admin</h3><p class="er" id="pwEr">비밀번호가 틀렸습니다</p><input type="password" id="pwIn" placeholder="비밀번호" maxlength="10"><div class="mdb"><button class="cc" onclick="closePw()">취소</button><button class="cf" onclick="cfPw()">확인</button></div></div></div>
@@ -624,6 +596,90 @@ function openSettings(){
   renderTabSettings();renderFilterSettings();renderNickSettings();
 }
 function closeSettings(){document.getElementById('settingsOverlay').classList.remove('show')}
+
+// ===== GUIDE (editable) =====
+var defaultGuide=[
+  {t:'sec',text:'📲 앱 설치 방법'},
+  {t:'item',icon:'🍎',label:'iPhone (Safari)',desc:'1. Safari로 이 페이지 접속\n2. 하단 공유 버튼 (□↑) 탭\n3. "홈 화면에 추가" 선택\n4. 홈 화면에 앱 아이콘 생성!'},
+  {t:'item',icon:'🤖',label:'Android (Chrome)',desc:'1. Chrome으로 이 페이지 접속\n2. 우측 상단 ⋮ 메뉴 탭\n3. "홈 화면에 추가" 또는 "앱 설치" 선택\n4. 홈 화면에 앱 아이콘 생성!'},
+  {t:'sec',text:'📋 탭 사용법'},
+  {t:'item',icon:'🗺️',label:'지도',desc:'장소별 위치 확인. 카테고리 필터로 식당·카페·마사지 등 모아보기. 푸꾸옥에서 🔵내 위치도 확인 가능!'},
+  {t:'item',icon:'🗓️',label:'일정',desc:'날짜별 일정표 + 날씨 정보. 어떤 날에 뭘 할지 한눈에!'},
+  {t:'item',icon:'📓',label:'다이어리',desc:'여행 사진 올리고 메모 남기기. 댓글로 서로 소통해요! 비밀번호 4자리로 관리.'},
+  {t:'item',icon:'📋',label:'예산·팁',desc:'예산표, 체크리스트, 베트남어, 긴급연락처 등 여행 필수 정보.'},
+  {t:'sec',text:'✨ 주요 기능'},
+  {t:'item',icon:'📌',label:'MY루트',desc:'지도 탭에서 MY루트 필터로 우리 여행 루트만 모아보기. 장소 추가/수정은 주인장에게 문의!'},
+  {t:'item',icon:'📄',label:'내보내기',desc:'다이어리 하단 내보내기 → 책 형태 PDF로 저장. 여행 추억을 간직하세요!'},
+  {t:'item',icon:'가',label:'글자 크기',desc:'오른쪽 상단 가 버튼으로 글자 크기를 키울 수 있어요.'}
+];
+var guideData=null;
+fbGet('guide_items',function(val){guideData=val||defaultGuide;renderGuide()});
+
+function renderGuide(){
+  var el=document.getElementById('guideContent');if(!el||!guideData)return;
+  var h='';
+  guideData.forEach(function(item,i){
+    if(item.t==='sec'){
+      h+='<div class="guide-sec">'+item.text;
+      if(isAdmin)h+=' <button onclick="editGuideItem('+i+')" style="float:right;background:none;border:none;font-size:10px;color:var(--ac);cursor:pointer">수정</button>';
+      h+='</div>';
+    }else{
+      h+='<div class="guide-item"><span class="gi-icon">'+item.icon+'</span><span class="gi-label">'+item.label+'</span>';
+      h+='<div class="gi-desc">'+item.desc.replace(/\n/g,'<br>')+'</div>';
+      if(isAdmin){
+        h+='<div style="display:flex;gap:4px;margin-top:4px">';
+        h+='<button onclick="editGuideItem('+i+')" style="padding:2px 8px;background:none;border:1px solid #ddd;border-radius:4px;font-size:9px;color:#999;cursor:pointer;font-family:inherit">수정</button>';
+        h+='<button onclick="deleteGuideItem('+i+')" style="padding:2px 8px;background:none;border:1px solid #f0c0b0;border-radius:4px;font-size:9px;color:var(--co);cursor:pointer;font-family:inherit">삭제</button>';
+        h+='</div>';
+      }
+      h+='</div>';
+    }
+  });
+  if(isAdmin){
+    h+='<div style="margin-top:12px;padding-top:12px;border-top:1px dashed #ddd">';
+    h+='<div style="font-size:11px;font-weight:700;color:var(--ac);margin-bottom:6px">항목 추가</div>';
+    h+='<div style="display:flex;gap:4px;margin-bottom:4px">';
+    h+='<select id="guideAddType" style="padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:11px;font-family:inherit"><option value="item">항목</option><option value="sec">섹션</option></select>';
+    h+='<input id="guideAddIcon" placeholder="아이콘" style="width:40px;padding:4px;border:1px solid #ddd;border-radius:4px;font-size:11px;text-align:center">';
+    h+='<input id="guideAddLabel" placeholder="제목" style="flex:1;padding:4px 6px;border:1px solid #ddd;border-radius:4px;font-size:11px;font-family:inherit">';
+    h+='</div>';
+    h+='<textarea id="guideAddDesc" placeholder="설명 (줄바꿈 가능)" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:11px;font-family:inherit;resize:vertical;min-height:36px;margin-bottom:4px"></textarea>';
+    h+='<button onclick="addGuideItem()" style="width:100%;padding:6px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">추가</button>';
+    h+='</div>';
+  }
+  el.innerHTML=h;
+}
+function editGuideItem(i){
+  var item=guideData[i];if(!item)return;
+  if(item.t==='sec'){
+    var v=prompt('섹션 제목',item.text);if(v===null)return;
+    guideData[i].text=v;
+  }else{
+    var icon=prompt('아이콘',item.icon);if(icon===null)return;
+    var label=prompt('제목',item.label);if(label===null)return;
+    var desc=prompt('설명 (\\n으로 줄바꿈)',item.desc);if(desc===null)return;
+    guideData[i].icon=icon;guideData[i].label=label;guideData[i].desc=desc;
+  }
+  fbSet('guide_items',guideData);renderGuide();
+}
+function deleteGuideItem(i){
+  if(!confirm('삭제하시겠습니까?'))return;
+  guideData.splice(i,1);fbSet('guide_items',guideData);renderGuide();
+}
+function addGuideItem(){
+  var type=document.getElementById('guideAddType').value;
+  var icon=document.getElementById('guideAddIcon').value.trim();
+  var label=document.getElementById('guideAddLabel').value.trim();
+  var desc=document.getElementById('guideAddDesc').value.trim();
+  if(type==='sec'){
+    if(!label){alert('제목을 입력하세요');return}
+    guideData.push({t:'sec',text:label});
+  }else{
+    if(!label){alert('제목을 입력하세요');return}
+    guideData.push({t:'item',icon:icon||'📝',label:label,desc:desc});
+  }
+  fbSet('guide_items',guideData);renderGuide();
+}
 function saveSettings(){
   appSettings.title=document.getElementById('set-title').value;
   appSettings.diaryTitle=document.getElementById('set-diary-title').value;
@@ -747,7 +803,7 @@ function updMode(){
   if(isAdmin){b.textContent=appSettings.adminLabel||'Admin';b.classList.add('admin');document.body.classList.add('admin-mode')}
   else{b.textContent=appSettings.visitorLabel||'Login';b.classList.remove('admin');document.body.classList.remove('admin-mode')}
   var ts=document.getElementById('trashSection');if(ts)ts.style.display=isAdmin?'block':'none';
-  renderTabs();renderSch();renderKeyInfo();renderTips();renderBudgetSummary();renderPlacesTrash();rMk();if(aFil!=='all')rCd(aFil);
+  renderTabs();renderSch();renderKeyInfo();renderTips();renderBudgetSummary();renderPlacesTrash();rMk();if(aFil!=='all')rCd(aFil);renderGuide();renderDiary();
 }
 
 // ===== PLACES =====
