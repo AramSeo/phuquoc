@@ -1832,7 +1832,7 @@ function delDE(id){
   var found=DD.find(function(x){return x._key===id});
   if(!found)return;
   if(isAdmin){
-    // Admin: move to trash directly
+    if(!confirm('사진을 삭제하시겠습니까?'))return;
     moveToTrash(id,found);return;
   }
   // Normal user: ask for password
