@@ -167,8 +167,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .diary-pager button:active{transform:scale(.9)}
 .diary-pager button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
 .diary-pager .pg-arrow{font-size:14px;background:none;border:none;color:var(--tx2);width:28px}
-.diary-scroll-btns{position:sticky;bottom:70px;float:right;display:flex;flex-direction:column;gap:6px;margin-right:2px;z-index:50}
-.diary-scroll-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--ac);color:#fff;font-size:16px;cursor:pointer;box-shadow:0 2px 12px rgba(10,186,181,.3);display:flex;align-items:center;justify-content:center}
+.diary-scroll-btn{position:fixed;right:14px;width:36px;height:36px;border-radius:50%;border:none;background:var(--ac);color:#fff;font-size:14px;cursor:pointer;box-shadow:0 2px 12px rgba(10,186,181,.3);z-index:50;display:flex;align-items:center;justify-content:center}
+.diary-scroll-btn.up{bottom:calc(var(--th) + 50px)}
+.diary-scroll-btn.down{bottom:calc(var(--th) + 10px)}
 .dup{padding:28px 24px;border:2px dashed var(--ac);border-radius:var(--r);text-align:center;color:var(--ac);margin-bottom:14px;cursor:pointer;background:var(--acl);font-weight:500;transition:all .2s var(--ease)}
 .dup:active{background:#d0f0ed;transform:scale(.98)}
 .dup input{display:none}
@@ -402,6 +403,8 @@ body.font-lg .ql a{font-size:12px}
   </div>
 </div>
 <div class="tc" id="tab-diary">
+  <button class="diary-scroll-btn up" onclick="var m=document.querySelector('.mn');var step=m.scrollHeight/8;var cur=m.scrollTop;m.scrollTo({top:Math.max(0,cur-step),behavior:'smooth'})">▲</button>
+  <button class="diary-scroll-btn down" onclick="var m=document.querySelector('.mn');var step=m.scrollHeight/8;var cur=m.scrollTop;m.scrollTo({top:cur+step,behavior:'smooth'})">▼</button>
   <div class="drw">
     <div id="diaryCompose" style="display:none"></div>
     <div class="dup" id="diaryUpBtn" onclick="document.getElementById('phIn').click()">
@@ -1544,126 +1547,135 @@ function addNickColor(){
   nickColorMap[name]=colorEl.value;_saveNickColors();renderDiary();renderNickSettings();
 }
 
+var _allDiaryCards=[];
+var _diaryPage=0;
+var DIARY_PER_PAGE=5;
+
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
-  if(!DD.length){el.innerHTML='<div style="text-align:center;color:#999;padding:30px;font-size:13px">아직 기록이 없어요</div>';return}
+  if(!DD.length){_allDiaryCards=[];el.innerHTML='<div style="text-align:center;color:#999;padding:30px;font-size:13px">아직 기록이 없어요</div>';return}
   DD.sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)});
-  // Group by date
+  // Build all cards (grouped by date then groupId)
+  _allDiaryCards=[];
   var dateGroups={};
   DD.forEach(function(e){if(!dateGroups[e.date])dateGroups[e.date]=[];dateGroups[e.date].push(e)});
-  var dates=Object.keys(dateGroups).sort();
-  // Page navigation: <- 1 2 3 ... ->
-  var html='<div class="diary-pager">';
-  html+='<button class="pg-arrow" onclick="diaryPagePrev()">‹</button>';
-  dates.forEach(function(d,i){
-    html+='<button id="dpg_'+i+'" onclick="diaryGoPage('+i+')">'+(i+1)+'</button>';
-  });
-  html+='<button class="pg-arrow" onclick="diaryPageNext()">›</button>';
-  html+='</div>';
-  var dateIdx=0;
   Object.keys(dateGroups).sort().forEach(function(date){
-    html+='<div class="ddg" id="dg_'+dateIdx+'"><div class="ddh">🌴 '+date+'</div>';
-    dateIdx++;
-    // Sub-group by groupId within this date
     var entries=dateGroups[date];
-    var cards=[];var gMap={};
+    var gMap={};
     entries.forEach(function(e){
       if(e.groupId){
-        if(!gMap[e.groupId]){gMap[e.groupId]=[];cards.push(gMap[e.groupId])}
+        if(!gMap[e.groupId]){gMap[e.groupId]=[];_allDiaryCards.push({date:date,group:gMap[e.groupId]})}
         gMap[e.groupId].push(e);
       }else{
-        cards.push([e]);
+        _allDiaryCards.push({date:date,group:[e]});
       }
     });
-    cards.forEach(function(group){
-      var primary=group[0];var eid=primary._key;
-      html+='<div class="de">';
-      // Image(s)
-      if(group.length>1){
-        var cid='car_'+eid;
-        html+='<div class="de-carousel" id="'+cid+'">';
-        group.forEach(function(e){html+='<img src="'+e.data+'">'});
-        html+='</div>';
-        html+='<div class="de-indicators"><div class="de-dots" id="dots_'+cid+'">';
-        group.forEach(function(e,i){html+='<span class="de-dot'+(i===0?' on':'')+'"></span>'});
-        html+='</div><div class="de-counter" id="cnt_'+cid+'">1 / '+group.length+'</div></div>';
-      }else{
-        html+='<img src="'+primary.data+'">';
-      }
-      html+='<div class="dt">'+(primary.time||'')+'</div>';
-      // View mode
-      html+='<div id="dv_'+eid+'">';
-      if(primary.memo)html+='<div style="font-size:14px;line-height:1.7;padding:6px 0;white-space:pre-wrap">'+primary.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
-      var delCall=group.length>1?'delGroup(\''+primary.groupId+'\')':'delDE(\''+eid+'\')';
-      html+='<div style="display:flex;gap:6px;margin-top:4px">';
-      html+='<button onclick="startEditDE(\''+eid+'\')" style="padding:3px 10px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit">수정</button>';
-      html+='<button onclick="'+delCall+'" style="padding:3px 10px;background:none;border:1px solid #f0c0b0;border-radius:6px;font-size:10px;color:var(--co);cursor:pointer;font-family:inherit">삭제</button>';
-      html+='</div></div>';
-      // Edit mode (hidden)
-      if(group.length===1){
-        html+='<div id="de_'+eid+'" style="display:none">'
-          +'<div style="margin:6px 0"><label style="display:block;padding:8px;border:1.5px dashed #ccc;border-radius:8px;text-align:center;font-size:11px;color:#888;cursor:pointer">사진 변경<input type="file" accept="image/*" style="display:none" onchange="changePhoto(\''+eid+'\',event)"></label></div>'
-          +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(primary.memo||'')+'</textarea>'
-          +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
-          +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
-          +'<div style="clear:both"></div></div>';
-      }else{
-        html+='<div id="de_'+eid+'" style="display:none">'
-          +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(primary.memo||'')+'</textarea>'
-          +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
-          +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
-          +'<div style="clear:both"></div></div>';
-      }
-      // Replies - collect from all entries in group
-      var allReplies=[];
-      group.forEach(function(ge){
-        var r=diaryReplies[ge._key]||[];
-        r.forEach(function(rr){allReplies.push({r:rr,dk:ge._key})});
-      });
-      allReplies.sort(function(a,b){return(a.r.ts||'').localeCompare(b.r.ts||'')});
-      html+='<div class="reply-section"><div class="reply-header">💬 댓글 ('+allReplies.length+')</div>';
-      allReplies.forEach(function(item){
-        var r=item.r;var dk=item.dk;
-        var nc=nickColor(r.nick||'');
-        var initial=(r.nick||'?').charAt(0).toUpperCase();
-        html+='<div class="reply-item">';
-        html+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">';
-        html+='<span style="width:24px;height:24px;border-radius:50%;background:'+nc+';color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+initial+'</span>';
-        html+='<span class="reply-nick" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</span></div>';
-        html+='<div class="reply-text">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
-        var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
-        html+='<div class="reply-meta"><span>'+ts+'</span>';
-        html+='<button class="reply-del" onclick="deleteReply(\''+dk+'\',\''+r._key+'\')">삭제</button>';
-        html+='</div></div>';
-      });
-      var savedNick='';try{savedNick=localStorage.getItem('reply_nick')||''}catch(ex){}
-      html+='<div class="reply-form"><div class="rf-row"><input type="text" id="rn_'+eid+'" placeholder="이름 (닉네임)" value="'+savedNick.replace(/"/g,'&quot;')+'"><input type="tel" id="rp_'+eid+'" placeholder="비밀번호 (숫자 4자리)" maxlength="4" pattern="[0-9]{4}" style="-webkit-text-security:disc"></div>';
-      html+='<textarea id="rt_'+eid+'" placeholder="댓글 남기기..."></textarea>';
-      html+='<button class="reply-submit" onclick="addReply(\''+eid+'\')">등록</button></div></div>';
-      html+='</div>';
-    });
-    html+='</div>';
   });
-  // Scroll to top button
-  html+='<div class="diary-scroll-btns">';
-  html+='<button class="diary-scroll-btn" onclick="document.querySelector(\'.mn\').scrollTo({top:0,behavior:\'smooth\'})">▲</button>';
-  html+='<button class="diary-scroll-btn" onclick="var m=document.querySelector(\'.mn\');m.scrollTo({top:m.scrollHeight,behavior:\'smooth\'})">▼</button>';
-  html+='</div>';
-  el.innerHTML=html;
-  initCarousels();
-  if(dates.length)diaryGoPage(0);
+  // Clamp page
+  var totalPages=Math.ceil(_allDiaryCards.length/DIARY_PER_PAGE)||1;
+  if(_diaryPage>=totalPages)_diaryPage=totalPages-1;
+  if(_diaryPage<0)_diaryPage=0;
+  renderDiaryPage();
   document.getElementById('trashSection').style.display=isAdmin?'block':'none';
 }
-var _diaryPage=0,_diaryPageCount=0;
-function diaryGoPage(i){
-  _diaryPageCount=document.querySelectorAll('[id^="dg_"]').length;
-  if(i<0||i>=_diaryPageCount)return;
-  _diaryPage=i;
-  document.getElementById('dg_'+i).scrollIntoView({behavior:'smooth',block:'start'});
-  document.querySelectorAll('.diary-pager button:not(.pg-arrow)').forEach(function(b,idx){b.classList.toggle('on',idx===i)});
+
+function renderDiaryPage(){
+  var el=document.getElementById('diaryEntries');
+  var totalPages=Math.ceil(_allDiaryCards.length/DIARY_PER_PAGE)||1;
+  var start=_diaryPage*DIARY_PER_PAGE;
+  var pageCards=_allDiaryCards.slice(start,start+DIARY_PER_PAGE);
+  var html='';
+  var prevDate='';
+  pageCards.forEach(function(card){
+    if(card.date!==prevDate){
+      if(prevDate)html+='</div>';
+      html+='<div class="ddg"><div class="ddh">🌴 '+card.date+'</div>';
+      prevDate=card.date;
+    }
+    var group=card.group;
+    var primary=group[0];var eid=primary._key;
+    html+='<div class="de">';
+    if(group.length>1){
+      var cid='car_'+eid;
+      html+='<div class="de-carousel" id="'+cid+'">';
+      group.forEach(function(e){html+='<img src="'+e.data+'">'});
+      html+='</div>';
+      html+='<div class="de-indicators"><div class="de-dots" id="dots_'+cid+'">';
+      group.forEach(function(e,i){html+='<span class="de-dot'+(i===0?' on':'')+'"></span>'});
+      html+='</div><div class="de-counter" id="cnt_'+cid+'">1 / '+group.length+'</div></div>';
+    }else{
+      html+='<img src="'+primary.data+'">';
+    }
+    html+='<div class="dt">'+(primary.time||'')+'</div>';
+    html+='<div id="dv_'+eid+'">';
+    if(primary.memo)html+='<div style="font-size:14px;line-height:1.7;padding:6px 0;white-space:pre-wrap">'+primary.memo.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+    var delCall=group.length>1?'delGroup(\''+primary.groupId+'\')':'delDE(\''+eid+'\')';
+    html+='<div style="display:flex;gap:6px;margin-top:4px">';
+    html+='<button onclick="startEditDE(\''+eid+'\')" style="padding:3px 10px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit">수정</button>';
+    html+='<button onclick="'+delCall+'" style="padding:3px 10px;background:none;border:1px solid #f0c0b0;border-radius:6px;font-size:10px;color:var(--co);cursor:pointer;font-family:inherit">삭제</button>';
+    html+='</div></div>';
+    if(group.length===1){
+      html+='<div id="de_'+eid+'" style="display:none">'
+        +'<div style="margin:6px 0"><label style="display:block;padding:8px;border:1.5px dashed #ccc;border-radius:8px;text-align:center;font-size:11px;color:#888;cursor:pointer">사진 변경<input type="file" accept="image/*" style="display:none" onchange="changePhoto(\''+eid+'\',event)"></label></div>'
+        +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(primary.memo||'')+'</textarea>'
+        +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
+        +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
+        +'<div style="clear:both"></div></div>';
+    }else{
+      html+='<div id="de_'+eid+'" style="display:none">'
+        +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(primary.memo||'')+'</textarea>'
+        +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
+        +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
+        +'<div style="clear:both"></div></div>';
+    }
+    var allReplies=[];
+    group.forEach(function(ge){
+      var r=diaryReplies[ge._key]||[];
+      r.forEach(function(rr){allReplies.push({r:rr,dk:ge._key})});
+    });
+    allReplies.sort(function(a,b){return(a.r.ts||'').localeCompare(b.r.ts||'')});
+    html+='<div class="reply-section"><div class="reply-header">💬 댓글 ('+allReplies.length+')</div>';
+    allReplies.forEach(function(item){
+      var r=item.r;var dk=item.dk;
+      var nc=nickColor(r.nick||'');
+      var initial=(r.nick||'?').charAt(0).toUpperCase();
+      html+='<div class="reply-item"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">';
+      html+='<span style="width:24px;height:24px;border-radius:50%;background:'+nc+';color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">'+initial+'</span>';
+      html+='<span class="reply-nick" style="color:'+nc+'">'+r.nick.replace(/</g,'&lt;')+'</span></div>';
+      html+='<div class="reply-text">'+r.text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div>';
+      var ts=r.ts?new Date(r.ts).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';
+      html+='<div class="reply-meta"><span>'+ts+'</span>';
+      html+='<button class="reply-del" onclick="deleteReply(\''+dk+'\',\''+r._key+'\')">삭제</button>';
+      html+='</div></div>';
+    });
+    var savedNick='';try{savedNick=localStorage.getItem('reply_nick')||''}catch(ex){}
+    html+='<div class="reply-form"><div class="rf-row"><input type="text" id="rn_'+eid+'" placeholder="이름 (닉네임)" value="'+savedNick.replace(/"/g,'&quot;')+'"><input type="tel" id="rp_'+eid+'" placeholder="비밀번호 (숫자 4자리)" maxlength="4" pattern="[0-9]{4}" style="-webkit-text-security:disc"></div>';
+    html+='<textarea id="rt_'+eid+'" placeholder="댓글 남기기..."></textarea>';
+    html+='<button class="reply-submit" onclick="addReply(\''+eid+'\')">등록</button></div></div>';
+    html+='</div>';
+  });
+  if(prevDate)html+='</div>';
+  // Pager at bottom
+  if(totalPages>1){
+    html+='<div class="diary-pager">';
+    html+='<button class="pg-arrow" onclick="diaryGoPage('+((_diaryPage-1))+')">‹</button>';
+    for(var p=0;p<totalPages;p++){
+      html+='<button class="'+(p===_diaryPage?'on':'')+'" onclick="diaryGoPage('+p+')">'+(p+1)+'</button>';
+    }
+    html+='<button class="pg-arrow" onclick="diaryGoPage('+((_diaryPage+1))+')">›</button>';
+    html+='</div>';
+  }
+  el.innerHTML=html;
+  initCarousels();
 }
-function diaryPagePrev(){diaryGoPage(_diaryPage-1)}
-function diaryPageNext(){diaryGoPage(_diaryPage+1)}
+
+function diaryGoPage(i){
+  var totalPages=Math.ceil(_allDiaryCards.length/DIARY_PER_PAGE)||1;
+  if(i<0||i>=totalPages)return;
+  _diaryPage=i;
+  document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
+  renderDiaryPage();
+}
 function initCarousels(){
   document.querySelectorAll('.de-carousel').forEach(function(c){
     var cid=c.id;
