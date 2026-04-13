@@ -545,6 +545,14 @@ body.font-lg .ql a{font-size:12px}
 <div class="mo" id="pwMo"><div class="md"><h3>Admin</h3><p class="er" id="pwEr">비밀번호가 틀렸습니다</p><input type="password" id="pwIn" placeholder="비밀번호" maxlength="10"><div class="mdb"><button class="cc" onclick="closePw()">취소</button><button class="cf" onclick="cfPw()">확인</button></div></div></div>
 
 <script>
+// ===== TOAST =====
+function showToast(msg){
+  var t=document.createElement('div');
+  t.style.cssText='position:fixed;top:calc(var(--hh) + env(safe-area-inset-top,0) + 10px);left:50%;transform:translateX(-50%);background:#1A6B5A;color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:99999;box-shadow:0 4px 16px rgba(0,0,0,.15);opacity:0;transition:opacity .3s;max-width:90%;text-align:center;font-family:inherit';
+  t.textContent=msg;document.body.appendChild(t);
+  setTimeout(function(){t.style.opacity='1'},50);
+  setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove()},300)},3000);
+}
 // ===== FIREBASE =====
 function fbSet(p,v){return db.ref(p).set(v)}
 function fbGet(p,cb){db.ref(p).on('value',function(s){cb(s.val())})}
@@ -1419,8 +1427,16 @@ var DD=[]; // from firebase
 var trashDD=[]; // from firebase trash
 var pendingPhotos=[]; // local unsaved
 
+var _prevDDCount=-1;
 fbGet('diary',function(val){
+  var prev=_prevDDCount;
   DD=val?Object.keys(val).map(function(k){var e=val[k];e._key=k;return e}):[];
+  // 이번주 한정 알림 (4/19까지)
+  if(prev>=0&&DD.length>prev&&new Date()<new Date('2026-04-20')){
+    var t=appSettings.title||'푸꾸옥';
+    showToast(t.replace(/[^\w가-힣\s]/g,'').trim()+'의 다이어리에 사진이 추가되었어요!');
+  }
+  _prevDDCount=DD.length;
   renderDiary();
 });
 fbGet('diary_trash',function(val){
