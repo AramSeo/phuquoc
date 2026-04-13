@@ -1644,12 +1644,12 @@ var DIARY_PER_PAGE=4;
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
   if(!DD.length){_allDiaryCards=[];el.innerHTML='<div style="text-align:center;color:#999;padding:30px;font-size:13px">아직 기록이 없어요</div>';return}
-  DD.sort(function(a,b){return(a.date+a.time).localeCompare(b.date+b.time)});
+  DD.sort(function(a,b){return(b.date+b.time).localeCompare(a.date+a.time)});
   // Build all cards (grouped by date then groupId)
   _allDiaryCards=[];
   var dateGroups={};
   DD.forEach(function(e){if(!dateGroups[e.date])dateGroups[e.date]=[];dateGroups[e.date].push(e)});
-  Object.keys(dateGroups).sort().forEach(function(date){
+  Object.keys(dateGroups).sort().reverse().forEach(function(date){
     var entries=dateGroups[date];
     var gMap={};
     entries.forEach(function(e){
