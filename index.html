@@ -1680,44 +1680,57 @@ var _allDiaryCards=[];
 var _diaryPage=0;
 var DIARY_PER_PAGE=4;
 
+var _tlLabels=null;
+fbGet('timeline_labels',function(val){_tlLabels=val||{};renderTimeline()});
+
 function renderTimeline(){
   var el=document.getElementById('diaryTimeline');if(!el)return;
   var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토',19:'일'};
-  // Collect dates that have diary photos
-  var photoDates={};DD.forEach(function(e){if(e.date)photoDates[e.date]=true});
+  // Dates that have diary photos + collect first memo as hint
+  var photoDates={};var photoHints={};
+  DD.forEach(function(e){
+    if(!e.date)return;
+    photoDates[e.date]=true;
+    if(!photoHints[e.date]&&e.memo){
+      var hint=e.memo.split('\n')[0].substring(0,8);
+      photoHints[e.date]=hint;
+    }
+  });
   var h='';
   (typeof DAY_INFO!=='undefined'?DAY_INFO:[]).forEach(function(di){
     var d=di.day;var dateStr='2026-04-'+(d<10?'0':'')+d;
     var hasPhoto=photoDates[dateStr];
-    // Get key activity from schedule
-    var act='';
-    if(typeof schData!=='undefined'){
-      var dd=schData[''+d]||{};
-      var secs=['am_act','pm_act','eve_act'];
-      for(var si=0;si<secs.length;si++){
-        var items=dd[secs[si]];
-        if(items&&items.length){act=items[0].text;break}
-      }
-    }
+    var label=(_tlLabels&&_tlLabels[''+d])||'';
+    var hint=photoHints[dateStr]||'';
     h+='<div class="diary-tl-day'+(hasPhoto?' has-photo':'')+'" onclick="jumpToDate(\''+dateStr+'\')">';
     h+='<div class="tl-date">4/'+d+'</div>';
     h+='<div class="tl-dow">'+dayNames[d]+'</div>';
-    if(act)h+='<div class="tl-act">'+act+'</div>';
+    if(label)h+='<div class="tl-act">'+label+'</div>';
+    else if(hint)h+='<div class="tl-act" style="color:var(--tx2)">'+hint+'</div>';
     h+='<div class="tl-dot"></div>';
+    if(isAdmin)h+='<button onclick="event.stopPropagation();editTlLabel('+d+')" style="background:none;border:none;font-size:8px;color:var(--ac);cursor:pointer;padding:0;margin-top:1px">수정</button>';
     h+='</div>';
   });
   el.innerHTML=h;
 }
 
+function editTlLabel(day){
+  var cur=(_tlLabels&&_tlLabels[''+day])||'';
+  var val=prompt('4/'+day+' 타임라인 라벨 (비우면 사진 메모 자동 표시)',cur);
+  if(val===null)return;
+  if(!_tlLabels)_tlLabels={};
+  _tlLabels[''+day]=val.trim();
+  fbSet('timeline_labels',_tlLabels);
+  renderTimeline();
+}
+
 function jumpToDate(dateStr){
-  // Find which page has this date
   for(var i=0;i<_allDiaryCards.length;i++){
     if(_allDiaryCards[i].date===dateStr){
       var page=Math.floor(i/DIARY_PER_PAGE);
       _diaryPage=page;
       document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
       renderDiaryPage();
-      // Highlight timeline
       document.querySelectorAll('.diary-tl-day').forEach(function(d){d.classList.remove('on')});
       var el=document.querySelector('.diary-tl-day[onclick*="'+dateStr+'"]');
       if(el)el.classList.add('on');
