@@ -1509,6 +1509,13 @@ function renderCompose(){
     h+='</select></div></div>';
   }
   // Memo
+  // Place selector
+  h+='<div style="display:flex;gap:6px;margin-bottom:6px;align-items:center">';
+  h+='<span style="font-size:11px;color:var(--tx2);flex-shrink:0">📍 장소</span>';
+  h+='<select id="composePlace" onchange="if(this.value)document.getElementById(\'composeMemo\').value=this.value+(document.getElementById(\'composeMemo\').value?\'\\n\'+document.getElementById(\'composeMemo\').value:\'\')" style="flex:1;padding:6px;border:1.5px solid #ddd;border-radius:var(--rs);font-size:12px;font-family:inherit">';
+  h+='<option value="">선택 안 함</option>';
+  if(typeof gAll==='function'){gAll().forEach(function(p){h+='<option value="'+p.n.replace(/"/g,'&quot;')+'">'+CM[p.c].i+' '+p.n+'</option>'})}
+  h+='</select></div>';
   h+='<textarea id="composeMemo" placeholder="메모를 입력하세요..." style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:var(--rs);font-size:14px;font-family:inherit;resize:vertical;min-height:60px;outline:none;margin-bottom:8px"></textarea>';
   // Password
   h+='<input type="tel" id="composePw" placeholder="비밀번호 (숫자 4자리)" maxlength="4" pattern="[0-9]{4}" style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:var(--rs);font-size:14px;text-align:center;font-family:inherit;outline:none;margin-bottom:12px;-webkit-text-security:disc">';
@@ -1690,10 +1697,11 @@ function renderTimeline(){
   var photoDates={};var photoHints={};
   DD.forEach(function(e){
     if(!e.date)return;
-    photoDates[e.date]=true;
-    if(!photoHints[e.date]&&e.memo){
-      var hint=e.memo.split('\n')[0].substring(0,8);
-      photoHints[e.date]=hint;
+    // Normalize date: both "2026-04-13" and "2026-4-13" match
+    var nd=e.date.replace(/-(\d)(?!\d)/g,'-0$1');
+    photoDates[nd]=true;photoDates[e.date]=true;
+    if(!photoHints[nd]&&e.memo){
+      photoHints[nd]=e.memo.split('\n')[0].substring(0,8);
     }
   });
   var h='';
@@ -1725,12 +1733,16 @@ function editTlLabel(day){
 }
 
 function jumpToDate(dateStr){
+  // Also try without leading zero (e.g. 2026-4-13)
+  var altDate=dateStr.replace(/-0/g,'-');
   for(var i=0;i<_allDiaryCards.length;i++){
-    if(_allDiaryCards[i].date===dateStr){
+    var cd=_allDiaryCards[i].date;
+    if(cd===dateStr||cd===altDate){
       var page=Math.floor(i/DIARY_PER_PAGE);
       _diaryPage=page;
       document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
       renderDiaryPage();
+      // Highlight
       document.querySelectorAll('.diary-tl-day').forEach(function(d){d.classList.remove('on')});
       var el=document.querySelector('.diary-tl-day[onclick*="'+dateStr+'"]');
       if(el)el.classList.add('on');
@@ -1954,10 +1966,19 @@ function swapGroupPhotos(keyA,keyB){
   var a=DD.find(function(x){return x._key===keyA});
   var b=DD.find(function(x){return x._key===keyB});
   if(!a||!b)return;
-  // Swap data in Firebase
   var tmpData=a.data,tmpTime=a.time;
-  db.ref('diary/'+keyA).update({data:b.data,time:b.time||''});
-  db.ref('diary/'+keyB).update({data:tmpData,time:tmpTime||''});
+  // Update local data immediately
+  a.data=b.data;a.time=b.time;
+  b.data=tmpData;b.time=tmpTime;
+  // Update previews immediately
+  var imgA=document.getElementById('eimg_'+keyA);
+  var imgB=document.getElementById('eimg_'+keyB);
+  if(imgA)imgA.src=a.data;
+  if(imgB)imgB.src=b.data;
+  // Save to Firebase
+  db.ref('diary/'+keyA).update({data:a.data,time:a.time||''});
+  db.ref('diary/'+keyB).update({data:b.data,time:b.time||''});
+  showToast('순서 변경됨');
 }
 function addPhotoToGroup(primaryId,e){
   var file=e.target.files[0];
@@ -1989,6 +2010,11 @@ function saveEditDE(id){
     });
   }
   _editPhotoData={};
+  // Explicitly close edit UI
+  var dv=document.getElementById('dv_'+id);
+  var de=document.getElementById('de_'+id);
+  if(dv)dv.style.display='';
+  if(de)de.style.display='none';
   _activeEditId=null;
   showToast('저장 완료!');
 }
