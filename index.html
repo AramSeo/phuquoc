@@ -1864,6 +1864,12 @@ function renderDiaryPage(){
   }
   el.innerHTML=html;
   initCarousels();
+  // Restore edit mode if was editing
+  if(_activeEditId){
+    var dv=document.getElementById('dv_'+_activeEditId);
+    var de=document.getElementById('de_'+_activeEditId);
+    if(dv&&de){dv.style.display='none';de.style.display='block'}
+  }
 }
 
 function diaryGoPage(i){
@@ -1910,19 +1916,21 @@ function updMemo(id,val){
   var e=pendingPhotos.find(function(x){return x.id===id});
   if(e)e.memo=val;
 }
+var _activeEditId=null;
 function startEditDE(id){
   var found=DD.find(function(x){return x._key===id});
   if(!found)return;
-  // Check password or admin
   if(!isAdmin){
     var pw=prompt(appSettings.pwPrompt||'비밀번호 4자리를 입력하세요');
     if(!pw||pw!==found.pw){alert(appSettings.pwError||'비밀번호가 틀렸습니다');return}
   }
+  _activeEditId=id;
   document.getElementById('dv_'+id).style.display='none';
   document.getElementById('de_'+id).style.display='block';
   _editPhotoData[id]=null;
 }
 function cancelEditDE(id){
+  _activeEditId=null;
   document.getElementById('de_'+id).style.display='none';
   document.getElementById('dv_'+id).style.display='';
   _editPhotoData[id]=null;
@@ -1981,6 +1989,7 @@ function saveEditDE(id){
     });
   }
   _editPhotoData={};
+  _activeEditId=null;
   showToast('저장 완료!');
 }
 function delDE(id){
