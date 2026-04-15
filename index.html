@@ -1470,16 +1470,33 @@ function renderCompose(){
   var el=document.getElementById('diaryCompose');
   if(!pendingPhotos.length){el.style.display='none';document.getElementById('diaryUpBtn').style.display='';return}
   document.getElementById('diaryUpBtn').style.display='none';
+  // Check for multiple dates
+  var dates={};pendingPhotos.forEach(function(p){if(p.date)dates[p.date]=true});
+  var uniqueDates=Object.keys(dates).sort();
   var h='<div style="background:var(--sf);border-radius:var(--r);padding:16px;box-shadow:var(--sh);margin-bottom:14px">';
   h+='<div style="font-size:15px;font-weight:900;margin-bottom:12px;color:var(--ac)">📷 새 사진 등록</div>';
-  // Photo previews
-  h+='<div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px;-webkit-overflow-scrolling:touch">';
+  // Photo previews with reorder
+  h+='<div style="display:flex;gap:8px;overflow-x:auto;margin-bottom:8px;padding-bottom:4px;-webkit-overflow-scrolling:touch">';
   pendingPhotos.forEach(function(p,i){
-    h+='<div style="position:relative;flex-shrink:0"><img src="'+p.data+'" style="width:120px;height:120px;object-fit:cover;border-radius:var(--rs)">';
-    h+='<button onclick="removePending('+i+')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>';
-    h+='<div style="font-size:9px;color:var(--tx2);text-align:center;margin-top:2px">'+(p.date||'')+' '+(p.time||'')+'</div></div>';
+    h+='<div style="position:relative;flex-shrink:0;text-align:center">';
+    h+='<img src="'+p.data+'" style="width:100px;height:100px;object-fit:cover;border-radius:var(--rs)">';
+    h+='<button onclick="removePending('+i+')" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>';
+    h+='<div style="display:flex;justify-content:center;gap:2px;margin-top:3px">';
+    if(i>0)h+='<button onclick="movePending('+i+',-1)" style="padding:1px 6px;background:#eee;border:none;border-radius:4px;font-size:10px;cursor:pointer">←</button>';
+    if(i<pendingPhotos.length-1)h+='<button onclick="movePending('+i+',1)" style="padding:1px 6px;background:#eee;border:none;border-radius:4px;font-size:10px;cursor:pointer">→</button>';
+    h+='</div></div>';
   });
   h+='</div>';
+  // Date selector if multiple dates
+  if(uniqueDates.length>1){
+    h+='<div style="background:var(--gdl);border-left:3px solid var(--gd);padding:8px 10px;border-radius:6px;margin-bottom:8px;font-size:12px">';
+    h+='<div style="font-weight:700;margin-bottom:4px">📅 사진 날짜가 다릅니다</div>';
+    h+='<div style="display:flex;align-items:center;gap:6px">';
+    h+='<span style="font-size:11px;color:var(--tx2)">통일할 날짜:</span>';
+    h+='<select id="composeDate" style="flex:1;padding:6px;border:1.5px solid #ddd;border-radius:6px;font-size:12px;font-family:inherit">';
+    uniqueDates.forEach(function(d){h+='<option value="'+d+'">'+d+'</option>'});
+    h+='</select></div></div>';
+  }
   // Memo
   h+='<textarea id="composeMemo" placeholder="메모를 입력하세요..." style="width:100%;padding:10px;border:1.5px solid #ddd;border-radius:var(--rs);font-size:14px;font-family:inherit;resize:vertical;min-height:60px;outline:none;margin-bottom:8px"></textarea>';
   // Password
@@ -1503,27 +1520,33 @@ function removePending(i){
   if(memoEl2)memoEl2.value=savedMemo;
   if(pwEl2)pwEl2.value=savedPw;
 }
+function movePending(i,dir){
+  var memoEl=document.getElementById('composeMemo');var pwEl=document.getElementById('composePw');
+  var sm=memoEl?memoEl.value:'';var sp=pwEl?pwEl.value:'';
+  var j=i+dir;if(j<0||j>=pendingPhotos.length)return;
+  var tmp=pendingPhotos[i];pendingPhotos[i]=pendingPhotos[j];pendingPhotos[j]=tmp;
+  renderCompose();
+  var m2=document.getElementById('composeMemo');var p2=document.getElementById('composePw');
+  if(m2)m2.value=sm;if(p2)p2.value=sp;
+}
 function cancelCompose(){pendingPhotos=[];renderCompose();renderDiary()}
 function saveCompose(){
   if(!pendingPhotos.length){alert('저장할 사진이 없습니다');return}
   var memo=(document.getElementById('composeMemo').value||'').trim();
   var pw=(document.getElementById('composePw').value||'').trim();
   if(!pw||pw.length!==4||!/^\d{4}$/.test(pw)){alert('숫자 4자리 비밀번호를 입력해주세요');return}
-  // Group pending photos by date
-  var dateGroups={};
+  // If date selector exists, unify all photos to selected date
+  var dateEl=document.getElementById('composeDate');
+  if(dateEl){
+    var selectedDate=dateEl.value;
+    pendingPhotos.forEach(function(p){p.date=selectedDate});
+  }
+  // Save all as one group
+  var gid=Date.now()+'_'+Math.random().toString(36).substr(2,6);
   pendingPhotos.forEach(function(p){
-    var d=p.date||'unknown';
-    if(!dateGroups[d])dateGroups[d]=[];
-    dateGroups[d].push(p);
-  });
-  Object.keys(dateGroups).forEach(function(date){
-    var photos=dateGroups[date];
-    var gid=Date.now()+'_'+Math.random().toString(36).substr(2,6);
-    photos.forEach(function(p){
-      var entry={data:p.data,memo:memo,date:p.date,time:p.time,pw:pw};
-      if(photos.length>1)entry.groupId=gid;
-      db.ref('diary').push(entry);
-    });
+    var entry={data:p.data,memo:memo,date:p.date,time:p.time,pw:pw};
+    if(pendingPhotos.length>1)entry.groupId=gid;
+    db.ref('diary').push(entry);
   });
   pendingPhotos=[];
   renderCompose();
@@ -1709,20 +1732,23 @@ function renderDiaryPage(){
     html+='<button onclick="startEditDE(\''+eid+'\')" style="padding:3px 10px;background:none;border:1px solid #ddd;border-radius:6px;font-size:10px;color:#999;cursor:pointer;font-family:inherit">수정</button>';
     html+='<button onclick="'+delCall+'" style="padding:3px 10px;background:none;border:1px solid #f0c0b0;border-radius:6px;font-size:10px;color:var(--co);cursor:pointer;font-family:inherit">삭제</button>';
     html+='</div></div>';
-    if(group.length===1){
-      html+='<div id="de_'+eid+'" style="display:none">'
-        +'<div style="margin:6px 0"><label style="display:block;padding:8px;border:1.5px dashed #ccc;border-radius:8px;text-align:center;font-size:11px;color:#888;cursor:pointer">사진 변경<input type="file" accept="image/*" style="display:none" onchange="changePhoto(\''+eid+'\',event)"></label></div>'
-        +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(primary.memo||'')+'</textarea>'
-        +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
-        +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
-        +'<div style="clear:both"></div></div>';
-    }else{
-      html+='<div id="de_'+eid+'" style="display:none">'
-        +'<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(primary.memo||'')+'</textarea>'
-        +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
-        +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
-        +'<div style="clear:both"></div></div>';
+    html+='<div id="de_'+eid+'" style="display:none">';
+    // Photo management
+    html+='<div style="display:flex;gap:6px;overflow-x:auto;margin:6px 0;padding-bottom:4px;-webkit-overflow-scrolling:touch">';
+    group.forEach(function(ge){
+      html+='<div style="position:relative;flex-shrink:0">';
+      html+='<img src="'+ge.data+'" style="width:70px;height:70px;object-fit:cover;border-radius:6px">';
+      html+='<label style="position:absolute;bottom:2px;left:2px;right:2px;background:rgba(0,0,0,.5);color:#fff;font-size:8px;text-align:center;padding:2px;border-radius:0 0 5px 5px;cursor:pointer">교체<input type="file" accept="image/*" style="display:none" onchange="changePhoto(\''+ge._key+'\',event)"></label>';
+      html+='</div>';
+    });
+    if(group.length<4){
+      html+='<label style="flex-shrink:0;width:70px;height:70px;border:1.5px dashed #ccc;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#ccc;cursor:pointer">+<input type="file" accept="image/*" style="display:none" onchange="addPhotoToGroup(\''+eid+'\',event)"></label>';
     }
+    html+='</div>';
+    html+='<textarea id="dm_'+eid+'" style="width:100%;padding:8px;border:1.5px solid var(--gd);border-radius:8px;font-size:12px;font-family:inherit;resize:vertical;min-height:40px;outline:none">'+(primary.memo||'')+'</textarea>'
+      +'<button onclick="saveEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:var(--ac);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;float:right">저장</button>'
+      +'<button onclick="cancelEditDE(\''+eid+'\')" style="margin-top:4px;padding:5px 14px;background:#eee;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;float:right;margin-right:4px">취소</button>'
+      +'<div style="clear:both"></div></div>';
     var allReplies=[];
     group.forEach(function(ge){
       var r=diaryReplies[ge._key]||[];
@@ -1828,7 +1854,25 @@ function cancelEditDE(id){
 function changePhoto(id,e){
   var file=e.target.files[0];
   if(!file)return;
-  cImg(file,function(dataUrl){_editPhotoData[id]=dataUrl});
+  cImg(file,function(dataUrl){
+    _editPhotoData[id]=dataUrl;
+    // Update preview immediately
+    var img=e.target.parentElement.previousElementSibling;
+    if(img&&img.tagName==='IMG')img.src=dataUrl;
+  });
+}
+function addPhotoToGroup(primaryId,e){
+  var file=e.target.files[0];
+  if(!file)return;
+  var found=DD.find(function(x){return x._key===primaryId});
+  if(!found)return;
+  cImg(file,function(dataUrl){
+    var gid=found.groupId||(Date.now()+'_'+Math.random().toString(36).substr(2,6));
+    // If primary had no groupId, add one
+    if(!found.groupId){db.ref('diary/'+primaryId).update({groupId:gid})}
+    db.ref('diary').push({data:dataUrl,memo:found.memo||'',date:found.date,time:found.time,pw:found.pw||'',groupId:gid});
+  });
+  e.target.value='';
 }
 function saveEditDE(id){
   var found=DD.find(function(x){return x._key===id});
