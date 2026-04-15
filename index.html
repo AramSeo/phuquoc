@@ -161,6 +161,17 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .uplace .udel{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer}
 
 /* Diary */
+.diary-tl{display:flex;overflow-x:auto;background:var(--sf);border-bottom:1px solid #eee;padding:6px 8px;gap:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:relative}
+.diary-tl::-webkit-scrollbar{display:none}
+.diary-tl-day{flex-shrink:0;text-align:center;padding:4px 10px;cursor:pointer;border-bottom:2px solid transparent;min-width:60px;transition:all .2s}
+.diary-tl-day.on{border-bottom-color:var(--ac);background:var(--acl);border-radius:8px 8px 0 0}
+.diary-tl-day .tl-date{font-size:11px;font-weight:700;color:var(--tx)}
+.diary-tl-day .tl-dow{font-size:9px;color:var(--tx2)}
+.diary-tl-day .tl-act{font-size:8px;color:var(--ac);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70px}
+.diary-tl-day .tl-dot{width:5px;height:5px;border-radius:50%;background:var(--co);margin:3px auto 0;display:none}
+.diary-tl-day.has-photo .tl-dot{display:block}
+.diary-add-btn{position:absolute;top:6px;right:12px;width:32px;height:32px;border-radius:50%;background:var(--ac);color:#fff;border:none;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(10,186,181,.3);display:flex;align-items:center;justify-content:center;z-index:10}
+.diary-add-btn:active{transform:scale(.9)}
 .drw{padding:12px;padding-bottom:100px}
 .diary-pager{display:flex;align-items:center;justify-content:center;gap:4px;padding:8px 0 10px}
 .diary-pager button{width:30px;height:30px;border-radius:50%;border:1.5px solid #ddd;background:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--tx2);display:flex;align-items:center;justify-content:center}
@@ -408,14 +419,15 @@ body.font-lg .ql a{font-size:12px}
   </div>
 </div>
 <div class="tc" id="tab-diary">
+  <div style="position:relative">
+    <div class="diary-tl" id="diaryTimeline"></div>
+    <button class="diary-add-btn" onclick="document.getElementById('phIn').click()" title="사진 추가">+</button>
+    <input type="file" id="phIn" accept="image/*" multiple onchange="handlePhotos(event)" style="display:none">
+  </div>
   <button class="diary-scroll-btn up" onclick="document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'})">▲</button>
   <button class="diary-scroll-btn down" onclick="var m=document.querySelector('.mn');m.scrollTo({top:m.scrollHeight,behavior:'smooth'})">▼</button>
   <div class="drw">
     <div id="diaryCompose" style="display:none"></div>
-    <div class="dup" id="diaryUpBtn" onclick="document.getElementById('phIn').click()">
-      📷 사진을 탭해서 업로드 (최대 4장)
-      <input type="file" id="phIn" accept="image/*" multiple onchange="handlePhotos(event)">
-    </div>
     <div id="diaryEntries"></div>
     <button class="dbtn exp" onclick="exportDiary()">내보내기</button>
     <div id="trashSection" style="display:none;margin-top:20px">
@@ -1468,8 +1480,7 @@ function handlePhotos(e){
 }
 function renderCompose(){
   var el=document.getElementById('diaryCompose');
-  if(!pendingPhotos.length){el.style.display='none';document.getElementById('diaryUpBtn').style.display='';return}
-  document.getElementById('diaryUpBtn').style.display='none';
+  if(!pendingPhotos.length){el.style.display='none';return}
   // Check for multiple dates
   var dates={};pendingPhotos.forEach(function(p){if(p.date)dates[p.date]=true});
   var uniqueDates=Object.keys(dates).sort();
@@ -1669,6 +1680,53 @@ var _allDiaryCards=[];
 var _diaryPage=0;
 var DIARY_PER_PAGE=4;
 
+function renderTimeline(){
+  var el=document.getElementById('diaryTimeline');if(!el)return;
+  var dayNames={13:'월',14:'화',15:'수',16:'목',17:'금',18:'토',19:'일'};
+  // Collect dates that have diary photos
+  var photoDates={};DD.forEach(function(e){if(e.date)photoDates[e.date]=true});
+  var h='';
+  (typeof DAY_INFO!=='undefined'?DAY_INFO:[]).forEach(function(di){
+    var d=di.day;var dateStr='2026-04-'+(d<10?'0':'')+d;
+    var hasPhoto=photoDates[dateStr];
+    // Get key activity from schedule
+    var act='';
+    if(typeof schData!=='undefined'){
+      var dd=schData[''+d]||{};
+      var secs=['am_act','pm_act','eve_act'];
+      for(var si=0;si<secs.length;si++){
+        var items=dd[secs[si]];
+        if(items&&items.length){act=items[0].text;break}
+      }
+    }
+    h+='<div class="diary-tl-day'+(hasPhoto?' has-photo':'')+'" onclick="jumpToDate(\''+dateStr+'\')">';
+    h+='<div class="tl-date">4/'+d+'</div>';
+    h+='<div class="tl-dow">'+dayNames[d]+'</div>';
+    if(act)h+='<div class="tl-act">'+act+'</div>';
+    h+='<div class="tl-dot"></div>';
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+
+function jumpToDate(dateStr){
+  // Find which page has this date
+  for(var i=0;i<_allDiaryCards.length;i++){
+    if(_allDiaryCards[i].date===dateStr){
+      var page=Math.floor(i/DIARY_PER_PAGE);
+      _diaryPage=page;
+      document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
+      renderDiaryPage();
+      // Highlight timeline
+      document.querySelectorAll('.diary-tl-day').forEach(function(d){d.classList.remove('on')});
+      var el=document.querySelector('.diary-tl-day[onclick*="'+dateStr+'"]');
+      if(el)el.classList.add('on');
+      return;
+    }
+  }
+  showToast('해당 날짜의 사진이 없어요');
+}
+
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
   if(!DD.length){_allDiaryCards=[];el.innerHTML='<div style="text-align:center;color:#999;padding:30px;font-size:13px">아직 기록이 없어요</div>';return}
@@ -1694,6 +1752,7 @@ function renderDiary(){
   if(_diaryPage>=totalPages)_diaryPage=totalPages-1;
   if(_diaryPage<0)_diaryPage=0;
   renderDiaryPage();
+  renderTimeline();
   document.getElementById('trashSection').style.display=isAdmin?'block':'none';
 }
 
