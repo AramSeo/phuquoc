@@ -1808,7 +1808,8 @@ function renderDiaryPage(){
     // Photo management with reorder
     html+='<div style="display:flex;gap:6px;overflow-x:auto;margin:6px 0;padding-bottom:4px;-webkit-overflow-scrolling:touch">';
     group.forEach(function(ge,gi){
-      html+='<div style="flex-shrink:0;text-align:center;width:76px">';
+      html+='<div style="flex-shrink:0;text-align:center;width:76px;position:relative">';
+      if(group.length>1)html+='<button onclick="delGroupPhoto(\''+ge._key+'\')" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:16px;height:16px;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1">✕</button>';
       html+='<img id="eimg_'+ge._key+'" src="'+ge.data+'" style="width:70px;height:70px;object-fit:cover;border-radius:6px">';
       html+='<div style="display:flex;gap:2px;margin-top:3px;justify-content:center">';
       if(group.length>1&&gi>0)html+='<button onclick="swapGroupPhotos(\''+ge._key+'\',\''+group[gi-1]._key+'\')" style="padding:2px 6px;background:#eee;border:none;border-radius:4px;font-size:10px;cursor:pointer">←</button>';
@@ -1934,6 +1935,12 @@ function changePhoto(id,e){
     var img=document.getElementById('eimg_'+id);
     if(img)img.src=dataUrl;
   });
+}
+function delGroupPhoto(key){
+  if(!confirm('이 사진을 삭제하시겠습니까?'))return;
+  var found=DD.find(function(x){return x._key===key});
+  if(!found)return;
+  moveToTrash(key,found);
 }
 function swapGroupPhotos(keyA,keyB){
   var a=DD.find(function(x){return x._key===keyA});
