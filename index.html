@@ -1805,12 +1805,18 @@ function renderDiaryPage(){
     html+='<button onclick="'+delCall+'" style="padding:3px 10px;background:none;border:1px solid #f0c0b0;border-radius:6px;font-size:10px;color:var(--co);cursor:pointer;font-family:inherit">삭제</button>';
     html+='</div></div>';
     html+='<div id="de_'+eid+'" style="display:none">';
-    // Photo management
+    // Photo management with reorder
     html+='<div style="display:flex;gap:6px;overflow-x:auto;margin:6px 0;padding-bottom:4px;-webkit-overflow-scrolling:touch">';
-    group.forEach(function(ge){
-      html+='<div style="position:relative;flex-shrink:0">';
-      html+='<img src="'+ge.data+'" style="width:70px;height:70px;object-fit:cover;border-radius:6px">';
+    group.forEach(function(ge,gi){
+      html+='<div style="position:relative;flex-shrink:0;text-align:center">';
+      html+='<img id="eimg_'+ge._key+'" src="'+ge.data+'" style="width:70px;height:70px;object-fit:cover;border-radius:6px">';
       html+='<label style="position:absolute;bottom:2px;left:2px;right:2px;background:rgba(0,0,0,.5);color:#fff;font-size:8px;text-align:center;padding:2px;border-radius:0 0 5px 5px;cursor:pointer">교체<input type="file" accept="image/*" style="display:none" onchange="changePhoto(\''+ge._key+'\',event)"></label>';
+      if(group.length>1){
+        html+='<div style="display:flex;justify-content:center;gap:2px;margin-top:2px">';
+        if(gi>0)html+='<button onclick="swapGroupPhotos(\''+ge._key+'\',\''+group[gi-1]._key+'\')" style="padding:1px 5px;background:#eee;border:none;border-radius:3px;font-size:9px;cursor:pointer">←</button>';
+        if(gi<group.length-1)html+='<button onclick="swapGroupPhotos(\''+ge._key+'\',\''+group[gi+1]._key+'\')" style="padding:1px 5px;background:#eee;border:none;border-radius:3px;font-size:9px;cursor:pointer">→</button>';
+        html+='</div>';
+      }
       html+='</div>';
     });
     if(group.length<4){
@@ -1928,10 +1934,18 @@ function changePhoto(id,e){
   if(!file)return;
   cImg(file,function(dataUrl){
     _editPhotoData[id]=dataUrl;
-    // Update preview immediately
-    var img=e.target.parentElement.previousElementSibling;
-    if(img&&img.tagName==='IMG')img.src=dataUrl;
+    var img=document.getElementById('eimg_'+id);
+    if(img)img.src=dataUrl;
   });
+}
+function swapGroupPhotos(keyA,keyB){
+  var a=DD.find(function(x){return x._key===keyA});
+  var b=DD.find(function(x){return x._key===keyB});
+  if(!a||!b)return;
+  // Swap data in Firebase
+  var tmpData=a.data,tmpTime=a.time;
+  db.ref('diary/'+keyA).update({data:b.data,time:b.time||''});
+  db.ref('diary/'+keyB).update({data:tmpData,time:tmpTime||''});
 }
 function addPhotoToGroup(primaryId,e){
   var file=e.target.files[0];
@@ -1950,16 +1964,20 @@ function saveEditDE(id){
   var found=DD.find(function(x){return x._key===id});
   if(!found)return;
   var memo=document.getElementById('dm_'+id).value.trim();
+  // Save primary
   var updates={memo:memo};
   if(_editPhotoData[id])updates.data=_editPhotoData[id];
   db.ref('diary/'+id).update(updates);
-  // Sync memo to all entries in the same group
+  // Sync memo + save replaced photos for all group members
   if(found.groupId){
     DD.filter(function(x){return x.groupId===found.groupId&&x._key!==id}).forEach(function(e){
-      db.ref('diary/'+e._key).update({memo:memo});
+      var gu={memo:memo};
+      if(_editPhotoData[e._key])gu.data=_editPhotoData[e._key];
+      db.ref('diary/'+e._key).update(gu);
     });
   }
-  _editPhotoData[id]=null;
+  _editPhotoData={};
+  showToast('저장 완료!');
 }
 function delDE(id){
   // Pending photo - just remove locally
