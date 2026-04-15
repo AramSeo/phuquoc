@@ -2310,13 +2310,17 @@ function renderTips(){
       // Table type
       h+='<div class="vt-wrap">';
       if(card.unit)h+='<div class="vt-unit">단위: '+card.unit+'</div>';
-      if(card.header){h+='<table class="vt"><tr>';card.header.forEach(function(th){h+='<th style="padding:4px 3px;font-size:9px;font-weight:700;background:var(--acl);color:var(--ac);text-align:center">'+th+'</th>'});h+='</tr>';}
+      if(isAdmin)h+='<div style="font-size:10px;color:var(--ac);margin-bottom:4px;font-weight:600">각 셀을 탭해서 수정 가능합니다</div>';
+      if(card.header){h+='<table class="vt"><tr>';card.header.forEach(function(th,thi){
+        if(isAdmin){h+='<th style="padding:4px 3px;font-size:9px;font-weight:700;background:var(--acl);color:var(--ac);text-align:center"><input type="text" value="'+th.replace(/"/g,'&quot;')+'" onblur="updTipHeader('+i+','+thi+',this.value)" style="border:none;background:none;font-size:9px;font-weight:700;color:var(--ac);text-align:center;width:100%;outline:none;font-family:inherit"></th>';}
+        else{h+='<th style="padding:4px 3px;font-size:9px;font-weight:700;background:var(--acl);color:var(--ac);text-align:center">'+th+'</th>';}
+      });h+='</tr>';}
       else{h+='<table class="vt">';}
       card.rows.forEach(function(row,ri){
         if(isAdmin){
           h+='<tr>';
           row.forEach(function(cell,ci){
-            h+='<td><input type="text" value="'+(cell||'').replace(/"/g,'&quot;')+'" onblur="updTipCell('+i+','+ri+','+ci+',this.value)" style="border:none;border-bottom:1px dashed #eee;width:100%;font-size:12px;font-family:inherit;outline:none;padding:2px;background:none"></td>';
+            h+='<td><input type="text" value="'+(cell||'').replace(/"/g,'&quot;')+'" onblur="updTipCell('+i+','+ri+','+ci+',this.value)" style="border:none;border-bottom:1px dashed var(--ac);width:100%;font-size:11px;font-family:inherit;outline:none;padding:3px 2px;background:rgba(10,186,181,.03);border-radius:2px"></td>';
           });
           h+='<td><button onclick="delTipRow('+i+','+ri+')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:11px">✕</button></td></tr>';
         } else {
@@ -2324,7 +2328,7 @@ function renderTips(){
         }
       });
       h+='</table></div>';
-      if(isAdmin)h+='<button onclick="addTipRow('+i+')" style="margin-top:6px;padding:4px 10px;background:none;border:1px dashed #ccc;border-radius:6px;font-size:11px;color:#999;cursor:pointer;font-family:inherit">+ 추가</button>';
+      if(isAdmin)h+='<button onclick="addTipRow('+i+')" style="margin-top:6px;padding:6px 12px;background:var(--acl);border:1.5px dashed var(--ac);border-radius:6px;font-size:11px;color:var(--ac);font-weight:600;cursor:pointer;font-family:inherit;width:100%">+ 행 추가</button>';
     } else {
       // Text type
       if(isAdmin){
@@ -2360,6 +2364,7 @@ function moveTip(i,dir){var cards=tipsData||[];var j=i+dir;if(j<0||j>=cards.leng
 function updTipTitle(i,val){tipsData[i].title=val;fbSet('tips_cards',tipsData)}
 function updTipContent(i,val){tipsData[i].content=val;fbSet('tips_cards',tipsData)}
 function updTipCell(i,ri,ci,val){tipsData[i].rows[ri][ci]=val;fbSet('tips_cards',tipsData)}
+function updTipHeader(i,ci,val){if(tipsData[i].header)tipsData[i].header[ci]=val;fbSet('tips_cards',tipsData)}
 function addTipRow(i){tipsData[i].rows.push(['','','']);fbSet('tips_cards',tipsData);renderTips()}
 function delTipRow(i,ri){tipsData[i].rows.splice(ri,1);fbSet('tips_cards',tipsData);renderTips()}
 // Tip card add/delete/trash
