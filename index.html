@@ -2346,7 +2346,7 @@ function renderTips(){
   var cards=tipsData||defaultTips;
   var h='';
   cards.forEach(function(card,i){
-    h+='<div class="ic"><div class="ich" onclick="tic(this)">';
+    h+='<div class="ic'+(isAdmin?' op':'')+'"><div class="ich" onclick="tic(this)">';
     if(isAdmin){
       h+='<span style="display:flex;align-items:center;gap:4px">';
       if(i>0)h+='<button onclick="event.stopPropagation();moveTip('+i+',-1)" style="background:none;border:none;color:#aaa;cursor:pointer;font-size:12px;padding:2px">▲</button>';
