@@ -1834,9 +1834,8 @@ function renderDiaryToolbar(){
   }else{
     h+='<button class="tb-back" onclick="backToDiaryGrid()" aria-label="그리드로 돌아가기">‹ 그리드</button>';
     h+='<div class="tb-spacer"></div>';
-    h+='<button class="tb-icon" onclick="exportDiary()" title="내보내기" aria-label="내보내기">📤</button>';
     h+='<button class="tb-icon add" onclick="document.getElementById(\'phIn\').click()" title="사진 추가" aria-label="사진 추가">＋</button>';
-    if(btmBtn)btmBtn.style.display='block';
+    if(btmBtn)btmBtn.style.display='none';
   }
   tb.innerHTML=h;
 }
