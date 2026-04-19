@@ -831,7 +831,7 @@ function renderTabSettings(){
 function sw(t){
   if(tabConfig.hidden.indexOf(t)>=0)return;
   closeAllPopups();location.hash=t;document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});var te=document.querySelector('[data-tab="'+t+'"]');if(te)te.classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100);
-  if(t==='diary'&&_diaryView==='feed'){_diaryView='grid';_activeEditId=null;renderDiaryToolbar();renderDiaryGrid()}
+  if(t==='diary'&&_diaryView==='detail'){_diaryView='grid';_activeEditId=null;_detailIdx=-1;_detailKey=null;renderDiaryToolbar();renderDiaryGrid()}
 }
 
 // ===== DIARY REPLIES (guestbook) =====
@@ -1492,7 +1492,7 @@ fbGet('diary_trash',function(val){
 function handlePhotos(e){
   var files=Array.from(e.target.files);
   if(!files.length)return;
-  if(files.length>4){files=files.slice(0,4);setTimeout(function(){alert('최대 4장까지 선택 가능해요.\n처음 4장만 추가됩니다.')},100)}
+  if(files.length>6){files=files.slice(0,6);setTimeout(function(){alert('최대 6장까지 선택 가능해요.\n처음 6장만 추가됩니다.')},100)}
   var remaining=files.length;
   files.forEach(function(file){
     getExifDate(file,function(exifDate,exifTime){
@@ -1712,10 +1712,9 @@ function addNickColor(){
 }
 
 var _allDiaryCards=[];
-var _diaryPage=0;
-var DIARY_PER_PAGE=4;
 var _diaryView='grid';
-var _feedAnchorKey=null;
+var _detailIdx=-1;
+var _detailKey=null;
 
 var _tlLabels=null;
 fbGet('timeline_labels',function(val){_tlLabels=val||{};renderTimeline()});
@@ -1772,15 +1771,14 @@ function jumpToDate(dateStr){
       document.querySelectorAll('.diary-tl-day').forEach(function(d){d.classList.remove('on')});
       var el=document.querySelector('.diary-tl-day[onclick*="'+dateStr+'"]');
       if(el)el.classList.add('on');
-      // In grid mode: scroll to that date's section. In feed mode: open page containing it.
-      if(_diaryView==='grid'){
-        var section=Array.from(document.querySelectorAll('.diary-grid-date')).find(function(s){return s.textContent.indexOf(cd)!==-1});
-        if(section)section.scrollIntoView({behavior:'smooth',block:'start'});
-        else document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
+      if(_diaryView==='detail'){
+        // Already in detail view — open first card of that date
+        openDiaryDetail(i);
       }else{
-        _diaryPage=Math.floor(i/DIARY_PER_PAGE);
-        document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
-        renderDiaryPage();
+        // In grid mode: scroll to the first thumbnail of that date
+        var cells=document.querySelectorAll('.diary-grid-cell');
+        if(cells[i]){cells[i].scrollIntoView({behavior:'smooth',block:'center'})}
+        else document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
       }
       return;
     }
@@ -1800,29 +1798,20 @@ function renderDiary(){
     return;
   }
   DD.sort(function(a,b){return(b.date+b.time).localeCompare(a.date+a.time)});
-  // Build all cards (grouped by date then groupId), latest first
+  // Build all cards, latest first — no date grouping
   _allDiaryCards=[];
-  var dateGroups={};
-  DD.forEach(function(e){if(!dateGroups[e.date])dateGroups[e.date]=[];dateGroups[e.date].push(e)});
-  Object.keys(dateGroups).sort().reverse().forEach(function(date){
-    var entries=dateGroups[date];
-    var gMap={};
-    entries.forEach(function(e){
-      if(e.groupId){
-        if(!gMap[e.groupId]){gMap[e.groupId]=[];_allDiaryCards.push({date:date,group:gMap[e.groupId]})}
-        gMap[e.groupId].push(e);
-      }else{
-        _allDiaryCards.push({date:date,group:[e]});
-      }
-    });
+  var gMap={};
+  DD.forEach(function(e){
+    if(e.groupId){
+      if(!gMap[e.groupId]){gMap[e.groupId]=[];_allDiaryCards.push({date:e.date,group:gMap[e.groupId]})}
+      gMap[e.groupId].push(e);
+    }else{
+      _allDiaryCards.push({date:e.date,group:[e]});
+    }
   });
-  // Clamp page (feed mode only)
-  var totalPages=Math.ceil(_allDiaryCards.length/DIARY_PER_PAGE)||1;
-  if(_diaryPage>=totalPages)_diaryPage=totalPages-1;
-  if(_diaryPage<0)_diaryPage=0;
   renderDiaryToolbar();
   if(_diaryView==='grid')renderDiaryGrid();
-  else renderDiaryPage();
+  else renderDiaryDetail();
   renderTimeline();
   document.getElementById('trashSection').style.display=isAdmin?'block':'none';
 }
@@ -1842,54 +1831,38 @@ function renderDiaryToolbar(){
 function renderDiaryGrid(){
   var el=document.getElementById('diaryEntries');
   if(!_allDiaryCards.length){el.innerHTML='<div class="diary-empty">아직 기록이 없어요</div>';return}
-  var html='';
-  var byDate={};
+  var html='<div class="diary-grid">';
   _allDiaryCards.forEach(function(card,idx){
-    if(!byDate[card.date])byDate[card.date]=[];
-    byDate[card.date].push({card:card,idx:idx});
+    var primary=card.group[0];
+    var multi=card.group.length>1;
+    var memo=(primary.memo||'').split('\n')[0];
+    html+='<div class="diary-grid-cell" onclick="openDiaryDetail('+idx+')">';
+    html+='<img src="'+primary.data+'" loading="lazy" alt="">';
+    if(multi)html+='<div class="gc-multi">▦ '+card.group.length+'</div>';
+    if(memo)html+='<div class="gc-memo">'+esc(memo)+'</div>';
+    html+='</div>';
   });
-  Object.keys(byDate).sort().reverse().forEach(function(date){
-    html+='<div class="diary-grid-section"><div class="diary-grid-date">🌴 '+esc(date)+'</div><div class="diary-grid">';
-    byDate[date].forEach(function(item){
-      var primary=item.card.group[0];
-      var multi=item.card.group.length>1;
-      var memo=(primary.memo||'').split('\n')[0];
-      html+='<div class="diary-grid-cell" onclick="openDiaryFeed('+item.idx+')">';
-      html+='<img src="'+primary.data+'" loading="lazy" alt="">';
-      if(multi)html+='<div class="gc-multi">▦ '+item.card.group.length+'</div>';
-      if(memo)html+='<div class="gc-memo">'+esc(memo)+'</div>';
-      html+='</div>';
-    });
-    html+='</div></div>';
-  });
+  html+='</div>';
   el.innerHTML=html;
 }
 
-function openDiaryFeed(idx){
+function openDiaryDetail(idx){
   if(idx<0||idx>=_allDiaryCards.length)return;
-  _diaryView='feed';
-  _diaryPage=Math.floor(idx/DIARY_PER_PAGE);
-  _feedAnchorKey=_allDiaryCards[idx].group[0]._key;
-  // Push history state so device back button returns to grid
-  try{history.pushState({diary:'feed'},'')}catch(_){}
+  _diaryView='detail';
+  _detailIdx=idx;
+  _detailKey=_allDiaryCards[idx].group[0]._key;
+  try{history.pushState({diary:'detail'},'')}catch(_){}
   renderDiaryToolbar();
-  renderDiaryPage();
+  renderDiaryDetail();
   document.querySelector('.mn').scrollTo({top:0,behavior:'auto'});
-  setTimeout(function(){
-    if(!_feedAnchorKey)return;
-    var anchor=document.getElementById('dv_'+_feedAnchorKey);
-    if(anchor){
-      var card=anchor.closest('.de');
-      if(card)card.scrollIntoView({behavior:'auto',block:'start'});
-    }
-    _feedAnchorKey=null;
-  },50);
 }
 
 function backToDiaryGrid(fromHistory){
   if(_diaryView==='grid')return;
   _diaryView='grid';
   _activeEditId=null;
+  _detailIdx=-1;
+  _detailKey=null;
   if(!fromHistory){try{history.back()}catch(_){}}
   renderDiaryToolbar();
   renderDiaryGrid();
@@ -1897,22 +1870,26 @@ function backToDiaryGrid(fromHistory){
 }
 
 window.addEventListener('popstate',function(){
-  if(_diaryView==='feed'){backToDiaryGrid(true)}
+  if(_diaryView==='detail'){backToDiaryGrid(true)}
 });
 
-function renderDiaryPage(){
+function renderDiaryDetail(){
   var el=document.getElementById('diaryEntries');
-  var totalPages=Math.ceil(_allDiaryCards.length/DIARY_PER_PAGE)||1;
-  var start=_diaryPage*DIARY_PER_PAGE;
-  var pageCards=_allDiaryCards.slice(start,start+DIARY_PER_PAGE);
-  var html='';
-  var prevDate='';
-  pageCards.forEach(function(card){
-    if(card.date!==prevDate){
-      if(prevDate)html+='</div>';
-      html+='<div class="ddg"><div class="ddh">🌴 '+card.date+'</div>';
-      prevDate=card.date;
+  // Re-sync index by key in case data changed
+  if(_detailKey){
+    for(var k=0;k<_allDiaryCards.length;k++){
+      if(_allDiaryCards[k].group.some(function(g){return g._key===_detailKey})){_detailIdx=k;break}
     }
+  }
+  if(_detailIdx<0||_detailIdx>=_allDiaryCards.length){
+    // Card deleted — return to grid
+    backToDiaryGrid(true);
+    return;
+  }
+  var card=_allDiaryCards[_detailIdx];
+  var html='';
+  html+='<div class="ddg"><div class="ddh">🌴 '+esc(card.date)+'</div>';
+  (function(){
     var group=card.group;
     var primary=group[0];var eid=primary._key;
     html+='<div class="de">';
@@ -1948,7 +1925,7 @@ function renderDiaryPage(){
       if(group.length>1&&gi<group.length-1)html+='<button onclick="swapGroupPhotos(\''+ge._key+'\',\''+group[gi+1]._key+'\')" style="padding:2px 6px;background:#eee;border:none;border-radius:4px;font-size:10px;cursor:pointer">→</button>';
       html+='</div></div>';
     });
-    if(group.length<4){
+    if(group.length<6){
       html+='<label style="flex-shrink:0;width:70px;height:70px;border:1.5px dashed #ccc;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#ccc;cursor:pointer">+<input type="file" accept="image/*" style="display:none" onchange="addPhotoToGroup(\''+eid+'\',event)"></label>';
     }
     html+='</div>';
@@ -1981,34 +1958,16 @@ function renderDiaryPage(){
     html+='<textarea id="rt_'+eid+'" placeholder="댓글 남기기..."></textarea>';
     html+='<button class="reply-submit" onclick="addReply(\''+eid+'\')">등록</button></div></div>';
     html+='</div>';
-  });
-  if(prevDate)html+='</div>';
-  // Pager at bottom
-  if(totalPages>1){
-    html+='<div class="diary-pager">';
-    html+='<button class="pg-arrow" onclick="diaryGoPage('+((_diaryPage-1))+')">‹</button>';
-    for(var p=0;p<totalPages;p++){
-      html+='<button class="'+(p===_diaryPage?'on':'')+'" onclick="diaryGoPage('+p+')">'+(p+1)+'</button>';
-    }
-    html+='<button class="pg-arrow" onclick="diaryGoPage('+((_diaryPage+1))+')">›</button>';
-    html+='</div>';
-  }
+  })();
+  html+='</div>';
   el.innerHTML=html;
   initCarousels();
-  // Restore edit mode if was editing
+  // Restore edit mode if was editing this card
   if(_activeEditId){
     var dv=document.getElementById('dv_'+_activeEditId);
     var de=document.getElementById('de_'+_activeEditId);
     if(dv&&de){dv.style.display='none';de.style.display='block'}
   }
-}
-
-function diaryGoPage(i){
-  var totalPages=Math.ceil(_allDiaryCards.length/DIARY_PER_PAGE)||1;
-  if(i<0||i>=totalPages)return;
-  _diaryPage=i;
-  document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
-  renderDiaryPage();
 }
 function initCarousels(){
   document.querySelectorAll('.de-carousel').forEach(function(c){
@@ -2119,13 +2078,13 @@ function saveEditDE(id){
   // Save primary
   var updates={memo:memo};
   if(_editPhotoData[id])updates.data=_editPhotoData[id];
-  db.ref('diary/'+id).update(updates);
+  db.ref('diary/'+id).update(updates).catch(function(e){fbErr('diary/'+id,e);alert('수정 실패: '+(e&&e.message||'네트워크 오류'))});
   // Sync memo + save replaced photos for all group members
   if(found.groupId){
     DD.filter(function(x){return x.groupId===found.groupId&&x._key!==id}).forEach(function(e){
       var gu={memo:memo};
       if(_editPhotoData[e._key])gu.data=_editPhotoData[e._key];
-      db.ref('diary/'+e._key).update(gu);
+      db.ref('diary/'+e._key).update(gu).catch(function(err){fbErr('diary/'+e._key,err)});
     });
   }
   _editPhotoData={};
@@ -2160,8 +2119,8 @@ function delDE(id){
 function moveToTrash(id,entry){
   // Copy to trash, then delete from diary
   var trashEntry={data:entry.data,memo:entry.memo,date:entry.date,time:entry.time,pw:entry.pw,deletedAt:new Date().toISOString()};
-  db.ref('diary_trash').push(trashEntry);
-  db.ref('diary/'+id).remove();
+  db.ref('diary_trash').push(trashEntry).catch(function(e){fbErr('diary_trash',e);alert('삭제 실패: '+(e&&e.message||'네트워크 오류'))});
+  db.ref('diary/'+id).remove().catch(function(e){fbErr('diary/'+id,e);alert('삭제 실패: '+(e&&e.message||'네트워크 오류'))});
 }
 function renderTrash(){
   var el=document.getElementById('trashEntries');
