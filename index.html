@@ -1848,11 +1848,11 @@ function renderDiaryGrid(){
   _allDiaryCards.forEach(function(card,idx){
     var primary=card.group[0];
     var multi=card.group.length>1;
-    var label=primary.place||(primary.memo||'').split('\n')[0];
+    var place=(primary.place||'').trim();
     html+='<div class="diary-grid-cell" onclick="openDiaryDetail('+idx+')">';
     html+='<img src="'+primary.data+'" loading="lazy" alt="">';
     if(multi)html+='<div class="gc-multi">▦ '+card.group.length+'</div>';
-    if(label)html+='<div class="gc-memo">'+(primary.place?'📍 ':'')+esc(label)+'</div>';
+    if(place)html+='<div class="gc-memo">📍 '+esc(place)+'</div>';
     html+='</div>';
   });
   html+='</div>';
@@ -2439,11 +2439,10 @@ function buildExport(all,mapImg){
     h+='<div class="gutter"></div></div>';
   }
 
-  // Toolbar (screen only)
-  h+='<div class="toolbar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 12px;display:flex;gap:6px;justify-content:center;z-index:100;padding-bottom:calc(10px + env(safe-area-inset-bottom,0))">';
-  h+='<button class="tb-share" style="flex:1;padding:12px 8px;background:#0ABAB5;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">📤 공유</button>';
-  h+='<button class="tb-download" style="flex:1;padding:12px 8px;background:#1A6B5A;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">💾 다운로드</button>';
-  h+='<button class="tb-close" style="flex:1;padding:12px 8px;background:#f0efec;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;color:#666">닫기</button>';
+  // Toolbar (screen only) — single export button (share sheet handles save/send)
+  h+='<div class="toolbar" style="position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #eee;padding:10px 16px;display:flex;gap:8px;justify-content:center;z-index:100;padding-bottom:calc(10px + env(safe-area-inset-bottom,0))">';
+  h+='<button class="tb-close" style="flex:0 0 auto;min-width:88px;padding:12px 16px;background:#f0efec;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:#666">닫기</button>';
+  h+='<button class="tb-share" style="flex:1;padding:12px;background:#0ABAB5;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(10,186,181,.25)">📤 내보내기</button>';
   h+='</div>';
   h+='</body></html>';
 
@@ -2465,29 +2464,42 @@ function buildExport(all,mapImg){
     var vw=ov.clientWidth;
     var spreads=ov.querySelectorAll('.spread');
     spreads.forEach(function(s){
+      // Reset before measuring to avoid stale transform affecting offsetHeight
+      s.style.transform='none';
+      s.style.marginBottom='20px';
       var natW=s.scrollWidth||s.offsetWidth;
       if(natW>vw){
         var sc=vw/natW;
+        var h=s.offsetHeight;
         s.style.transform='scale('+sc+')';
         s.style.transformOrigin='top center';
-        s.style.marginBottom=(-s.offsetHeight*(1-sc)+20)+'px';
+        s.style.marginBottom=(-h*(1-sc)+20)+'px';
       }
     });
   }
-  setTimeout(scaleBooks,50);
+  // Wait for images + fonts before scaling — first-render was calculating heights
+  // before photos loaded, causing overlapping spreads
+  _fontsReady().then(function(){return _waitForImages(ov)}).then(function(){
+    scaleBooks();
+    // Run again once more after a short delay (covers late font metric settling)
+    setTimeout(scaleBooks,200);
+  }).catch(function(){setTimeout(scaleBooks,300)});
+  // Rescale on viewport change (rotation)
+  window.addEventListener('resize',scaleBooks);
+  ov._scaleBooks=scaleBooks;
 
   // Wire up buttons
-  ov.querySelector('.tb-close').onclick=function(){ov.remove()};
+  function _closeOv(){try{window.removeEventListener('resize',scaleBooks)}catch(_){}ov.remove()}
+  ov.querySelector('.tb-close').onclick=_closeOv;
   function _downloadBlob(blob,fileName){
     var url=URL.createObjectURL(blob);
     var a=document.createElement('a');a.href=url;a.download=fileName;a.rel='noopener';
     document.body.appendChild(a);a.click();
     setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url)},100);
   }
-  function _generateAndUse(btn,mode){
+  function _generateAndShare(btn){
     var orig=btn.innerHTML;
     btn.innerHTML='⏳ PDF 생성 중...';btn.style.opacity='0.6';btn.disabled=true;
-    // Disable other buttons too
     var allBtns=ov.querySelectorAll('.toolbar button');
     allBtns.forEach(function(b){if(b!==btn)b.disabled=true});
     generateSharePDF(ov,title,function(blob){
@@ -2495,27 +2507,21 @@ function buildExport(all,mapImg){
       allBtns.forEach(function(b){b.disabled=false});
       if(!blob){alert('PDF 생성에 실패했습니다. 사진이 많으면 시간이 걸릴 수 있어요.');return}
       var fileName=(title||'다이어리').replace(/[^a-zA-Z0-9가-힣\s]/g,'').trim()+'.pdf';
-      if(mode==='share'){
-        var file;
-        try{file=new File([blob],fileName,{type:'application/pdf'})}catch(_){file=null}
-        if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
-          navigator.share({title:title,files:[file]}).then(null,function(err){
-            if(err&&err.name==='AbortError')return;
-            // Share failed — fall back to download
-            try{console.warn('share fail',err)}catch(_){}
-            _downloadBlob(blob,fileName);
-          });
-        }else{
-          // No share support — download directly
+      var file;
+      try{file=new File([blob],fileName,{type:'application/pdf'})}catch(_){file=null}
+      if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+        navigator.share({title:title,files:[file]}).then(null,function(err){
+          if(err&&err.name==='AbortError')return;
+          try{console.warn('share fail',err)}catch(_){}
           _downloadBlob(blob,fileName);
-        }
+        });
       }else{
+        // No share support — download directly
         _downloadBlob(blob,fileName);
       }
     });
   }
-  ov.querySelector('.tb-share').onclick=function(){_generateAndUse(this,'share')};
-  ov.querySelector('.tb-download').onclick=function(){_generateAndUse(this,'download')};
+  ov.querySelector('.tb-share').onclick=function(){_generateAndShare(this)};
 }
 
 // ===== TIPS CARDS (editable, reorderable) =====
