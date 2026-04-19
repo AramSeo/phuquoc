@@ -1942,7 +1942,7 @@ function renderDiaryGrid(){
     if(sel)html+='<div class="gc-check">✓</div>';
     html+='<img src="'+primary.data+'" loading="lazy" alt="">';
     if(multi)html+='<div class="gc-multi">▦ '+card.group.length+'</div>';
-    if(place)html+='<div class="gc-memo">📍 '+esc(place)+'</div>';
+    if(place)html+='<div class="gc-memo">'+esc(place)+'</div>';
     html+='</div>';
   });
   html+='</div>';
