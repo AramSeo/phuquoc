@@ -205,6 +205,22 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .de .dd{position:absolute;top:6px;right:8px;background:rgba(0,0,0,.4);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .dbtn{width:100%;padding:12px;border:none;border-radius:var(--r);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:8px}
 .dbtn.save{background:var(--ac);color:#fff}.dbtn.exp{background:#1A6B5A;color:#fff;margin-top:6px}
+/* Diary Grid (Instagram-style) */
+.diary-toolbar{display:flex;align-items:center;gap:8px;padding:8px 0 12px}
+.diary-toolbar .tb-back{flex-shrink:0;display:flex;align-items:center;gap:4px;padding:7px 12px;background:#fff;border:1.5px solid #ddd;border-radius:20px;font-size:12px;font-weight:700;color:var(--tx);cursor:pointer;font-family:inherit}
+.diary-toolbar .tb-back:active{background:#f0efec}
+.diary-toolbar .tb-spacer{flex:1}
+.diary-toolbar .tb-exp{flex-shrink:0;padding:7px 14px;background:#1A6B5A;color:#fff;border:none;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.diary-toolbar .tb-exp:active{transform:scale(.95)}
+.diary-grid-section{margin-bottom:14px}
+.diary-grid-date{font-weight:700;font-size:13px;color:var(--ac);margin:0 0 6px;padding-bottom:4px;border-bottom:2px solid var(--ac)}
+.diary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.diary-grid-cell{position:relative;aspect-ratio:1;overflow:hidden;border-radius:4px;cursor:pointer;background:#F5F3EE}
+.diary-grid-cell img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s}
+.diary-grid-cell:active img{transform:scale(.97)}
+.diary-grid-cell .gc-multi{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;display:flex;align-items:center;gap:2px;pointer-events:none}
+.diary-grid-cell .gc-memo{position:absolute;bottom:0;left:0;right:0;padding:4px 6px;background:linear-gradient(to top,rgba(0,0,0,.55),transparent);color:#fff;font-size:10px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+.diary-empty{text-align:center;color:#999;padding:30px;font-size:13px}
 .unsaved-tag{display:inline-block;padding:1px 6px;background:#fff3e0;border-radius:4px;font-size:9px;color:#e65100;font-weight:700;margin-left:4px}
 
 /* Budget/Tips */
@@ -431,9 +447,10 @@ body.font-lg .ql a{font-size:12px}
   <button class="diary-scroll-btn up" onclick="document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'})">▲</button>
   <button class="diary-scroll-btn down" onclick="var m=document.querySelector('.mn');m.scrollTo({top:m.scrollHeight,behavior:'smooth'})">▼</button>
   <div class="drw">
+    <div id="diaryToolbar" class="diary-toolbar"></div>
     <div id="diaryCompose" style="display:none"></div>
     <div id="diaryEntries"></div>
-    <button class="dbtn exp" onclick="exportDiary()">내보내기</button>
+    <button class="dbtn exp" id="diaryExportBtm" onclick="exportDiary()" style="display:none">내보내기</button>
     <div id="trashSection" style="display:none;margin-top:20px">
       <div style="font-weight:700;font-size:14px;color:var(--co);margin-bottom:8px;padding-bottom:4px;border-bottom:2px solid var(--co)">휴지통 (Admin 전용)</div>
       <div id="trashEntries"></div>
@@ -813,7 +830,8 @@ function renderTabSettings(){
 // ===== TAB SWITCH =====
 function sw(t){
   if(tabConfig.hidden.indexOf(t)>=0)return;
-  closeAllPopups();location.hash=t;document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});var te=document.querySelector('[data-tab="'+t+'"]');if(te)te.classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100)
+  closeAllPopups();location.hash=t;document.querySelectorAll('.ti').forEach(function(e){e.classList.remove('on')});var te=document.querySelector('[data-tab="'+t+'"]');if(te)te.classList.add('on');document.querySelectorAll('.tc').forEach(function(e){e.classList.remove('on')});document.getElementById('tab-'+t).classList.add('on');if(t==='map'&&!lmap)initMap();if(t==='map'&&lmap)setTimeout(function(){lmap.invalidateSize()},100);
+  if(t==='diary'&&_diaryView==='feed'){_diaryView='grid';_activeEditId=null;renderDiaryToolbar();renderDiaryGrid()}
 }
 
 // ===== DIARY REPLIES (guestbook) =====
@@ -1696,6 +1714,8 @@ function addNickColor(){
 var _allDiaryCards=[];
 var _diaryPage=0;
 var DIARY_PER_PAGE=4;
+var _diaryView='grid';
+var _feedAnchorKey=null;
 
 var _tlLabels=null;
 fbGet('timeline_labels',function(val){_tlLabels=val||{};renderTimeline()});
@@ -1748,14 +1768,20 @@ function jumpToDate(dateStr){
   for(var i=0;i<_allDiaryCards.length;i++){
     var cd=_allDiaryCards[i].date;
     if(cd===dateStr||cd===altDate){
-      var page=Math.floor(i/DIARY_PER_PAGE);
-      _diaryPage=page;
-      document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
-      renderDiaryPage();
       // Highlight
       document.querySelectorAll('.diary-tl-day').forEach(function(d){d.classList.remove('on')});
       var el=document.querySelector('.diary-tl-day[onclick*="'+dateStr+'"]');
       if(el)el.classList.add('on');
+      // In grid mode: scroll to that date's section. In feed mode: open page containing it.
+      if(_diaryView==='grid'){
+        var section=Array.from(document.querySelectorAll('.diary-grid-date')).find(function(s){return s.textContent.indexOf(cd)!==-1});
+        if(section)section.scrollIntoView({behavior:'smooth',block:'start'});
+        else document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
+      }else{
+        _diaryPage=Math.floor(i/DIARY_PER_PAGE);
+        document.querySelector('.mn').scrollTo({top:0,behavior:'smooth'});
+        renderDiaryPage();
+      }
       return;
     }
   }
@@ -1764,9 +1790,17 @@ function jumpToDate(dateStr){
 
 function renderDiary(){
   var el=document.getElementById('diaryEntries');
-  if(!DD.length){_allDiaryCards=[];el.innerHTML='<div style="text-align:center;color:#999;padding:30px;font-size:13px">아직 기록이 없어요</div>';return}
+  if(!DD.length){
+    _allDiaryCards=[];
+    el.innerHTML='<div class="diary-empty">아직 기록이 없어요</div>';
+    renderDiaryToolbar();
+    var btmBtn=document.getElementById('diaryExportBtm');if(btmBtn)btmBtn.style.display='none';
+    renderTimeline();
+    document.getElementById('trashSection').style.display=isAdmin?'block':'none';
+    return;
+  }
   DD.sort(function(a,b){return(b.date+b.time).localeCompare(a.date+a.time)});
-  // Build all cards (grouped by date then groupId)
+  // Build all cards (grouped by date then groupId), latest first
   _allDiaryCards=[];
   var dateGroups={};
   DD.forEach(function(e){if(!dateGroups[e.date])dateGroups[e.date]=[];dateGroups[e.date].push(e)});
@@ -1782,14 +1816,89 @@ function renderDiary(){
       }
     });
   });
-  // Clamp page
+  // Clamp page (feed mode only)
   var totalPages=Math.ceil(_allDiaryCards.length/DIARY_PER_PAGE)||1;
   if(_diaryPage>=totalPages)_diaryPage=totalPages-1;
   if(_diaryPage<0)_diaryPage=0;
-  renderDiaryPage();
+  renderDiaryToolbar();
+  if(_diaryView==='grid')renderDiaryGrid();
+  else renderDiaryPage();
   renderTimeline();
   document.getElementById('trashSection').style.display=isAdmin?'block':'none';
 }
+
+function renderDiaryToolbar(){
+  var tb=document.getElementById('diaryToolbar');if(!tb)return;
+  var btmBtn=document.getElementById('diaryExportBtm');
+  if(_diaryView==='grid'){
+    tb.innerHTML=_allDiaryCards.length?'<div class="tb-spacer"></div><button class="tb-exp" onclick="exportDiary()">📤 내보내기</button>':'';
+    if(btmBtn)btmBtn.style.display='none';
+  }else{
+    tb.innerHTML='<button class="tb-back" onclick="backToDiaryGrid()">← 그리드</button><div class="tb-spacer"></div><button class="tb-exp" onclick="exportDiary()">📤 내보내기</button>';
+    if(btmBtn)btmBtn.style.display='block';
+  }
+}
+
+function renderDiaryGrid(){
+  var el=document.getElementById('diaryEntries');
+  if(!_allDiaryCards.length){el.innerHTML='<div class="diary-empty">아직 기록이 없어요</div>';return}
+  var html='';
+  var byDate={};
+  _allDiaryCards.forEach(function(card,idx){
+    if(!byDate[card.date])byDate[card.date]=[];
+    byDate[card.date].push({card:card,idx:idx});
+  });
+  Object.keys(byDate).sort().reverse().forEach(function(date){
+    html+='<div class="diary-grid-section"><div class="diary-grid-date">🌴 '+esc(date)+'</div><div class="diary-grid">';
+    byDate[date].forEach(function(item){
+      var primary=item.card.group[0];
+      var multi=item.card.group.length>1;
+      var memo=(primary.memo||'').split('\n')[0];
+      html+='<div class="diary-grid-cell" onclick="openDiaryFeed('+item.idx+')">';
+      html+='<img src="'+primary.data+'" loading="lazy" alt="">';
+      if(multi)html+='<div class="gc-multi">▦ '+item.card.group.length+'</div>';
+      if(memo)html+='<div class="gc-memo">'+esc(memo)+'</div>';
+      html+='</div>';
+    });
+    html+='</div></div>';
+  });
+  el.innerHTML=html;
+}
+
+function openDiaryFeed(idx){
+  if(idx<0||idx>=_allDiaryCards.length)return;
+  _diaryView='feed';
+  _diaryPage=Math.floor(idx/DIARY_PER_PAGE);
+  _feedAnchorKey=_allDiaryCards[idx].group[0]._key;
+  // Push history state so device back button returns to grid
+  try{history.pushState({diary:'feed'},'')}catch(_){}
+  renderDiaryToolbar();
+  renderDiaryPage();
+  document.querySelector('.mn').scrollTo({top:0,behavior:'auto'});
+  setTimeout(function(){
+    if(!_feedAnchorKey)return;
+    var anchor=document.getElementById('dv_'+_feedAnchorKey);
+    if(anchor){
+      var card=anchor.closest('.de');
+      if(card)card.scrollIntoView({behavior:'auto',block:'start'});
+    }
+    _feedAnchorKey=null;
+  },50);
+}
+
+function backToDiaryGrid(fromHistory){
+  if(_diaryView==='grid')return;
+  _diaryView='grid';
+  _activeEditId=null;
+  if(!fromHistory){try{history.back()}catch(_){}}
+  renderDiaryToolbar();
+  renderDiaryGrid();
+  document.querySelector('.mn').scrollTo({top:0,behavior:'auto'});
+}
+
+window.addEventListener('popstate',function(){
+  if(_diaryView==='feed'){backToDiaryGrid(true)}
+});
 
 function renderDiaryPage(){
   var el=document.getElementById('diaryEntries');
