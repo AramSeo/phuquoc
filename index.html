@@ -222,6 +222,16 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--tx);
 .diary-grid-cell .gc-multi{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:10px;display:flex;align-items:center;gap:2px;pointer-events:none}
 .diary-grid-cell .gc-memo{position:absolute;bottom:0;left:0;right:0;padding:4px 6px;background:linear-gradient(to top,rgba(0,0,0,.55),transparent);color:#fff;font-size:10px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
 .diary-empty{text-align:center;color:#999;padding:30px;font-size:13px}
+/* Selection mode for export */
+.diary-grid-cell.selectable .gc-check{position:absolute;top:6px;left:6px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;font-weight:900;z-index:3;box-shadow:0 1px 5px rgba(0,0,0,.25);transition:background .15s}
+.diary-grid-cell.selectable.selected .gc-check{background:var(--ac);color:#fff}
+.diary-grid-cell.selectable.selected{outline:3px solid var(--ac);outline-offset:-3px}
+.diary-grid-cell.selectable.selected img{transform:scale(.94);transition:transform .15s}
+.diary-toolbar .tb-text{flex-shrink:0;padding:7px 12px;background:none;border:1.5px solid #ddd;border-radius:18px;font-size:12px;font-weight:700;color:var(--tx);cursor:pointer;font-family:inherit}
+.diary-toolbar .tb-text:active{background:rgba(0,0,0,.06)}
+.diary-toolbar .tb-primary{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:7px 14px;background:var(--ac);color:#fff;border:none;border-radius:18px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 2px 8px rgba(10,186,181,.25)}
+.diary-toolbar .tb-primary:active{transform:scale(.96)}
+.diary-toolbar .tb-primary .badge{background:rgba(255,255,255,.25);padding:1px 7px;border-radius:10px;font-size:11px;font-weight:900;min-width:18px;text-align:center}
 .unsaved-tag{display:inline-block;padding:1px 6px;background:#fff3e0;border-radius:4px;font-size:9px;color:#e65100;font-weight:700;margin-left:4px}
 
 /* Budget/Tips */
@@ -1718,6 +1728,8 @@ var _allDiaryCards=[];
 var _diaryView='grid';
 var _detailIdx=-1;
 var _detailKey=null;
+var _selectionMode=false;
+var _selectedKeys=new Set();
 
 var _tlLabels=null;
 fbGet('timeline_labels',function(val){_tlLabels=val||{};renderTimeline()});
@@ -1824,11 +1836,22 @@ function renderDiaryToolbar(){
   var tb=document.getElementById('diaryToolbar');if(!tb)return;
   var btmBtn=document.getElementById('diaryExportBtm');
   var h='';
+  if(_selectionMode){
+    var n=_selectedKeys.size;
+    var total=_allDiaryCards.length;
+    var allSel=total>0&&n===total;
+    h+='<button class="tb-back" onclick="exitExportSelection()" aria-label="취소">✕ 취소</button>';
+    h+='<div class="tb-spacer"></div>';
+    h+='<button class="tb-text" onclick="toggleSelectAll()">'+(allSel?'전체 해제':'전체 선택')+'</button>';
+    h+='<button class="tb-primary" onclick="confirmExport()" title="내보내기">📤<span class="badge">'+n+'</span></button>';
+    if(btmBtn)btmBtn.style.display='none';
+    tb.innerHTML=h;return;
+  }
   if(_diaryView==='grid'){
     var count=_allDiaryCards.length;
     h+='<span class="tb-title">'+(count?count+'개 기록':'다이어리')+'</span>';
     h+='<div class="tb-spacer"></div>';
-    if(count)h+='<button class="tb-icon" onclick="exportDiary()" title="내보내기" aria-label="내보내기">📤</button>';
+    if(count)h+='<button class="tb-icon" onclick="enterExportSelection()" title="내보내기" aria-label="내보내기">📤</button>';
     h+='<button class="tb-icon add" onclick="document.getElementById(\'phIn\').click()" title="사진 추가" aria-label="사진 추가">＋</button>';
     if(btmBtn)btmBtn.style.display='none';
   }else{
@@ -1840,15 +1863,83 @@ function renderDiaryToolbar(){
   tb.innerHTML=h;
 }
 
+function enterExportSelection(){
+  if(!_allDiaryCards.length){alert('내보낼 기록이 없습니다');return}
+  if(_diaryView!=='grid'){_diaryView='grid';_detailIdx=-1;_detailKey=null}
+  _selectionMode=true;
+  _selectedKeys=new Set();
+  renderDiaryToolbar();
+  renderDiaryGrid();
+}
+function exitExportSelection(){
+  _selectionMode=false;
+  _selectedKeys=new Set();
+  renderDiaryToolbar();
+  renderDiaryGrid();
+}
+function toggleExportSelection(idx){
+  var card=_allDiaryCards[idx];if(!card)return;
+  var key=card.group[0]._key;
+  var cell=document.querySelectorAll('.diary-grid-cell')[idx];
+  if(_selectedKeys.has(key)){_selectedKeys.delete(key);if(cell)cell.classList.remove('selected')}
+  else{_selectedKeys.add(key);if(cell)cell.classList.add('selected')}
+  _updateSelectionUI();
+}
+function toggleSelectAll(){
+  var total=_allDiaryCards.length;
+  if(_selectedKeys.size===total){_selectedKeys=new Set()}
+  else{_selectedKeys=new Set(_allDiaryCards.map(function(c){return c.group[0]._key}))}
+  renderDiaryToolbar();
+  renderDiaryGrid();
+}
+function _updateSelectionUI(){
+  var total=_allDiaryCards.length;
+  var n=_selectedKeys.size;
+  var b=document.querySelector('#diaryToolbar .badge');
+  if(b)b.textContent=n;
+  var t=document.querySelector('#diaryToolbar .tb-text');
+  if(t)t.textContent=(total>0&&n===total)?'전체 해제':'전체 선택';
+}
+function confirmExport(){
+  var selectedDD=[];
+  _allDiaryCards.forEach(function(card){
+    if(_selectedKeys.has(card.group[0]._key)){
+      card.group.forEach(function(e){selectedDD.push(e)});
+    }
+  });
+  if(!selectedDD.length){
+    if(!confirm('선택한 사진이 없습니다.\n표지와 지도만 포함된 PDF를 만들까요?'))return;
+  }
+  // Exit selection mode (visual)
+  _selectionMode=false;
+  _selectedKeys=new Set();
+  renderDiaryToolbar();
+  renderDiaryGrid();
+  // Show loading + capture map + build export with filtered entries
+  var loadOv=document.createElement('div');
+  loadOv.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ac);font-weight:700';
+  loadOv.textContent='지도 캡처 중...';
+  document.body.appendChild(loadOv);
+  captureMap(function(mapImg){
+    loadOv.remove();
+    buildExport(selectedDD,mapImg);
+  });
+}
+
 function renderDiaryGrid(){
   var el=document.getElementById('diaryEntries');
   if(!_allDiaryCards.length){el.innerHTML='<div class="diary-empty">아직 기록이 없어요</div>';return}
+  var sel=_selectionMode;
   var html='<div class="diary-grid">';
   _allDiaryCards.forEach(function(card,idx){
     var primary=card.group[0];
     var multi=card.group.length>1;
     var place=(primary.place||'').trim();
-    html+='<div class="diary-grid-cell" onclick="openDiaryDetail('+idx+')">';
+    var isSelected=sel&&_selectedKeys.has(primary._key);
+    var cls='diary-grid-cell'+(sel?' selectable':'')+(isSelected?' selected':'');
+    var clickFn=sel?'toggleExportSelection('+idx+')':'openDiaryDetail('+idx+')';
+    html+='<div class="'+cls+'" onclick="'+clickFn+'">';
+    if(sel)html+='<div class="gc-check">✓</div>';
     html+='<img src="'+primary.data+'" loading="lazy" alt="">';
     if(multi)html+='<div class="gc-multi">▦ '+card.group.length+'</div>';
     if(place)html+='<div class="gc-memo">📍 '+esc(place)+'</div>';
@@ -2195,17 +2286,9 @@ function captureMap(cb){
   },300);
 }
 function exportDiary(){
-  var all=DD.slice();
-  if(!all.length){alert('내보낼 기록이 없습니다');return}
-  // Show loading
-  var loadOv=document.createElement('div');
-  loadOv.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--ac);font-weight:700';
-  loadOv.textContent='지도 캡처 중...';
-  document.body.appendChild(loadOv);
-  captureMap(function(mapImg){
-    loadOv.remove();
-    buildExport(all,mapImg);
-  });
+  // Entry point — go through selection mode
+  if(!DD.length){alert('내보낼 기록이 없습니다');return}
+  enterExportSelection();
 }
 function adjustSmartPhotoLayouts(root){
   // For 2-photo groups: pick horizontal vs vertical based on average aspect ratio
