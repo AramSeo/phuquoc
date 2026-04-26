@@ -1727,7 +1727,6 @@ function renderTimeline(){
     var hint=photoHints[dateStr]||'';
     h+='<div class="diary-tl-day'+(hasPhoto?' has-photo':'')+'" onclick="jumpToDate(\''+dateStr+'\')">';
     h+='<div class="tl-date">4/'+d+'</div>';
-    h+='<div class="tl-dow">'+dayNames[d]+'</div>';
     if(label)h+='<div class="tl-act">'+label+'</div>';
     else if(hint)h+='<div class="tl-act" style="color:var(--tx2)">'+hint+'</div>';
     h+='<div class="tl-dot"></div>';
